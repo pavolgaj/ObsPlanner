@@ -1,8 +1,20 @@
 from tkinter import * 
 import tkinter.ttk as ttk 
 
-fakeEvt()
-'''generate event for "select" action'''
+class fakeEvtWidget():
+    '''generate event widget for "select" action'''
+    def __init__(self,index,lst):
+        self.index=index
+        self.lst=list(lst)
+    def curselection(self):
+        return [self.index]
+    def get(self,index):
+        return self.lst[index]
+
+class fakeEvt():
+    '''generate event for "select" action'''
+    def __init__(self,index,lst):
+        self.widget=fakeEvtWidget(index,lst)
 
 class IORedirector(object):
     '''A general class for redirecting I/O to this Text widget.'''

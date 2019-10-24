@@ -14,21 +14,27 @@ def juldat(year,mon,day,h=0,m=0,s=0):
     
 def printDMS(x):
         #vystup v tvare d:m:s
-        sgn=int(np.sign(x))
+        sgn=''
+        if np.sign(x)<0: sgn='-'
+        x=abs(x)
         d=int(abs(x))
         m=int(round((abs(x)-d)*60.,3))
         s=abs(round((abs(x)-d-m/60.)*3600.,2))
-        xx=str(sgn*d).rjust(2,'0')+':'+str(m).rjust(2,'0')+':'+('%.2f' %s).rjust(5,'0')
+        xx=sgn+str(d).rjust(2,'0')+':'+str(m).rjust(2,'0')+':'+('%.2f' %s).rjust(5,'0')
         return xx
 
 def readDMS(x,deg=True):
         #vystup v tvare d:m:s
+        sgn=1
+        if x[0]=='-':
+            sgn=-1
+            x=x[1:]
         d=int(x[:x.find(':')])
         x=x[x.find(':')+1:]
         m=int(x[:x.find(':')])
         s=float(x[x.find(':')+1:])
-        if deg: return np.sign(d)*(d+m/60.+s/3600.)
-        else: return d,m,s
+        if deg: return sgn*(d+m/60.+s/3600.)
+        else: return sgn*d,m,s
 
 class star:
     def __init__(self,name,ra,dec,mag,size='0',typ='NA',note='',const=''):

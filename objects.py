@@ -8,13 +8,14 @@ class objects:
     #global constellations
     
     def __init__(self,constellations):
-        if os.path.isfile('data/objects.opd'):
-            f=open('data/objects.opd','rb')
-            self.objects=pickle.load(f)
-            f.close()
-        else: self.objects={}
+        self.objects={}
         self.constellations=constellations
         #return self.objects  
+        
+    def load(self,name):
+        f=open(name,'rb')
+        self.objects=pickle.load(f)
+        f.close()
     
     def add(self,name,ra,dec,mag,size='',typ='',note='',const=''):
         obj=stars.star(name,ra,dec,mag,size,typ,note,const)           
@@ -24,7 +25,7 @@ class objects:
         obs=observation(obj,date,observer,telescope,site,image,note)
         self.objects[obj]['obs'][date]=obs
 
-    def save(self):
-        f=open('data/objects.opd','wb')
+    def save(self,name):
+        f=open(name,'wb')
         pickle.dump(self.objects,f)
         f.close()

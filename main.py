@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 import sys
 import os
+import pickle
 
 from tkinter import *
-from tkinter import messagebox  
+from tkinter import messagebox 
+from tkinter import filedialog 
 import tkinter.ttk as ttk 
 
 import numpy as np
@@ -57,7 +59,7 @@ def AddObj(obj=None):
         if len(nameVar.get())==0:
             messagebox.showerror('Name Error','"Name" not given!')
             return
-        else: name=nameVar.get()
+        else: name=nameVar.get().strip()
         try:
             if ':' in raVar.get(): ra=stars.readDMS(raVar.get(),deg=True)
             else: ra=float(raVar.get())
@@ -76,10 +78,16 @@ def AddObj(obj=None):
         
         #nacitanie udajov a pridanie objektu 
         note=TextO.get('1.0',END)   
-        if obj is None: objects.add(nameVar.get(),ra,dec,magVar.get(),sizeVar.get(),typeVar.get(),note,constVar.get())    
-        else: objects.objects[obj.name]['object']=stars.star(nameVar.get(),ra,dec,magVar.get(),sizeVar.get(),typeVar.get(),note,constVar.get())
-        
-        objfilter()
+        if obj is None: 
+            objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())  
+            #objfilter()  
+        else: 
+            if not name==obj.name: del objects.objects[obj.name] #TODO: nejake upozornenie...
+            objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+        zoznam=objfilter()
+        fake=fakeEvt(zoznam.index(name),zoznam)
+        objselect(fake)
+      
         top.destroy()
         
     def detect():
@@ -100,7 +108,7 @@ def AddObj(obj=None):
             if constellations[const].testPoint(ra,dec): 
                 constVar.set(const)
                 return  
-    
+                    
     top=Toplevel(root)
     top.geometry('250x350')
     top.title('Object')
@@ -223,23 +231,36 @@ def AddObj(obj=None):
     Button1.place(relx=0.45,rely=0.93,height=24,width=47)
     Button1.configure(text='Save')
     Button1.configure(command=save)
+    
 
 def AddObs():
     print('AddObs')
     sys.stdout.flush()
 
 def DelObj():
-    print('DelObj')
-    sys.stdout.flush()
+    #TODO: potvrdenie o zmazani
+    del objects.objects[objZ.name]    
+    objfilter()
+    obssVar.set('')
+    Text1.delete(1.0,END)
+    Text2.delete(1.0,END)
+    figAlt.clf()
+    figObj.clf()
+    canvas1.draw()
+    canvas2.draw()
+    #TODO: blokovanie tlacidiel
+    Button2.configure(state=DISABLED)
+    Button3.configure(state=DISABLED)
+    Button4.configure(state=DISABLED)
+    Button5.configure(state=DISABLED)
+    Button6.configure(state=DISABLED)
 
 def DelObs():
     print('DelObs')
     sys.stdout.flush()
 
 def EditObj():
-    AddObj(objZ)
-    fake=fakeEvt()
-    objselect(fake)
+    AddObj(objZ)      
 
 def EditObs():
     print('EditObs')
@@ -247,25 +268,65 @@ def EditObs():
 
 def Exit(): 
     global root
+    f=open('data/settings.ops','wb')
+    pickle.dump(settings,f)
+    f.close()
+    
     root.destroy()
     root=None
     matplotlib.pyplot.close()
 
 def NewFile():
-    print('NewFile')
-    sys.stdout.flush()
+    global objects      
+    objects=objClass.objects(constellations)
+    objfilter()
+    obssVar.set('')
+    Text1.delete(1.0,END)
+    Text2.delete(1.0,END)
+    figAlt.clf()
+    figObj.clf()
+    canvas1.draw()
+    canvas2.draw()
+    settings['file']=''
+    #TODO: disable edit,delete,image
+    Button2.configure(state=DISABLED)
+    Button3.configure(state=DISABLED)
+    Button4.configure(state=DISABLED)
+    Button5.configure(state=DISABLED)
+    Button6.configure(state=DISABLED)
 
 def NowTime():
     dt=datetime.datetime.now(datetime.timezone.utc)
     dateVar.set(dt.strftime('%Y-%m-%d %H:%M:%S'))
 
 def OpenFile():
-    print('OpenFile')
-    sys.stdout.flush()
+    global objects 
+    name=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file')
+    #name=name.replace('\\','/')        
+    
+    if len(name)>0:                   
+        objects=objClass.objects(constellations)          
+        objects.load(name)          
+        objfilter()
+        obssVar.set('')
+        Text1.delete(1.0,END)
+        Text2.delete(1.0,END)
+        figAlt.clf()
+        figObj.clf()
+        canvas1.draw()
+        canvas2.draw()
+        settings['file']=name
+        Button2.configure(state=DISABLED)
+        Button3.configure(state=DISABLED)
+        Button4.configure(state=DISABLED)
+        Button5.configure(state=DISABLED)
+        Button6.configure(state=DISABLED)
 
 def SaveFile():
-    print('SaveFile')
-    sys.stdout.flush()
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')         
+    if len(name)>0: 
+        objects.save(name)
+        settings['file']=name
 
 def Settings():
     print('Settings')
@@ -296,7 +357,7 @@ def plotAlt(ra,dec):
     
     year,mon,day,hour,minute,sec=getDate()
     jd0=stars.juldat(year,mon,day,hour-2,minute,sec)  #start -2h
-    jd1=stars.juldat(year,mon,day,hour+12,minute,sec)  #stop 12h
+    jd1=stars.juldat(year,mon,day,hour+8,minute,sec)  #stop +8h
     jd=np.linspace(jd0,jd1,200)
     
     a,h=objZ.altAz(jd,lon,lat)
@@ -307,7 +368,7 @@ def plotAlt(ra,dec):
     ax.set_ylim(min(h0),max(h)+5) 
     
     #znacky po hodinach
-    jdH=np.arange(stars.juldat(year,mon,day,hour-1,0,0),stars.juldat(year,mon,day,hour+13,0,1),1./24.)
+    jdH=np.arange(stars.juldat(year,mon,day,hour-1,0,0),stars.juldat(year,mon,day,hour+7,0,1),1./24.)
     for i in range(len(jdH)):
         a,h=objZ.altAz(jdH[i],lon,lat)
         if h>0:
@@ -361,12 +422,14 @@ def objfilter(event=None):
                 a,h=ob['object'].altAz(jd,lon,lat)
                 if (a<limits[3]) and (a>limits[2]) and (h<limits[1]) and (h>limits[0]): 
                     zoznam.append(ob['object'].name)
-    objsVar.set(sort(zoznam))     
+    zoznam=sort(zoznam)
+    objsVar.set(zoznam)   
+    return zoznam    
     
 def objselect(evt):
     global objZ,obsZ #zobrazeny objekt a zoznam pozorovani 
     w=evt.widget
-    if len(w.curselection())==0: return
+    if len(w.curselection())==0: return 
     index=int(w.curselection()[0])
     value=w.get(index)
     
@@ -407,6 +470,11 @@ def objselect(evt):
     sys.stdout=old 
 
     obssVar.set(sortObs(obsZ))
+    Button2.configure(state=NORMAL)
+    Button3.configure(state=NORMAL)
+    Button4.configure(state=NORMAL)
+    Button5.configure(state=DISABLED)
+    Button6.configure(state=DISABLED)
 
 def obsselect(evt):
     global obsZ1  #zobrazene pozorovanie       
@@ -429,9 +497,20 @@ def obsselect(evt):
     print('---------------------')
     print('Note: '+obsZ1.note)    
     sys.stdout=old 
+    
+    Button5.configure(state=NORMAL)
+    Button6.configure(state=NORMAL)
 
 constellations=stars.load()
 objects=objClass.objects(constellations)
+
+#nastavenia
+settings={}
+if os.path.isfile('data/settings.ops'): 
+    f=open('data/settings.ops','rb')
+    settings=pickle.load(f)
+    f.close()      
+    if os.path.isfile(settings['file'].strip()): objects.load(settings['file'].strip())
 
 root=Tk() 
 root.protocol('WM_DELETE_WINDOW',Exit)
@@ -492,11 +571,13 @@ Button2=Button(Labelframe0)
 Button2.place(relx=0.35,rely=0.95,height=24,width=47)  
 Button2.configure(command=EditObj)
 Button2.configure(text='Edit')
+Button2.configure(state=DISABLED) 
 
 Button3=Button(Labelframe0)
 Button3.place(relx=0.65,rely=0.95,height=24,width=47) 
 Button3.configure(command=DelObj)
 Button3.configure(text='Delete')
+Button3.configure(state=DISABLED)
 
 #pozorovania
 Labelframe1=LabelFrame(root)
@@ -521,16 +602,19 @@ Button4=Button(Labelframe1)
 Button4.place(relx=0.02,rely=0.95,height=24,width=47) 
 Button4.configure(command=AddObs)
 Button4.configure(text='Add')
+Button4.configure(state=DISABLED)
 
 Button5=Button(Labelframe1)
 Button5.place(relx=0.28,rely=0.95,height=24,width=47)   
 Button5.configure(command=EditObs)
 Button5.configure(text='Edit')
+Button5.configure(state=DISABLED)
 
 Button6=Button(Labelframe1)
 Button6.place(relx=0.53,rely=0.95,height=24,width=47)   
 Button6.configure(command=DelObs)
 Button6.configure(text='Delete')
+Button6.configure(state=DISABLED)
 
 Button7=Button(Labelframe1)
 Button7.place(relx=0.78,rely=0.95,height=24,width=47) 

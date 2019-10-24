@@ -161,7 +161,7 @@ def AddObj(obj=None):
     Label8.configure(anchor='w')
     
     Entry7=Entry(top)
-    Entry7.place(relx=0.35,rely=0.26,height=25,relwidth=0.4)
+    Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
     Entry7.configure(background='white')
     Entry7.configure(textvariable=constVar)
     

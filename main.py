@@ -22,6 +22,13 @@ import stars
 import objects as objClass
 from gui_tools import *
 
+class siteClass():
+    def __init__(self,name,lat,lon,ele):
+        self.name=name
+        self.lat=lat
+        self.lon=lon
+        self.ele=ele
+
 #grafy
 figObj=Figure()
 figAlt=Figure()
@@ -302,7 +309,7 @@ def NowTime():
 def OpenFile():
     global objects 
     name=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file')
-    #name=name.replace('\\','/')        
+    name=name.replace('\\','/')        
     
     if len(name)>0:                   
         objects=objClass.objects(constellations)          
@@ -315,7 +322,9 @@ def OpenFile():
         figObj.clf()
         canvas1.draw()
         canvas2.draw()
-        settings['file']=name
+        cwd=os.getcwd().replace('\\','/')+'/'
+        if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
+        settings['file']=name         
         Button2.configure(state=DISABLED)
         Button3.configure(state=DISABLED)
         Button4.configure(state=DISABLED)
@@ -324,13 +333,308 @@ def OpenFile():
 
 def SaveFile():
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')         
+    name=name.replace('\\','/')
     if len(name)>0: 
         objects.save(name)
+        cwd=os.getcwd().replace('\\','/')+'/'
+        if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
         settings['file']=name
 
 def Settings():
-    print('Settings')
-    sys.stdout.flush()
+    def addObserver(obs=None):
+        def saveObs():
+            if obs is not None: settings['observers'].remove(obs)
+            settings['observers'].append(obsNameVar.get())
+            TCombobox1['values']=sorted(settings['observers'])
+            TCombobox1.current(sorted(settings['observers']).index(obsNameVar.get()))
+            topObs.destroy()
+        
+        topObs=Tk()
+        topObs.geometry('300x80')
+        topObs.title('Observer')
+        try: topObs.iconbitmap('ObsPlanner.ico')   #win
+        except: pass
+        
+        obsNameVar=StringVar(topObs)
+        
+        if obs is not None: obsNameVar.set(obs)
+        
+        Label1=Label(topObs)
+        Label1.place(relx=0.01,rely=0.1,height=21,width=43)
+        Label1.configure(text='Name')
+        
+        Entry1=Entry(topObs)
+        Entry1.place(relx=0.2,rely=0.1,height=25,relwidth=0.75)
+        Entry1.configure(background='white')
+        Entry1.configure(textvariable=obsNameVar)
+        
+        Button1=Button(topObs)
+        Button1.place(relx=0.4,rely=0.6,height=24,width=60)
+        Button1.configure(text='Save')
+        Button1.configure(command=saveObs)        
+        
+    def editObserver():
+        addObserver(observerVar.get())
+        
+    def delObserver():
+        settings['observers'].remove(observerVar.get())
+        TCombobox1['values']=sorted(settings['observers'])
+        TCombobox1.current(0)
+            
+    def addSite(site=None):
+        def saveSite():
+            try:
+                if ':' in siteLatVar.get(): lat=stars.readDMS(siteLatVar.get(),deg=True)
+                else: lat=float(siteLatVar.get())
+            except: 
+                messagebox.showerror('Latitude Error','Wrong Latitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
+                return
+            try:
+                if ':' in siteLonVar.get(): lon=stars.readDMS(siteLonVar.get(),deg=True)
+                else: lon=float(siteLonVar.get())
+            except: 
+                messagebox.showerror('Longitude Error','Wrong Longitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
+                return    
+      
+            if site is not None: del settings['sites'][site]
+            settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()))
+            TCombobox2['values']=sorted(settings['sites'].keys())
+            TCombobox2.current(sorted(settings['sites'].keys()).index(siteNameVar.get()))
+            topSite.destroy()
+        
+        topSite=Tk()
+        topSite.geometry('230x200')
+        topSite.title('Site')
+        try: topSite.iconbitmap('ObsPlanner.ico')   #win
+        except: pass
+        
+        siteNameVar=StringVar(topSite)
+        siteLatVar=StringVar(topSite)
+        siteLonVar=StringVar(topSite)
+        siteEleVar=StringVar(topSite)
+        
+        if site is not None: 
+            siteNameVar.set(site)
+            siteLatVar.set(stars.printDMS(settings['sites'][site].lat))
+            siteLonVar.set(stars.printDMS(settings['sites'][site].lon))
+            siteEleVar.set(settings['sites'][site].ele)
+        
+        Label1=Label(topSite)
+        Label1.place(relx=0.05,rely=0.05,height=21,width=43)
+        Label1.configure(text='Name')
+        Label1.configure(anchor='w')
+        
+        Entry1=Entry(topSite)
+        Entry1.place(relx=0.35,rely=0.05,height=25,relwidth=0.6)
+        Entry1.configure(background='white')
+        Entry1.configure(textvariable=siteNameVar)
+        
+        Label2=Label(topSite)
+        Label2.place(relx=0.05,rely=0.25,height=21,width=57)
+        Label2.configure(text='Latitude')
+        Label2.configure(anchor='w')
+        
+        Entry2=Entry(topSite)
+        Entry2.place(relx=0.35,rely=0.25,height=25,relwidth=0.6)
+        Entry2.configure(background='white')
+        Entry2.configure(textvariable=siteLatVar)
+        
+        Label3=Label(topSite)
+        Label3.place(relx=0.05,rely=0.45,height=21,width=68)
+        Label3.configure(text='Longitude')
+        Label3.configure(anchor='w')
+        
+        Entry3=Entry(topSite)
+        Entry3.place(relx=0.35,rely=0.45,height=25,relwidth=0.6)
+        Entry3.configure(background='white')
+        Entry3.configure(textvariable=siteLonVar)
+        
+        Label4=Label(topSite)
+        Label4.place(relx=0.05,rely=0.65,height=21,width=65)
+        Label4.configure(text='Elevation')
+        Label4.configure(anchor='w')
+        
+        Entry4=Entry(topSite)
+        Entry4.place(relx=0.35,rely=0.65,height=25,relwidth=0.6)
+        Entry4.configure(background='white')
+        Entry4.configure(textvariable=siteEleVar)
+        
+        Button1=Button(topSite)
+        Button1.place(relx=0.4,rely=0.82,height=29,width=58)
+        Button1.configure(text='Save')
+        Button1.configure(command=saveSite)     
+            
+    def editSite():
+        addSite(siteVar.get())
+            
+    def delSite():
+        del settings['sites'][siteVar.get()]
+        TCombobox2['values']=sorted(settings['sites'])
+        TCombobox2.current(0)
+            
+    def addTel(tel=None):
+        def saveTel():
+            if tel is not None: settings['telescopes'].remove(tel)
+            settings['telescopes'].append(telNameVar.get())
+            TCombobox3['values']=sorted(settings['telescopes'])
+            TCombobox3.current(sorted(settings['telescopes']).index(telNameVar.get()))
+            topTel.destroy()
+        
+        topTel=Tk()
+        topTel.geometry('400x80')
+        topTel.title('Telescope')
+        try: topTel.iconbitmap('ObsPlanner.ico')   #win
+        except: pass
+        
+        telNameVar=StringVar(topTel)
+        
+        if tel is not None: telNameVar.set(tel)
+        
+        Label1=Label(topTel)
+        Label1.place(relx=0.01,rely=0.1,height=21,width=43)
+        Label1.configure(text='Name')
+        
+        Entry1=Entry(topTel)
+        Entry1.place(relx=0.15,rely=0.1,height=25,relwidth=0.82)
+        Entry1.configure(background='white')
+        Entry1.configure(textvariable=telNameVar)
+        
+        Button1=Button(topTel)
+        Button1.place(relx=0.4,rely=0.6,height=24,width=60)
+        Button1.configure(text='Save')
+        Button1.configure(command=saveTel)
+            
+    def editTel():
+        addTel(telVar.get())
+            
+    def delTel():
+        settings['telescopes'].remove(telVar.get())
+        TCombobox3['values']=sorted(settings['telescopes'])
+        TCombobox3.current(0)
+            
+    def saveSet():
+        settings['default_obs']=observerVar.get()
+        settings['default_site']=settings['sites'][siteVar.get()]
+        settings['default_tel']=telVar.get()
+        #todo: test, ze bolo vsetko zadane
+        top.destroy()     
+                
+    top=Tk()
+    top.geometry('500x150')
+    top.title('Settings')
+    try: top.iconbitmap('ObsPlanner.ico')   #win
+    except: pass
+    
+    observerVar=StringVar(top)
+    siteVar=StringVar(top)
+    telVar=StringVar(top)
+    
+    Label1=Label(top)
+    Label1.place(relx=0.02,rely=0.02,height=21,width=111)
+    Label1.configure(text='Default Observer')
+    Label1.configure(anchor='w')
+    
+    TCombobox1=ttk.Combobox(top)
+    TCombobox1.place(relx=0.26,rely=0.02,height=25,relwidth=0.4)
+    TCombobox1.configure(textvariable=observerVar)
+    TCombobox1.configure(takefocus='')
+    TCombobox1.configure(state='readonly')
+    if len(settings['observers'])>0:
+        TCombobox1['values']=sorted(settings['observers'])
+        TCombobox1.current(sorted(settings['observers']).index(settings['default_obs']))
+    
+    Button1=Button(top)
+    Button1.place(relx=0.69,rely=0.02,height=24,width=43)
+    Button1.configure(text='Add')
+    Button1.configure(command=addObserver)
+    
+    Button1_1=Button(top)
+    Button1_1.place(relx=0.79,rely=0.02,height=24,width=43)
+    Button1_1.configure(text='Edit')
+    Button1_1.configure(command=editObserver) 
+    
+    Button1_2=Button(top)
+    Button1_2.place(relx=0.89,rely=0.02,height=24,width=43)
+    Button1_2.configure(text='Delete') 
+    Button1_2.configure(command=delObserver)
+    
+    Label2=Label(top)
+    Label2.place(relx=0.02,rely=0.22,height=21,width=78)
+    Label2.configure(text='Default Site')
+    Label2.configure(anchor='w')
+    
+    TCombobox2=ttk.Combobox(top)
+    TCombobox2.place(relx=0.26,rely=0.22,height=25,relwidth=0.4)
+    TCombobox2.configure(textvariable=siteVar)
+    TCombobox2.configure(takefocus='')
+    TCombobox2.configure(state='readonly')
+    if len(settings['sites'])>0:
+        TCombobox2['values']=sorted(settings['sites'].keys())
+        TCombobox2.current(sorted(settings['sites'].keys()).index(settings['default_site'].name))
+    
+    Button2=Button(top)
+    Button2.place(relx=0.69,rely=0.22,height=24,width=43)
+    Button2.configure(text='Add')
+    Button2.configure(command=addSite)
+    
+    Button2_1=Button(top)
+    Button2_1.place(relx=0.79,rely=0.22,height=24,width=43)
+    Button2_1.configure(text='Edit')
+    Button2_1.configure(command=editSite)
+    
+    Button2_2=Button(top)
+    Button2_2.place(relx=0.89,rely=0.22,height=24,width=43)
+    Button2_2.configure(text='Delete')
+    Button2_2.configure(command=delSite)
+    
+    Label3=Label(top)
+    Label3.place(relx=0.02,rely=0.42,height=21,width=118)
+    Label3.configure(text='Default Technique')
+    Label3.configure(anchor='w')
+    
+    TCombobox3=ttk.Combobox(top)
+    TCombobox3.place(relx=0.26,rely=0.42,height=25,relwidth=0.4)
+    TCombobox3.configure(textvariable=telVar)
+    TCombobox3.configure(takefocus='')
+    TCombobox3.configure(state='readonly')
+    if len(settings['telescopes'])>0:
+        TCombobox3['values']=sorted(settings['telescopes'])
+        TCombobox3.current(sorted(settings['telescopes']).index(settings['default_tel']))
+    
+    Button3=Button(top)
+    Button3.place(relx=0.69,rely=0.42,height=24,width=43)
+    Button3.configure(text='Add')
+    Button3.configure(command=addTel)
+    
+    Button3_1=Button(top)
+    Button3_1.place(relx=0.79,rely=0.42,height=24,width=43)
+    Button3_1.configure(text='Edit')
+    Button3_1.configure(command=editTel)
+    
+    Button3_2=Button(top)
+    Button3_2.place(relx=0.89,rely=0.42,height=24,width=43)
+    Button3_2.configure(text='Delete')
+    Button3_2.configure(command=delTel)
+    
+    Label4=Label(top)
+    Label4.place(relx=0.02,rely=0.62,height=21,width=78)
+    Label4.configure(text='Image Path')
+    Label4.configure(anchor='w')
+    
+    Radiobutton1=Radiobutton(top)
+    Radiobutton1.place(relx=0.26,rely=0.65,height=21,relwidth=0.15)
+    Radiobutton1.configure(justify=LEFT)
+    Radiobutton1.configure(text='Original')
+    
+    Radiobutton2=Radiobutton(top)
+    Radiobutton2.place(relx=0.46,rely=0.65,height=21,relwidth=0.12)
+    Radiobutton2.configure(justify=LEFT)
+    Radiobutton2.configure(text='Copy')
+    
+    Button4=Button(top)
+    Button4.place(relx=0.40,rely=0.8,height=24,width=60)
+    Button4.configure(text='Save')
+    Button4.configure(command=saveSet)
 
 def ShowImg():
     print('ShowImg')
@@ -360,7 +664,7 @@ def plotAlt(ra,dec):
     jd1=stars.juldat(year,mon,day,hour+8,minute,sec)  #stop +8h
     jd=np.linspace(jd0,jd1,200)
     
-    a,h=objZ.altAz(jd,lon,lat)
+    a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
     h0=h[np.where(h>0)]
     a0=a[np.where(h>0)]
     ax.plot(a0,h0,'k-')
@@ -370,7 +674,7 @@ def plotAlt(ra,dec):
     #znacky po hodinach
     jdH=np.arange(stars.juldat(year,mon,day,hour-1,0,0),stars.juldat(year,mon,day,hour+7,0,1),1./24.)
     for i in range(len(jdH)):
-        a,h=objZ.altAz(jdH[i],lon,lat)
+        a,h=objZ.altAz(jdH[i],settings['default_site'].lon,settings['default_site'].lat)
         if h>0:
             ax.plot(a,h,'ko') 
             if hour-1+i>24: 
@@ -382,7 +686,7 @@ def plotAlt(ra,dec):
     
     #aktualna poloha
     jd=stars.juldat(year,mon,day,hour,minute,sec)    
-    a,h=objZ.altAz(jd,lon,lat)
+    a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
     ax.plot(a,h,'kx',markersize=12)
     
     ax.set_ylabel('Alt. (deg)')
@@ -399,14 +703,14 @@ def objfilter(event=None):
         year,mon,day,hour,minute,sec=getDate()
         jd=stars.juldat(year,mon,day,hour,minute,sec)
         for ob in objects.objects.values():
-            a,h=ob['object'].altAz(jd,lon,lat)
+            a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
             if (a<limits[3]) and (a>limits[2]) and (h<limits[1]) and (h>limits[0]): 
                 zoznam.append(ob['object'].name)
     elif filt=='Above horizont': 
         year,mon,day,hour,minute,sec=getDate()
         jd=stars.juldat(year,mon,day,hour,minute,sec)
         for ob in objects.objects.values():
-            a,h=ob['object'].altAz(jd,lon,lat)
+            a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
             if (h>0): zoznam.append(ob['object'].name)
     elif filt=='Observed':
         for ob in objects.objects.values():
@@ -419,7 +723,7 @@ def objfilter(event=None):
         jd=stars.juldat(year,mon,day,hour,minute,sec)
         for ob in objects.objects.values():
             if len(ob['obs'])==0:                
-                a,h=ob['object'].altAz(jd,lon,lat)
+                a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
                 if (a<limits[3]) and (a>limits[2]) and (h<limits[1]) and (h>limits[0]): 
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
@@ -456,9 +760,9 @@ def objselect(evt):
     print('Size: '+objZ.size)
     print('Mag: '+str(objZ.mag))
     print('---------------------')
-    a,h=objZ.altAz(stars.juldat(year,mon,day,hour,minute,sec),lon,lat)
+    a,h=objZ.altAz(stars.juldat(year,mon,day,hour,minute,sec),settings['default_site'].lon,settings['default_site'].lat)
     print('Az: '+stars.printDMS(a)+'; Alt: '+stars.printDMS(h))
-    r,t,s=objZ.rise(stars.juldat(year,mon,day+round(hour/24.),0,0,0),lon,lat)
+    r,t,s=objZ.rise(stars.juldat(year,mon,day+round(hour/24.),0,0,0),settings['default_site'].lon,settings['default_site'].lat)
     if not r=='NA': 
         r=stars.printDMS(r)
         s=stars.printDMS(s)
@@ -505,12 +809,21 @@ constellations=stars.load()
 objects=objClass.objects(constellations)
 
 #nastavenia
-settings={}
 if os.path.isfile('data/settings.ops'): 
     f=open('data/settings.ops','rb')
     settings=pickle.load(f)
-    f.close()      
+    f.close()    
     if os.path.isfile(settings['file'].strip()): objects.load(settings['file'].strip())
+else:
+    #todo -> upozornenie
+    settings={}
+    settings['observers']=[]
+    settings['sites']={}
+    settings['telescopes']=[]
+    settings['default_obs']=''
+    settings['default_site']=None
+    settings['default_tel']=''
+    settings['file']=''
 
 root=Tk() 
 root.protocol('WM_DELETE_WINDOW',Exit)
@@ -663,9 +976,7 @@ Popupmenu1.add_command(command=About,label='About')
 root.config(menu=Popupmenu1)
 
 #z nastaveni
-#suradnice
-lat=49
-lon=21.25    
+#todo:
 limits=[5,40,190,330]   #min_alt,max_alt,min_az,max_az
 
 NowTime()

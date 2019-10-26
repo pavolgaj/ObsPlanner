@@ -23,11 +23,13 @@ import objects as objClass
 from gui_tools import *
 
 class siteClass():
-    def __init__(self,name,lat,lon,ele):
+    def __init__(self,name,lat,lon,ele,limits=None):
         self.name=name
         self.lat=lat
         self.lon=lon
         self.ele=ele
+        if limits is None: self.limits=[0,90,0,360]     #min_alt,max_alt,min_az,max_az
+        else: self.limits=limits
 
 #grafy
 figObj=Figure()
@@ -381,7 +383,81 @@ def Settings():
         TCombobox1['values']=sorted(settings['observers'])
         TCombobox1.current(0)
             
-    def addSite(site=None):
+    def addSite(site=None):  
+        def setLimits():
+            global limits           
+            def saveLims():
+                global limits
+                limits[0]=minAltVar.get()
+                limits[1]=maxAltVar.get()
+                limits[2]=minAzmVar.get()
+                limits[3]=maxAzmVar.get()
+                topLims.destroy()
+            
+            topLims=Tk()
+            topLims.geometry('400x150')
+            topLims.title('Limits')
+            try: topLims.iconbitmap('ObsPlanner.ico')   #win
+            except: pass
+        
+            minAltVar=DoubleVar(topLims)
+            maxAltVar=DoubleVar(topLims)
+            minAzmVar=DoubleVar(topLims)
+            maxAzmVar=DoubleVar(topLims)
+            
+            if site is not None: limits=settings['sites'][site].limits
+            else: limits=new_limits
+            
+            minAltVar.set(limits[0])
+            maxAltVar.set(limits[1])
+            minAzmVar.set(limits[2])
+            maxAzmVar.set(limits[3])
+            
+            Label1=Label(topLims)
+            Label1.place(relx=0.25,rely=0.05,height=21,width=43)
+            Label1.configure(text='Min')
+            Label1.configure(anchor='w')
+            
+            Label2=Label(topLims)
+            Label2.place(relx=0.62,rely=0.05,height=21,width=43)
+            Label2.configure(text='Max')
+            Label2.configure(anchor='w')
+            
+            Label3=Label(topLims)
+            Label3.place(relx=0.05,rely=0.25,height=21,width=80 )
+            Label3.configure(text='Altitude')
+            Label3.configure(anchor='w')
+        
+            Entry1=Entry(topLims)
+            Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
+            Entry1.configure(background='white')
+            Entry1.configure(textvariable=minAltVar)
+            
+            Entry2=Entry(topLims)
+            Entry2.place(relx=0.62,rely=0.25,height=25,relwidth=0.35)
+            Entry2.configure(background='white')
+            Entry2.configure(textvariable=maxAltVar)
+            
+            Label4=Label(topLims)
+            Label4.place(relx=0.05,rely=0.45,height=21,width=80)
+            Label4.configure(text='Azimut')
+            Label4.configure(anchor='w')
+            
+            Entry3=Entry(topLims)
+            Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
+            Entry3.configure(background='white')
+            Entry3.configure(textvariable=minAzmVar)
+            
+            Entry4=Entry(topLims)
+            Entry4.place(relx=0.62,rely=0.45,height=25,relwidth=0.35)
+            Entry4.configure(background='white')
+            Entry4.configure(textvariable=maxAzmVar)
+            
+            Button2=Button(topLims)
+            Button2.place(relx=0.45,rely=0.7,height=29,width=58)
+            Button2.configure(text='Save')
+            Button2.configure(command=saveLims) 
+            
         def saveSite():
             try:
                 if ':' in siteLatVar.get(): lat=stars.readDMS(siteLatVar.get(),deg=True)
@@ -395,9 +471,8 @@ def Settings():
             except: 
                 messagebox.showerror('Longitude Error','Wrong Longitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
                 return    
-      
             if site is not None: del settings['sites'][site]
-            settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()))
+            settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()),limits)
             TCombobox2['values']=sorted(settings['sites'].keys())
             TCombobox2.current(sorted(settings['sites'].keys()).index(siteNameVar.get()))
             topSite.destroy()
@@ -411,13 +486,16 @@ def Settings():
         siteNameVar=StringVar(topSite)
         siteLatVar=StringVar(topSite)
         siteLonVar=StringVar(topSite)
-        siteEleVar=StringVar(topSite)
+        siteEleVar=StringVar(topSite) 
+        new_limits=[0,90,0,360] 
+        limits=new_limits       
         
         if site is not None: 
             siteNameVar.set(site)
             siteLatVar.set(stars.printDMS(settings['sites'][site].lat))
             siteLonVar.set(stars.printDMS(settings['sites'][site].lon))
             siteEleVar.set(settings['sites'][site].ele)
+            limits=settings['sites'][site].limits
         
         Label1=Label(topSite)
         Label1.place(relx=0.05,rely=0.05,height=21,width=43)
@@ -460,9 +538,14 @@ def Settings():
         Entry4.configure(textvariable=siteEleVar)
         
         Button1=Button(topSite)
-        Button1.place(relx=0.4,rely=0.82,height=29,width=58)
-        Button1.configure(text='Save')
-        Button1.configure(command=saveSite)     
+        Button1.place(relx=0.2,rely=0.82,height=29,width=58)
+        Button1.configure(text='Limits')
+        Button1.configure(command=setLimits)  
+        
+        Button2=Button(topSite)
+        Button2.place(relx=0.6,rely=0.82,height=29,width=58)
+        Button2.configure(text='Save')
+        Button2.configure(command=saveSite)     
             
     def editSite():
         addSite(siteVar.get())
@@ -589,7 +672,7 @@ def Settings():
     
     Label3=Label(top)
     Label3.place(relx=0.02,rely=0.42,height=21,width=118)
-    Label3.configure(text='Default Technique')
+    Label3.configure(text='Default Telescope')
     Label3.configure(anchor='w')
     
     TCombobox3=ttk.Combobox(top)
@@ -656,7 +739,9 @@ def plotAlt(ra,dec):
     #vyznacenie limitov
     rect=patches.Rectangle((-10,0),380,100,edgecolor='none',facecolor='lightgray')
     ax.add_patch(rect)
-    rect=patches.Rectangle((limits[2],limits[0]),limits[3]-limits[2],limits[1]-limits[0],linewidth=1,edgecolor='gray',facecolor='white')
+    rect=patches.Rectangle((settings['default_site'].limits[2],settings['default_site'].limits[0]),\
+        settings['default_site'].limits[3]-settings['default_site'].limits[2],\
+        settings['default_site'].limits[1]-settings['default_site'].limits[0],linewidth=1,edgecolor='gray',facecolor='white')
     ax.add_patch(rect)
     
     year,mon,day,hour,minute,sec=getDate()
@@ -704,7 +789,7 @@ def objfilter(event=None):
         jd=stars.juldat(year,mon,day,hour,minute,sec)
         for ob in objects.objects.values():
             a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-            if (a<limits[3]) and (a>limits[2]) and (h<limits[1]) and (h>limits[0]): 
+            if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]): 
                 zoznam.append(ob['object'].name)
     elif filt=='Above horizont': 
         year,mon,day,hour,minute,sec=getDate()
@@ -813,7 +898,7 @@ if os.path.isfile('data/settings.ops'):
     f=open('data/settings.ops','rb')
     settings=pickle.load(f)
     f.close()    
-    if os.path.isfile(settings['file'].strip()): objects.load(settings['file'].strip())
+    if os.path.isfile(settings['file'].strip()): objects.load(settings['file'].strip())    
 else:
     #todo -> upozornenie
     settings={}
@@ -824,6 +909,7 @@ else:
     settings['default_site']=None
     settings['default_tel']=''
     settings['file']=''
+    settings['night_mode']=False
 
 root=Tk() 
 root.protocol('WM_DELETE_WINDOW',Exit)
@@ -974,10 +1060,6 @@ Popupmenu1.add_cascade(menu=import_export,label='Import/Export',state=DISABLED)
 Popupmenu1.add_command(command=Settings,label='Settings')
 Popupmenu1.add_command(command=About,label='About')
 root.config(menu=Popupmenu1)
-
-#z nastaveni
-#todo:
-limits=[5,40,190,330]   #min_alt,max_alt,min_az,max_az
 
 NowTime()
 objfilter()

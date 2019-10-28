@@ -516,6 +516,7 @@ def AddObs(obs=None):
             else: 
                 if not name==obj.name: del objects.objects[obj.name] #TODO: nejake upozornenie...
                 objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+            #todo: ak nie je observed...
             zoznam=objfilter()
             fake=fakeEvt(zoznam.index(name),zoznam)
             objselect(fake)
@@ -679,7 +680,7 @@ def AddObs(obs=None):
         except: 
             messagebox.showerror('Date/Time Error','Wrong date/time format! Correct format is "Y-m-d H:M:S". Date/time set to current time.')
             return
-
+        #todo zmena datumu
         objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image='',note=note.strip())       
                 
         zoznam=objfilter()
@@ -833,7 +834,7 @@ def AddObs(obs=None):
     Label7.configure(text='Note')
     Label7.configure(anchor='w')
     
-    TextO=Text(top)
+    TextO=ScrolledText(top)
     TextO.place(relx=0.27,rely=0.5,relheight=0.35,relwidth=0.45)
     TextO.configure(background='white')
     TextO.configure(width=10)
@@ -1352,16 +1353,19 @@ def Settings():
     Label4.place(relx=0.02,rely=0.62,height=21,width=78)
     Label4.configure(text='Image Path')
     Label4.configure(anchor='w')
+    Label4.configure(state=DISABLED)
     
     Radiobutton1=Radiobutton(top)
     Radiobutton1.place(relx=0.26,rely=0.65,height=21,relwidth=0.15)
     Radiobutton1.configure(justify=LEFT)
     Radiobutton1.configure(text='Original')
+    Radiobutton1.configure(state=DISABLED)
     
     Radiobutton2=Radiobutton(top)
     Radiobutton2.place(relx=0.46,rely=0.65,height=21,relwidth=0.12)
     Radiobutton2.configure(justify=LEFT)
     Radiobutton2.configure(text='Copy')
+    Radiobutton2.configure(state=DISABLED)
     
     Button4=Button(top)
     Button4.place(relx=0.40,rely=0.8,height=24,width=60)
@@ -1472,7 +1476,7 @@ def objfilter(event=None):
         for ob in objects.objects.values():
             if len(ob['obs'])==0:                
                 a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-                if (a<limits[3]) and (a>limits[2]) and (h<limits[1]) and (h>limits[0]): 
+                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]): 
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
     objsVar.set(zoznam)   

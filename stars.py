@@ -153,7 +153,7 @@ class constellation:
             ra=r*np.cos(f)
             dec=r*np.sin(f)           
         else:            
-            mpl.gca().invert_xaxis()
+            mpl.gca().invert_xaxis()              
             
         self.ax.set_yticklabels([])
         self.ax.set_xticklabels([])
@@ -229,6 +229,7 @@ class constellation:
                 dec0=r0*np.sin(f0)
                 ra1=r1*np.cos(f1)
                 dec1=r1*np.sin(f1)
+            else: self.ax.set_xlim(self.ax.get_xlim()[::-1])
             if self.prechod:
                 #prechod cez 24h
                 if ra0>12: ra0-=24  

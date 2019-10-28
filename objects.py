@@ -23,7 +23,7 @@ class objects:
 
     def addObs(self,obj,date,observer,telescope,site,image='',note=''):
         obs=observation(obj,date,observer,telescope,site,image,note)
-        self.objects[obj]['obs'][date]=obs
+        self.objects[obj]['obs'][obs.date]=obs
 
     def save(self,name):
         f=open(name,'wb')

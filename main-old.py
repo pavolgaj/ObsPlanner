@@ -53,11 +53,7 @@ def sort(zoznam):
 
 def sortObs(zoznam):
     #zoradenie pozorovani
-    obsSort=[]
-    order={}
-    for x in zoznam: order[zoznam[x].jd]=x
-    for x in sorted(order): obsSort.append(order[x])
-    return obsSort    
+    return sorted(list(zoznam))    
 
 def About():
     print('About')
@@ -486,188 +482,8 @@ def AddObs(obs=None):
     def editTel():
         addTel(telVar.get())
     
-    def addObsObj(obj=None):                                                                
-        def save():
-            #kontrola vstupu
-            if len(nameVar.get())==0:
-                messagebox.showerror('Name Error','"Name" not given!')
-                return
-            else: name=nameVar.get().strip()
-            try:
-                if ':' in raVar.get(): ra=stars.readDMS(raVar.get(),deg=True)
-                else: ra=float(raVar.get())
-            except: 
-                messagebox.showerror('RA Error','Wrong RA format! Correct format is "H:M:S" or "H.h" (decimal number in hours).')
-                return
-            try:    
-                if ':' in decVar.get(): dec=stars.readDMS(decVar.get(),deg=True)
-                else: dec=float(decVar.get()) 
-            except: 
-                messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')  
-                return               
-            if len(constVar.get())==0:
-                messagebox.showerror('Constelation Error','"Constelation" not given!')
-                return
-            
-            #nacitanie udajov a pridanie objektu 
-            note=TextO.get('1.0',END)   
-            if obj is None: 
-                objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())  
-            else: 
-                if not name==obj.name: del objects.objects[obj.name] #TODO: nejake upozornenie...
-                objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
-            zoznam=objfilter()
-            fake=fakeEvt(zoznam.index(name),zoznam)
-            objselect(fake)
-            
-            TCombobox4['values']=sort(objects.objects.keys())
-            TCombobox4.current(sort(objects.objects.keys()).index(objZ.name))
-          
-            topObj.destroy()
-            
-        def detect():
-            constVar.set('')
-            try:
-                if ':' in raVar.get(): ra=stars.readDMS(raVar.get(),deg=True)
-                else: ra=float(raVar.get())
-            except: 
-                messagebox.showerror('RA Error','Wrong RA format! Correct format is "H:M:S" or "H.h" (decimal number in hours).')
-                return
-            try:    
-                if ':' in decVar.get(): dec=stars.readDMS(decVar.get(),deg=True)
-                else: dec=float(decVar.get()) 
-            except: 
-                messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')  
-                return     
-            for const in constellations:
-                if constellations[const].testPoint(ra,dec): 
-                    constVar.set(const)
-                    return  
-                        
-        topObj=Toplevel(root)
-        topObj.geometry('250x350')
-        topObj.title('Object')
-        try: topObj.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
-        
-        nameVar=StringVar(topObj)
-        raVar=StringVar(topObj)
-        decVar=StringVar(topObj)
-        constVar=StringVar(topObj)
-        magVar=StringVar(topObj)
-        sizeVar=StringVar(topObj)
-        typeVar=StringVar(topObj)
-        
-        if obj is not None:
-            nameVar.set(obj.name)
-            raVar.set(stars.printDMS(obj.ra))
-            decVar.set(stars.printDMS(obj.dec))
-            constVar.set(obj.const)
-            magVar.set(obj.mag)
-            sizeVar.set(obj.size)
-            typeVar.set(obj.type)
-        
-        #objekty
-        Label1=Label(topObj)
-        Label1.place(relx=0.01,rely=0.02,height=21,width=43)
-        Label1.configure(text='Name')
-        Label1.configure(anchor='w')
-        
-        Entry1=Entry(topObj)
-        Entry1.place(relx=0.2,rely=0.02,height=25,relwidth=0.75)
-        Entry1.configure(background='white')
-        Entry1.configure(textvariable=nameVar)
-        
-        Label2=Label(topObj)
-        Label2.place(relx=0.01,rely=0.10,height=21,width=43)
-        Label2.configure(text='RA')
-        Label2.configure(anchor='w')
-        
-        Entry2=Entry(topObj)
-        Entry2.place(relx=0.2,rely=0.10,height=25,relwidth=0.75)
-        Entry2.configure(background='white')
-        Entry2.configure(textvariable=raVar)
-        
-        Label3=Label(topObj)
-        Label3.place(relx=0.01,rely=0.18,height=21,width=43)
-        Label3.configure(text='DEC')
-        Label3.configure(anchor='w')
-        
-        Entry3=Entry(topObj)
-        Entry3.place(relx=0.2,rely=0.18,height=25,relwidth=0.75)
-        Entry3.configure(background='white')
-        Entry3.configure(textvariable=decVar)
-        
-        Label8=Label(topObj)
-        Label8.place(relx=0.01,rely=0.26,height=21,width=90)
-        Label8.configure(text='Constellation')
-        Label8.configure(anchor='w')
-        
-        Entry7=Entry(topObj)
-        Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
-        Entry7.configure(background='white')
-        Entry7.configure(textvariable=constVar)
-        
-        Button2=Button(topObj)
-        Button2.place(relx=0.76,rely=0.26,height=24,width=47)
-        Button2.configure(text='Detect')
-        Button2.configure(command=detect)  
-        
-        Label4=Label(topObj)
-        Label4.place(relx=0.01,rely=0.34,height=21,width=43)
-        Label4.configure(text='Mag')
-        Label4.configure(anchor='w')
-        
-        Entry4=Entry(topObj)
-        Entry4.place(relx=0.2,rely=0.34,height=25,relwidth=0.75)
-        Entry4.configure(background='white') 
-        Entry4.configure(textvariable=magVar)
-        
-        Label5=Label(topObj)
-        Label5.place(relx=0.01,rely=0.42,height=21,width=43)
-        Label5.configure(text='Size')
-        Label5.configure(anchor='w')
-        
-        Entry5=Entry(topObj)
-        Entry5.place(relx=0.2,rely=0.42,height=25,relwidth=0.75)
-        Entry5.configure(background='white') 
-        Entry5.configure(textvariable=sizeVar) 
-        
-        Label6=Label(topObj)
-        Label6.place(relx=0.01,rely=0.50,height=21,width=43)
-        Label6.configure(text='Type')
-        Label6.configure(anchor='w')
-        
-        Entry6=Entry(topObj)
-        Entry6.place(relx=0.2,rely=0.50,height=25,relwidth=0.75)
-        Entry6.configure(background='white') 
-        Entry6.configure(textvariable=typeVar)
-        
-        Label7=Label(topObj)
-        Label7.place(relx=0.01,rely=0.58,height=21,width=43)
-        Label7.configure(text='Notes')
-        Label7.configure(anchor='w')
-        
-        TextO=ScrolledText(topObj)
-        TextO.place(relx=0.2,rely=0.58,relheight=0.33,relwidth=0.75)
-        TextO.configure(background='white')
-        TextO.configure(width=10)
-        TextO.configure(wrap=WORD) 
-        
-        if obj is not None:
-            #vypis info o objekte
-            old=sys.stdout
-            #redirect output to text field
-            sys.stdout=StdoutRedirector(TextO)    
-            print(obj.note)
-            sys.stdout=old
-        
-        Button1=Button(topObj)
-        Button1.place(relx=0.45,rely=0.93,height=24,width=47)
-        Button1.configure(text='Save')
-        Button1.configure(command=save)  
-
-        
+    def addObsObj(obj=None):
+        AddObj(obj)
         
     def edObsObj():
         addObsObj(objects.objects[objVar.get()]['object'])   
@@ -675,21 +491,7 @@ def AddObs(obs=None):
     def saveObs():
         #todo testovanie...
         note=TextO.get('1.0',END)
-        try: dt=datetime.datetime.strptime(obsDateVar.get(),'%Y-%m-%d %H:%M:%S')
-        except: 
-            messagebox.showerror('Date/Time Error','Wrong date/time format! Correct format is "Y-m-d H:M:S". Date/time set to current time.')
-            return
-
-        objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image='',note=note.strip())       
-                
-        zoznam=objfilter()
-        fake=fakeEvt(zoznam.index(objVar.get()),zoznam)
-        objselect(fake)
-        
-        zoznam=sortObs(obsZ)
-        fake=fakeEvt(zoznam.index(obsDateVar.get()),zoznam)
-        obsselect(fake)
-        
+        objects.addObs(objVar.get(),obsDateVar.get(),observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image='',note=note)
         top.destroy()
     
     top=Tk()
@@ -846,7 +648,7 @@ def AddObs(obs=None):
             
     if obs is not None:
         observerVar.set(obs.observer)
-        siteVar.set(obs.site.name)
+        siteVar.set(obs.site)
         telVar.set(obs.telescope)
         objVar.set(obs.obj)
         obsDateVar.set(obs.date)
@@ -1372,9 +1174,8 @@ def ShowImg():
     print('ShowImg')
     sys.stdout.flush()
     
-def getDate(date=None):
-    if date is None: date=dateVar.get()
-    try: dt=datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S')
+def getDate():
+    try: dt=datetime.datetime.strptime(dateVar.get(),'%Y-%m-%d %H:%M:%S')
     except: 
         messagebox.showerror('Date/Time Error','Wrong date/time format! Correct format is "Y-m-d H:M:S". Date/time set to current time.')
         NowTime()
@@ -1400,22 +1201,9 @@ def plotAlt(ra,dec):
     jd=np.linspace(jd0,jd1,200)
     
     a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-    if max(h)<0: 
-        figAlt.clf()
-        ax=figAlt.add_subplot(111)
-        ax.text(0,0,'Below horizont!',horizontalalignment='center',verticalalignment='center',fontsize=30)
-        ax.set_xlim(-0.5,0.5)
-        ax.set_ylim(-0.5,0.5)
-        ax.set_yticklabels([])
-        ax.set_xticklabels([])
-        ax.grid(False)
-        ax.set_axis_off()
-        canvas2.draw()
-        return
     h0=h[np.where(h>0)]
     a0=a[np.where(h>0)]
     ax.plot(a0,h0,'k-')
-    
     ax.set_xlim(min(a0)-5,max(a0)+5)
     ax.set_ylim(min(h0),max(h)+5) 
     

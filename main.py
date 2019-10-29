@@ -35,6 +35,8 @@ class siteClass():
 figObj=Figure()
 figAlt=Figure()
 
+changed=False
+
 def sort(zoznam):
     #zoradenie objektov->pridanie nul
     objSort=[]
@@ -46,8 +48,7 @@ def sort(zoznam):
                 break
             except: pass
         order[x[:i]+x[i:].rjust(10,'0')]=x
-    for x in sorted(order):
-        #print(x)
+    for x in sorted(order.keys()):
         objSort.append(order[x])
     return objSort
 
@@ -64,10 +65,10 @@ def About():
     sys.stdout.flush()
 
 def AddObj(obj=None):
-    global objects
+    global changed
     
     def save():
-        global objects
+        global changed
         #kontrola vstupu
         if len(nameVar.get())==0:
             messagebox.showerror('Name Error','"Name" not given!')
@@ -92,15 +93,23 @@ def AddObj(obj=None):
         #nacitanie udajov a pridanie objektu 
         note=TextO.get('1.0',END)   
         if obj is None: 
-            objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())  
-            #objfilter()  
+            objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())   
         else: 
-            if not name==obj.name: del objects.objects[obj.name] #TODO: nejake upozornenie...
-            objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+            if not name==obj.name: 
+                ans=messagebox.askquestion('Edit Object','Object name was changed. Old object (with all observations) will be deleted! Do you want to continue?',type='yesno')
+                if ans=='no': return
+                del objects.objects[obj.name] 
+                objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+            else: objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+
         zoznam=objfilter()
+        if not name in zoznam: 
+            filtVar.set('All')
+            zoznam=objfilter()
         fake=fakeEvt(zoznam.index(name),zoznam)
         objselect(fake)
       
+        changed=True
         top.destroy()
         
     def detect():
@@ -247,6 +256,7 @@ def AddObj(obj=None):
     
 
 def AddObs(obs=None):
+    global changed
     #todo...
     def addObserver(obs=None):
         def saveObs():
@@ -514,8 +524,12 @@ def AddObs(obs=None):
             if obj is None: 
                 objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())  
             else: 
-                if not name==obj.name: del objects.objects[obj.name] #TODO: nejake upozornenie...
-                objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+                if not name==obj.name:
+                    ans=messagebox.askquestion('Edit Object','Object name was changed. Old object (with all observations) will be deleted! Do you want to continue?',type='yesno')
+                    if ans=='no': return 
+                    del objects.objects[obj.name] 
+                    objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())  
+                else: objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
             #todo: ak nie je observed...
             zoznam=objfilter()
             fake=fakeEvt(zoznam.index(name),zoznam)
@@ -674,16 +688,19 @@ def AddObs(obs=None):
         addObsObj(objects.objects[objVar.get()]['object'])   
     
     def saveObs():
-        #todo testovanie...
+        global changed
         note=TextO.get('1.0',END)
         try: dt=datetime.datetime.strptime(obsDateVar.get(),'%Y-%m-%d %H:%M:%S')
         except: 
             messagebox.showerror('Date/Time Error','Wrong date/time format! Correct format is "Y-m-d H:M:S". Date/time set to current time.')
             return
-        #todo zmena datumu
+        if obs is not None: del objects.objects[obs.obj]['obs'][obs.date]                 
         objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image='',note=note.strip())       
                 
         zoznam=objfilter()
+        if not objVar.get() in zoznam: 
+            filtVar.set('All')
+            zoznam=objfilter()
         fake=fakeEvt(zoznam.index(objVar.get()),zoznam)
         objselect(fake)
         
@@ -691,6 +708,7 @@ def AddObs(obs=None):
         fake=fakeEvt(zoznam.index(obsDateVar.get()),zoznam)
         obsselect(fake)
         
+        changed=True
         top.destroy()
     
     top=Tk()
@@ -861,7 +879,10 @@ def AddObs(obs=None):
         
 
 def DelObj():
-    #TODO: potvrdenie o zmazani
+    global changed
+    ans=messagebox.askquestion('Delete Object','Selected object (with all observations) will be deleted! Do you want to continue?',type='yesno')
+    if ans=='no': return
+    changed=True
     del objects.objects[objZ.name]    
     objfilter()
     obssVar.set('')
@@ -871,7 +892,6 @@ def DelObj():
     figObj.clf()
     canvas1.draw()
     canvas2.draw()
-    #TODO: blokovanie tlacidiel
     Button2.configure(state=DISABLED)
     Button3.configure(state=DISABLED)
     Button4.configure(state=DISABLED)
@@ -879,7 +899,11 @@ def DelObj():
     Button6.configure(state=DISABLED)
 
 def DelObs():
+    global changed
+    ans=messagebox.askquestion('Delete Observation','Selected observation will be deleted! Do you want to continue?',type='yesno')
+    if ans=='no': return
     del objects.objects[objZ.name]['obs'][obsZ1.date]
+    changed=True
     obsZ=objects.objects[objZ.name]['obs']
     
     Text2.delete(1.0,END)
@@ -894,19 +918,47 @@ def EditObs():
     AddObs(obsZ1)
 
 def Exit(): 
-    global root
+    global root      
+    if changed:
+        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
+        if ans=='yes':
+            if len(settings['file'])==0:
+                name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')         
+                name=name.replace('\\','/')
+                if len(name)>0: 
+                    cwd=os.getcwd().replace('\\','/')+'/'
+                    if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
+                    settings['file']=name
+                else: return
+            objects.save(settings['file'])
+        elif ans=='cancel': return
+        
     if not noSett:
         f=open('data/settings.ops','wb')
         pickle.dump(settings,f)
-        f.close()
+        f.close()    
     
     root.destroy()
     root=None
     matplotlib.pyplot.close()
-    #todo save?
 
 def NewFile():
-    global objects      
+    global changed
+    global objects 
+    if changed:
+        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
+        if ans=='yes':
+            if len(settings['file'])==0:
+                name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')         
+                name=name.replace('\\','/')
+                if len(name)>0: 
+                    cwd=os.getcwd().replace('\\','/')+'/'
+                    if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
+                    settings['file']=name
+                else: return
+            objects.save(settings['file'])
+        elif ans=='cancel': return
+             
     objects=objClass.objects(constellations)
     objfilter()
     obssVar.set('')
@@ -916,24 +968,40 @@ def NewFile():
     figObj.clf()
     canvas1.draw()
     canvas2.draw()
-    settings['file']=''
-    #TODO: disable edit,delete,image
+    settings['file']=''   
     Button2.configure(state=DISABLED)
     Button3.configure(state=DISABLED)
     Button4.configure(state=DISABLED)
     Button5.configure(state=DISABLED)
     Button6.configure(state=DISABLED)
+    changed=False
 
 def NowTime():
     dt=datetime.datetime.now(datetime.timezone.utc)
     dateVar.set(dt.strftime('%Y-%m-%d %H:%M:%S'))
 
 def OpenFile():
+    global changed
     global objects 
+    if changed:
+        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
+        if ans=='yes':
+            if len(settings['file'])==0:
+                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')         
+                name0=name0.replace('\\','/')
+                if len(name0)>0: 
+                    cwd=os.getcwd().replace('\\','/')+'/'
+                    if cwd in name0: name0=name0.replace(cwd,'')    #uloz relativnu cestu
+                    settings['file']=name0
+                else: return
+            objects.save(settings['file'])
+        elif ans=='cancel': return 
+        changed=False
+            
     name=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file')
     name=name.replace('\\','/')        
     
-    if len(name)>0:                   
+    if len(name)>0:                               
         objects=objClass.objects(constellations)          
         objects.load(name)          
         objfilter()
@@ -951,9 +1019,11 @@ def OpenFile():
         Button3.configure(state=DISABLED)
         Button4.configure(state=DISABLED)
         Button5.configure(state=DISABLED)
-        Button6.configure(state=DISABLED)
+        Button6.configure(state=DISABLED)         
+        
 
 def SaveFile():
+    global changed
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')         
     name=name.replace('\\','/')
     if len(name)>0: 
@@ -961,6 +1031,7 @@ def SaveFile():
         cwd=os.getcwd().replace('\\','/')+'/'
         if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
         settings['file']=name
+        changed=False
 
 def Settings():
     #TODO: blokovanie tlacidiel

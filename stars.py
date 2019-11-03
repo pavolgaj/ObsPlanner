@@ -246,15 +246,28 @@ class constellation:
                 ra0.append(i[0])
                 dec0.append(i[1])
             ra0=np.array(ra0)
+            dec0=np.array(dec0)
             if self.prechod:
                 #prechod cez 24h
                 ra0[ra0>12]-=24
                 if ra>12: ra-=24
+            if self.projection=='polar':
+                if max(dec0)<0: coef=-1
+                else: coef=1
+                f0=-np.deg2rad(15*ra0)
+                r0=90-coef*dec0
+                ra0=r0*np.cos(f0)
+                dec0=r0*np.sin(f0)
+                
+                f=-np.deg2rad(15*ra)
+                r=90-coef*dec
+                ra=r*np.cos(f)
+                dec=r*np.sin(f)                
             for i in range(len(ra0)):
                 poly.append([ra0[i],dec0[i]])
                 
-            if ra>max(ra0) or ra<min(ra0): break
-            if dec>max(dec0) or dec<min(dec0): break
+            if ra>max(ra0) or ra<min(ra0): continue
+            if dec>max(dec0) or dec<min(dec0): continue
                     
             poly=np.array(poly)
             bbPath=mplPath.Path(poly)

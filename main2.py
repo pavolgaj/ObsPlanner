@@ -3,7 +3,7 @@ import sys
 import os
 import pickle
 
-import tkinter as tk
+from tkinter import *
 from tkinter import messagebox 
 from tkinter import filedialog 
 import tkinter.ttk as ttk 
@@ -72,7 +72,6 @@ def AddObj(obj=None):
         #kontrola vstupu
         if len(nameVar.get())==0:
             messagebox.showerror('Name Error','"Name" not given!')
-            top.lift()
             return
         else: name=nameVar.get().strip()
         try:
@@ -80,30 +79,25 @@ def AddObj(obj=None):
             else: ra=float(raVar.get())
         except: 
             messagebox.showerror('RA Error','Wrong RA format! Correct format is "H:M:S" or "H.h" (decimal number in hours).')
-            top.lift()
             return
         try:    
             if ':' in decVar.get(): dec=stars.readDMS(decVar.get(),deg=True)
             else: dec=float(decVar.get()) 
         except: 
-            messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).') 
-            top.lift() 
+            messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')  
             return               
         if len(constVar.get())==0:
             messagebox.showerror('Constelation Error','"Constelation" not given!')
-            top.lift()
             return
         
         #nacitanie udajov a pridanie objektu 
-        note=TextO.get('1.0',tk.END)   
+        note=TextO.get('1.0',END)   
         if obj is None: 
             objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())   
         else: 
             if not name==obj.name: 
                 ans=messagebox.askquestion('Edit Object','Object name was changed. Old object (with all observations) will be deleted! Do you want to continue?',type='yesno')
-                if ans=='no': 
-                    top.lift()
-                    return
+                if ans=='no': return
                 del objects.objects[obj.name] 
                 objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
             else: objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
@@ -117,7 +111,6 @@ def AddObj(obj=None):
       
         changed=True
         top.destroy()
-        root.lift()
         
     def detect():
         constVar.set('')
@@ -126,35 +119,32 @@ def AddObj(obj=None):
             else: ra=float(raVar.get())
         except: 
             messagebox.showerror('RA Error','Wrong RA format! Correct format is "H:M:S" or "H.h" (decimal number in hours).')
-            top.lift()
             return
         try:    
             if ':' in decVar.get(): dec=stars.readDMS(decVar.get(),deg=True)
             else: dec=float(decVar.get()) 
         except: 
             messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')  
-            top.lift()
             return     
         for const in constellations:
             if constellations[const].testPoint(ra,dec): 
                 constVar.set(const)
-                #TODO: cez vsetky a upozornenie, ak viac
                 return  
                     
-    top=tk.Tk()
-    top.lift()
+    top=Tk()
+    top.attributes('-topmost','true')
     top.geometry('250x350')
     top.title('Object')
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
     
-    nameVar=tk.StringVar(top)
-    raVar=tk.StringVar(top)
-    decVar=tk.StringVar(top)
-    constVar=tk.StringVar(top)
-    magVar=tk.StringVar(top)
-    sizeVar=tk.StringVar(top)
-    typeVar=tk.StringVar(top)
+    nameVar=StringVar(top)
+    raVar=StringVar(top)
+    decVar=StringVar(top)
+    constVar=StringVar(top)
+    magVar=StringVar(top)
+    sizeVar=StringVar(top)
+    typeVar=StringVar(top)
     
     if obj is not None:
         nameVar.set(obj.name)
@@ -166,82 +156,82 @@ def AddObj(obj=None):
         typeVar.set(obj.type)
     
     #objekty
-    Label1=tk.Label(top)
+    Label1=Label(top)
     Label1.place(relx=0.01,rely=0.02,height=21,width=43)
     Label1.configure(text='Name')
     Label1.configure(anchor='w')
     
-    Entry1=tk.Entry(top)
+    Entry1=Entry(top)
     Entry1.place(relx=0.2,rely=0.02,height=25,relwidth=0.75)
     Entry1.configure(background='white')
     Entry1.configure(textvariable=nameVar)
     
-    Label2=tk.Label(top)
+    Label2=Label(top)
     Label2.place(relx=0.01,rely=0.10,height=21,width=43)
     Label2.configure(text='RA')
     Label2.configure(anchor='w')
     
-    Entry2=tk.Entry(top)
+    Entry2=Entry(top)
     Entry2.place(relx=0.2,rely=0.10,height=25,relwidth=0.75)
     Entry2.configure(background='white')
     Entry2.configure(textvariable=raVar)
     
-    Label3=tk.Label(top)
+    Label3=Label(top)
     Label3.place(relx=0.01,rely=0.18,height=21,width=43)
     Label3.configure(text='DEC')
     Label3.configure(anchor='w')
     
-    Entry3=tk.Entry(top)
+    Entry3=Entry(top)
     Entry3.place(relx=0.2,rely=0.18,height=25,relwidth=0.75)
     Entry3.configure(background='white')
     Entry3.configure(textvariable=decVar)
     
-    Label8=tk.Label(top)
+    Label8=Label(top)
     Label8.place(relx=0.01,rely=0.26,height=21,width=90)
     Label8.configure(text='Constellation')
     Label8.configure(anchor='w')
     
-    Entry7=tk.Entry(top)
+    Entry7=Entry(top)
     Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
     Entry7.configure(background='white')
     Entry7.configure(textvariable=constVar)
     
-    Button2=tk.Button(top)
+    Button2=Button(top)
     Button2.place(relx=0.76,rely=0.26,height=24,width=47)
     Button2.configure(text='Detect')
     Button2.configure(command=detect)  
     
-    Label4=tk.Label(top)
+    Label4=Label(top)
     Label4.place(relx=0.01,rely=0.34,height=21,width=43)
     Label4.configure(text='Mag')
     Label4.configure(anchor='w')
     
-    Entry4=tk.Entry(top)
+    Entry4=Entry(top)
     Entry4.place(relx=0.2,rely=0.34,height=25,relwidth=0.75)
     Entry4.configure(background='white') 
     Entry4.configure(textvariable=magVar)
     
-    Label5=tk.Label(top)
+    Label5=Label(top)
     Label5.place(relx=0.01,rely=0.42,height=21,width=43)
     Label5.configure(text='Size')
     Label5.configure(anchor='w')
     
-    Entry5=tk.Entry(top)
+    Entry5=Entry(top)
     Entry5.place(relx=0.2,rely=0.42,height=25,relwidth=0.75)
     Entry5.configure(background='white') 
     Entry5.configure(textvariable=sizeVar) 
     
-    Label6=tk.Label(top)
+    Label6=Label(top)
     Label6.place(relx=0.01,rely=0.50,height=21,width=43)
     Label6.configure(text='Type')
     Label6.configure(anchor='w')
     
-    Entry6=tk.Entry(top)
+    Entry6=Entry(top)
     Entry6.place(relx=0.2,rely=0.50,height=25,relwidth=0.75)
     Entry6.configure(background='white') 
     Entry6.configure(textvariable=typeVar)
     
-    Label7=tk.Label(top)
+    Label7=Label(top)
     Label7.place(relx=0.01,rely=0.58,height=21,width=43)
     Label7.configure(text='Notes')
     Label7.configure(anchor='w')
@@ -250,7 +240,7 @@ def AddObj(obj=None):
     TextO.place(relx=0.2,rely=0.58,relheight=0.33,relwidth=0.75)
     TextO.configure(background='white')
     TextO.configure(width=10)
-    TextO.configure(wrap=tk.WORD) 
+    TextO.configure(wrap=WORD) 
     
     if obj is not None:
         #vypis info o objekte
@@ -260,7 +250,7 @@ def AddObj(obj=None):
         print(obj.note)
         sys.stdout=old
     
-    Button1=tk.Button(top)
+    Button1=Button(top)
     Button1.place(relx=0.45,rely=0.93,height=24,width=47)
     Button1.configure(text='Save')
     Button1.configure(command=save)
@@ -268,7 +258,7 @@ def AddObj(obj=None):
 
 def AddObs(obs=None):
     global changed
-    #TODO...
+    #todo...
     def addObserver(obs=None):
         def saveObs():
             if obs is not None: settings['observers'].remove(obs)
@@ -276,29 +266,27 @@ def AddObs(obs=None):
             TCombobox1['values']=sorted(settings['observers'])
             TCombobox1.current(sorted(settings['observers']).index(obsNameVar.get()))
             topObs.destroy()
-            top.lift()
         
-        topObs=tk.Tk()
-        topObs.lift()
+        topObs=Tk()        
         topObs.geometry('300x80')
         topObs.title('Observer')
         try: topObs.iconbitmap('ObsPlanner.ico')   #win
         except: pass
         
-        obsNameVar=tk.StringVar(topObs)
+        obsNameVar=StringVar(topObs)
         
         if obs is not None: obsNameVar.set(obs)
         
-        Label1=tk.Label(topObs)
+        Label1=Label(topObs)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
         
-        Entry1=tk.Entry(topObs)
+        Entry1=Entry(topObs)
         Entry1.place(relx=0.2,rely=0.1,height=25,relwidth=0.75)
         Entry1.configure(background='white')
         Entry1.configure(textvariable=obsNameVar)
         
-        Button1=tk.Button(topObs)
+        Button1=Button(topObs)
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveObs)        
@@ -317,19 +305,17 @@ def AddObs(obs=None):
                 limits[2]=minAzmVar.get()
                 limits[3]=maxAzmVar.get()
                 topLims.destroy()
-                topSite.lift()
             
-            topLims=tk.Tk()
-            topLims.lift()
+            topLims=Tk()
             topLims.geometry('400x150')
             topLims.title('Limits')
             try: topLims.iconbitmap('ObsPlanner.ico')   #win
             except: pass
         
-            minAltVar=tk.DoubleVar(topLims)
-            maxAltVar=tk.DoubleVar(topLims)
-            minAzmVar=tk.DoubleVar(topLims)
-            maxAzmVar=tk.DoubleVar(topLims)
+            minAltVar=DoubleVar(topLims)
+            maxAltVar=DoubleVar(topLims)
+            minAzmVar=DoubleVar(topLims)
+            maxAzmVar=DoubleVar(topLims)
             
             if site is not None: limits=settings['sites'][site].limits
             else: limits=new_limits
@@ -339,47 +325,47 @@ def AddObs(obs=None):
             minAzmVar.set(limits[2])
             maxAzmVar.set(limits[3])
             
-            Label1=tk.Label(topLims)
+            Label1=Label(topLims)
             Label1.place(relx=0.25,rely=0.05,height=21,width=43)
             Label1.configure(text='Min')
             Label1.configure(anchor='w')
             
-            Label2=tk.Label(topLims)
+            Label2=Label(topLims)
             Label2.place(relx=0.62,rely=0.05,height=21,width=43)
             Label2.configure(text='Max')
             Label2.configure(anchor='w')
             
-            Label3=tk.Label(topLims)
+            Label3=Label(topLims)
             Label3.place(relx=0.05,rely=0.25,height=21,width=80 )
             Label3.configure(text='Altitude')
             Label3.configure(anchor='w')
         
-            Entry1=tk.Entry(topLims)
+            Entry1=Entry(topLims)
             Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
             Entry1.configure(background='white')
             Entry1.configure(textvariable=minAltVar)
             
-            Entry2=tk.Entry(topLims)
+            Entry2=Entry(topLims)
             Entry2.place(relx=0.62,rely=0.25,height=25,relwidth=0.35)
             Entry2.configure(background='white')
             Entry2.configure(textvariable=maxAltVar)
             
-            Label4=tk.Label(topLims)
+            Label4=Label(topLims)
             Label4.place(relx=0.05,rely=0.45,height=21,width=80)
             Label4.configure(text='Azimut')
             Label4.configure(anchor='w')
             
-            Entry3=tk.Entry(topLims)
+            Entry3=Entry(topLims)
             Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
             Entry3.configure(background='white')
             Entry3.configure(textvariable=minAzmVar)
             
-            Entry4=tk.Entry(topLims)
+            Entry4=Entry(topLims)
             Entry4.place(relx=0.62,rely=0.45,height=25,relwidth=0.35)
             Entry4.configure(background='white')
             Entry4.configure(textvariable=maxAzmVar)
             
-            Button2=tk.Button(topLims)
+            Button2=Button(topLims)
             Button2.place(relx=0.45,rely=0.7,height=29,width=58)
             Button2.configure(text='Save')
             Button2.configure(command=saveLims) 
@@ -390,33 +376,29 @@ def AddObs(obs=None):
                 else: lat=float(siteLatVar.get())
             except: 
                 messagebox.showerror('Latitude Error','Wrong Latitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
-                topSite.lift()
                 return
             try:
                 if ':' in siteLonVar.get(): lon=stars.readDMS(siteLonVar.get(),deg=True)
                 else: lon=float(siteLonVar.get())
             except: 
                 messagebox.showerror('Longitude Error','Wrong Longitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
-                topSite.lift()
                 return    
             if site is not None: del settings['sites'][site]
             settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()),limits)
             TCombobox2['values']=sorted(settings['sites'].keys())
             TCombobox2.current(sorted(settings['sites'].keys()).index(siteNameVar.get()))
             topSite.destroy()
-            top.lift()
         
-        topSite=tk.Tk()
-        topSite.lift()
+        topSite=Tk()
         topSite.geometry('230x200')
         topSite.title('Site')
         try: topSite.iconbitmap('ObsPlanner.ico')   #win
         except: pass
         
-        siteNameVar=tk.StringVar(topSite)
-        siteLatVar=tk.StringVar(topSite)
-        siteLonVar=tk.StringVar(topSite)
-        siteEleVar=tk.StringVar(topSite) 
+        siteNameVar=StringVar(topSite)
+        siteLatVar=StringVar(topSite)
+        siteLonVar=StringVar(topSite)
+        siteEleVar=StringVar(topSite) 
         new_limits=[0,90,0,360] 
         limits=new_limits       
         
@@ -427,52 +409,52 @@ def AddObs(obs=None):
             siteEleVar.set(settings['sites'][site].ele)
             limits=settings['sites'][site].limits
         
-        Label1=tk.Label(topSite)
+        Label1=Label(topSite)
         Label1.place(relx=0.05,rely=0.05,height=21,width=43)
         Label1.configure(text='Name')
         Label1.configure(anchor='w')
         
-        Entry1=tk.Entry(topSite)
+        Entry1=Entry(topSite)
         Entry1.place(relx=0.35,rely=0.05,height=25,relwidth=0.6)
         Entry1.configure(background='white')
         Entry1.configure(textvariable=siteNameVar)
         
-        Label2=tk.Label(topSite)
+        Label2=Label(topSite)
         Label2.place(relx=0.05,rely=0.25,height=21,width=57)
         Label2.configure(text='Latitude')
         Label2.configure(anchor='w')
         
-        Entry2=tk.Entry(topSite)
+        Entry2=Entry(topSite)
         Entry2.place(relx=0.35,rely=0.25,height=25,relwidth=0.6)
         Entry2.configure(background='white')
         Entry2.configure(textvariable=siteLatVar)
         
-        Label3=tk.Label(topSite)
+        Label3=Label(topSite)
         Label3.place(relx=0.05,rely=0.45,height=21,width=68)
         Label3.configure(text='Longitude')
         Label3.configure(anchor='w')
         
-        Entry3=tk.Entry(topSite)
+        Entry3=Entry(topSite)
         Entry3.place(relx=0.35,rely=0.45,height=25,relwidth=0.6)
         Entry3.configure(background='white')
         Entry3.configure(textvariable=siteLonVar)
         
-        Label4=tk.Label(topSite)
+        Label4=Label(topSite)
         Label4.place(relx=0.05,rely=0.65,height=21,width=65)
         Label4.configure(text='Elevation')
         Label4.configure(anchor='w')
         
-        Entry4=tk.Entry(topSite)
+        Entry4=Entry(topSite)
         Entry4.place(relx=0.35,rely=0.65,height=25,relwidth=0.6)
         Entry4.configure(background='white')
         Entry4.configure(textvariable=siteEleVar)
         
-        Button1=tk.Button(topSite)
+        Button1=Button(topSite)
         Button1.place(relx=0.2,rely=0.82,height=29,width=58)
         Button1.configure(text='Limits')
         Button1.configure(command=setLimits)  
         
-        Button2=tk.Button(topSite)
+        Button2=Button(topSite)
         Button2.place(relx=0.6,rely=0.82,height=29,width=58)
         Button2.configure(text='Save')
         Button2.configure(command=saveSite)     
@@ -487,29 +469,27 @@ def AddObs(obs=None):
             TCombobox3['values']=sorted(settings['telescopes'])
             TCombobox3.current(sorted(settings['telescopes']).index(telNameVar.get()))
             topTel.destroy()
-            top.lift()
         
-        topTel=tk.Tk()
-        topTel.lift()
+        topTel=Tk()
         topTel.geometry('400x80')
         topTel.title('Telescope')
         try: topTel.iconbitmap('ObsPlanner.ico')   #win
         except: pass
         
-        telNameVar=tk.StringVar(topTel)
+        telNameVar=StringVar(topTel)
         
         if tel is not None: telNameVar.set(tel)
         
-        Label1=tk.Label(topTel)
+        Label1=Label(topTel)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
         
-        Entry1=tk.Entry(topTel)
+        Entry1=Entry(topTel)
         Entry1.place(relx=0.15,rely=0.1,height=25,relwidth=0.82)
         Entry1.configure(background='white')
         Entry1.configure(textvariable=telNameVar)
-                
-        Button1=tk.Button(topTel)
+        
+        Button1=Button(topTel)
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveTel)
@@ -522,7 +502,6 @@ def AddObs(obs=None):
             #kontrola vstupu
             if len(nameVar.get())==0:
                 messagebox.showerror('Name Error','"Name" not given!')
-                topObj.lift()
                 return
             else: name=nameVar.get().strip()
             try:
@@ -530,30 +509,25 @@ def AddObs(obs=None):
                 else: ra=float(raVar.get())
             except: 
                 messagebox.showerror('RA Error','Wrong RA format! Correct format is "H:M:S" or "H.h" (decimal number in hours).')
-                topObj.lift()
                 return
             try:    
                 if ':' in decVar.get(): dec=stars.readDMS(decVar.get(),deg=True)
                 else: dec=float(decVar.get()) 
             except: 
                 messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')  
-                topObj.lift()
                 return               
             if len(constVar.get())==0:
                 messagebox.showerror('Constelation Error','"Constelation" not given!')
-                topObj.lift()
                 return
             
             #nacitanie udajov a pridanie objektu 
-            note=TextO.get('1.0',tk.END)   
+            note=TextO.get('1.0',END)   
             if obj is None: 
                 objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())  
             else: 
                 if not name==obj.name:
                     ans=messagebox.askquestion('Edit Object','Object name was changed. Old object (with all observations) will be deleted! Do you want to continue?',type='yesno')
-                    if ans=='no': 
-                        topObj.lift()
-                        return 
+                    if ans=='no': return 
                     del objects.objects[obj.name] 
                     objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())  
                 else: objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
@@ -568,7 +542,6 @@ def AddObs(obs=None):
             TCombobox4.current(sort(objects.objects.keys()).index(objZ.name))
           
             topObj.destroy()
-            top.lift()
             
         def detect():
             constVar.set('')
@@ -577,34 +550,31 @@ def AddObs(obs=None):
                 else: ra=float(raVar.get())
             except: 
                 messagebox.showerror('RA Error','Wrong RA format! Correct format is "H:M:S" or "H.h" (decimal number in hours).')
-                topObj.lift()
                 return
             try:    
                 if ':' in decVar.get(): dec=stars.readDMS(decVar.get(),deg=True)
                 else: dec=float(decVar.get()) 
             except: 
                 messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')  
-                topObj.lift()
                 return     
             for const in constellations:
                 if constellations[const].testPoint(ra,dec): 
                     constVar.set(const)
                     return  
                         
-        topObj=tk.Tk()
-        topObj.lift()
+        topObj=Toplevel(root)
         topObj.geometry('250x350')
         topObj.title('Object')
         try: topObj.iconbitmap('ObsPlanner.ico')   #win
         except: pass
         
-        nameVar=tk.StringVar(topObj)
-        raVar=tk.StringVar(topObj)
-        decVar=tk.StringVar(topObj)
-        constVar=tk.StringVar(topObj)
-        magVar=tk.StringVar(topObj)
-        sizeVar=tk.StringVar(topObj)
-        typeVar=tk.StringVar(topObj)
+        nameVar=StringVar(topObj)
+        raVar=StringVar(topObj)
+        decVar=StringVar(topObj)
+        constVar=StringVar(topObj)
+        magVar=StringVar(topObj)
+        sizeVar=StringVar(topObj)
+        typeVar=StringVar(topObj)
         
         if obj is not None:
             nameVar.set(obj.name)
@@ -616,82 +586,82 @@ def AddObs(obs=None):
             typeVar.set(obj.type)
         
         #objekty
-        Label1=tk.Label(topObj)
+        Label1=Label(topObj)
         Label1.place(relx=0.01,rely=0.02,height=21,width=43)
         Label1.configure(text='Name')
         Label1.configure(anchor='w')
         
-        Entry1=tk.Entry(topObj)
+        Entry1=Entry(topObj)
         Entry1.place(relx=0.2,rely=0.02,height=25,relwidth=0.75)
         Entry1.configure(background='white')
         Entry1.configure(textvariable=nameVar)
         
-        Label2=tk.Label(topObj)
+        Label2=Label(topObj)
         Label2.place(relx=0.01,rely=0.10,height=21,width=43)
         Label2.configure(text='RA')
         Label2.configure(anchor='w')
         
-        Entry2=tk.Entry(topObj)
+        Entry2=Entry(topObj)
         Entry2.place(relx=0.2,rely=0.10,height=25,relwidth=0.75)
         Entry2.configure(background='white')
         Entry2.configure(textvariable=raVar)
         
-        Label3=tk.Label(topObj)
+        Label3=Label(topObj)
         Label3.place(relx=0.01,rely=0.18,height=21,width=43)
         Label3.configure(text='DEC')
         Label3.configure(anchor='w')
         
-        Entry3=tk.Entry(topObj)
+        Entry3=Entry(topObj)
         Entry3.place(relx=0.2,rely=0.18,height=25,relwidth=0.75)
         Entry3.configure(background='white')
         Entry3.configure(textvariable=decVar)
         
-        Label8=tk.Label(topObj)
+        Label8=Label(topObj)
         Label8.place(relx=0.01,rely=0.26,height=21,width=90)
         Label8.configure(text='Constellation')
         Label8.configure(anchor='w')
         
-        Entry7=tk.Entry(topObj)
+        Entry7=Entry(topObj)
         Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
         Entry7.configure(background='white')
         Entry7.configure(textvariable=constVar)
         
-        Button2=tk.Button(topObj)
+        Button2=Button(topObj)
         Button2.place(relx=0.76,rely=0.26,height=24,width=47)
         Button2.configure(text='Detect')
         Button2.configure(command=detect)  
         
-        Label4=tk.Label(topObj)
+        Label4=Label(topObj)
         Label4.place(relx=0.01,rely=0.34,height=21,width=43)
         Label4.configure(text='Mag')
         Label4.configure(anchor='w')
         
-        Entry4=tk.Entry(topObj)
+        Entry4=Entry(topObj)
         Entry4.place(relx=0.2,rely=0.34,height=25,relwidth=0.75)
         Entry4.configure(background='white') 
         Entry4.configure(textvariable=magVar)
         
-        Label5=tk.Label(topObj)
+        Label5=Label(topObj)
         Label5.place(relx=0.01,rely=0.42,height=21,width=43)
         Label5.configure(text='Size')
         Label5.configure(anchor='w')
         
-        Entry5=tk.Entry(topObj)
+        Entry5=Entry(topObj)
         Entry5.place(relx=0.2,rely=0.42,height=25,relwidth=0.75)
         Entry5.configure(background='white') 
         Entry5.configure(textvariable=sizeVar) 
         
-        Label6=tk.Label(topObj)
+        Label6=Label(topObj)
         Label6.place(relx=0.01,rely=0.50,height=21,width=43)
         Label6.configure(text='Type')
         Label6.configure(anchor='w')
         
-        Entry6=tk.Entry(topObj)
+        Entry6=Entry(topObj)
         Entry6.place(relx=0.2,rely=0.50,height=25,relwidth=0.75)
         Entry6.configure(background='white') 
         Entry6.configure(textvariable=typeVar)
         
-        Label7=tk.Label(topObj)
+        Label7=Label(topObj)
         Label7.place(relx=0.01,rely=0.58,height=21,width=43)
         Label7.configure(text='Notes')
         Label7.configure(anchor='w')
@@ -700,7 +670,7 @@ def AddObs(obs=None):
         TextO.place(relx=0.2,rely=0.58,relheight=0.33,relwidth=0.75)
         TextO.configure(background='white')
         TextO.configure(width=10)
-        TextO.configure(wrap=tk.WORD) 
+        TextO.configure(wrap=WORD) 
         
         if obj is not None:
             #vypis info o objekte
@@ -710,7 +680,7 @@ def AddObs(obs=None):
             print(obj.note)
             sys.stdout=old
         
-        Button1=tk.Button(topObj)
+        Button1=Button(topObj)
         Button1.place(relx=0.45,rely=0.93,height=24,width=47)
         Button1.configure(text='Save')
         Button1.configure(command=save)  
@@ -722,11 +692,10 @@ def AddObs(obs=None):
     
     def saveObs():
         global changed
-        note=TextO.get('1.0',tk.END)
+        note=TextO.get('1.0',END)
         try: dt=datetime.datetime.strptime(obsDateVar.get(),'%Y-%m-%d %H:%M:%S')
         except: 
             messagebox.showerror('Date/Time Error','Wrong date/time format! Correct format is "Y-m-d H:M:S". Date/time set to current time.')
-            top.lift()
             return
         if obs is not None: del objects.objects[obs.obj]['obs'][obs.date]                 
         objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image='',note=note.strip())       
@@ -744,24 +713,23 @@ def AddObs(obs=None):
         
         changed=True
         top.destroy()
-        root.lift()
     
-    top=tk.Tk()
-    top.lift()
+    top=Tk()
+    top.attributes('-topmost','true')
     top.geometry('450x400')
     top.title('Observation') 
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
     
-    observerVar=tk.StringVar(top)
-    siteVar=tk.StringVar(top)
-    telVar=tk.StringVar(top)
-    objVar=tk.StringVar(top)
-    obsDateVar=tk.StringVar(top)
+    observerVar=StringVar(top)
+    siteVar=StringVar(top)
+    telVar=StringVar(top)
+    objVar=StringVar(top)
+    obsDateVar=StringVar(top)
     
     obsDateVar.set(dateVar.get())
     
-    Label1=tk.Label(top)
+    Label1=Label(top)
     Label1.place(relx=0.02,rely=0.02,height=21,width=63)
     Label1.configure(text='Observer')
     Label1.configure(anchor='w')
@@ -775,27 +743,27 @@ def AddObs(obs=None):
         TCombobox1['values']=sorted(settings['observers'])
         TCombobox1.current(sorted(settings['observers']).index(settings['default_obs']))
     
-    ButtonOA=tk.Button(top)
+    ButtonOA=Button(top)
     ButtonOA.place(relx=0.75,rely=0.02,height=24,width=43)
     ButtonOA.configure(text='Add')
     ButtonOA.configure(command=addObserver)
     
-    ButtonOE=tk.Button(top)
+    ButtonOE=Button(top)
     ButtonOE.place(relx=0.88,rely=0.02,height=24,width=43)
     ButtonOE.configure(text='Edit')
     ButtonOE.configure(command=editObserver)
     
-    Label2=tk.Label(top)
+    Label2=Label(top)
     Label2.place(relx=0.02,rely=0.10,height=21,width=130)
     Label2.configure(text='UTC Date/Time')
     Label2.configure(anchor='w')
     
-    Entry1=tk.Entry(top)
+    Entry1=Entry(top)
     Entry1.place(relx=0.27,rely=0.10,height=25,relwidth=0.45)
     Entry1.configure(background='white')
     Entry1.configure(textvariable=obsDateVar)
     
-    Label3=tk.Label(top)
+    Label3=Label(top)
     Label3.place(relx=0.02,rely=0.18,height=21,width=29)
     Label3.configure(text='Site')
     Label3.configure(anchor='w')
@@ -809,17 +777,17 @@ def AddObs(obs=None):
         TCombobox2['values']=sorted(settings['sites'])
         TCombobox2.current(sorted(settings['sites']).index(settings['default_site'].name))
     
-    ButtonOA=tk.Button(top)
+    ButtonOA=Button(top)
     ButtonOA.place(relx=0.75,rely=0.18,height=25,width=43)
     ButtonOA.configure(text='Add')
     ButtonOA.configure(command=addSite)
     
-    ButtonOE=tk.Button(top)
+    ButtonOE=Button(top)
     ButtonOE.place(relx=0.88,rely=0.18,height=25,width=43)
     ButtonOE.configure(text='Edit')
     ButtonOE.configure(command=editSite)
     
-    Label4=tk.Label(top)
+    Label4=Label(top)
     Label4.place(relx=0.02,rely=0.26,height=21,width=75)
     Label4.configure(text='Telescope')
     Label4.configure(anchor='w')
@@ -833,17 +801,17 @@ def AddObs(obs=None):
         TCombobox3['values']=sorted(settings['telescopes'])
         TCombobox3.current(sorted(settings['telescopes']).index(settings['default_tel']))
     
-    ButtonOA=tk.Button(top)
+    ButtonOA=Button(top)
     ButtonOA.place(relx=0.75,rely=0.26,height=25,width=43)
     ButtonOA.configure(text='Add')
     ButtonOA.configure(command=addTel)
     
-    ButtonOE=tk.Button(top)
+    ButtonOE=Button(top)
     ButtonOE.place(relx=0.88,rely=0.26,height=25,width=43)
     ButtonOE.configure(text='Edit')
     ButtonOE.configure(command=editTel)
     
-    Label5=tk.Label(top)
+    Label5=Label(top)
     Label5.place(relx=0.02,rely=0.34,height=21,width=46)
     Label5.configure(text='Object')
     Label5.configure(anchor='w')
@@ -857,33 +825,33 @@ def AddObs(obs=None):
         TCombobox4['values']=sort(objects.objects.keys())
         TCombobox4.current(sort(objects.objects.keys()).index(objZ.name))
     
-    ButtonObA=tk.Button(top)
+    ButtonObA=Button(top)
     ButtonObA.place(relx=0.75,rely=0.34,height=25,width=43)
     ButtonObA.configure(text='Add')
     ButtonObA.configure(command=addObsObj)
     
-    ButtonObE=tk.Button(top)
+    ButtonObE=Button(top)
     ButtonObE.place(relx=0.88,rely=0.34,height=25,width=43)
     ButtonObE.configure(text='Edit')
     ButtonObE.configure(command=edObsObj)
     
-    Label6=tk.Label(top)
+    Label6=Label(top)
     Label6.place(relx=0.02,rely=0.42,height=21,width=45)
     Label6.configure(text='Image')
-    Label6.configure(state=tk.DISABLED)
+    Label6.configure(state=DISABLED)
     Label6.configure(anchor='w')
     
-    Entry2=tk.Entry(top)
+    Entry2=Entry(top)
     Entry2.place(relx=0.27,rely=0.42,height=25,relwidth=0.45)
     Entry2.configure(background='white')
-    Entry2.configure(state=tk.DISABLED)   
+    Entry2.configure(state=DISABLED)   
     
-    Button1=tk.Button(top)
+    Button1=Button(top)
     Button1.place(relx=0.75,rely=0.42,height=25,width=43)
     Button1.configure(text='Add')
-    Button1.configure(state=tk.DISABLED)
+    Button1.configure(state=DISABLED)
     
-    Label7=tk.Label(top)
+    Label7=Label(top)
     Label7.place(relx=0.02,rely=0.5,height=21,width=46)
     Label7.configure(text='Note')
     Label7.configure(anchor='w')
@@ -892,9 +860,9 @@ def AddObs(obs=None):
     TextO.place(relx=0.27,rely=0.5,relheight=0.35,relwidth=0.45)
     TextO.configure(background='white')
     TextO.configure(width=10)
-    TextO.configure(wrap=tk.WORD) 
+    TextO.configure(wrap=WORD) 
     
-    Button2=tk.Button(top)
+    Button2=Button(top)
     Button2.place(relx=0.38,rely=0.88,height=29,width=57)
     Button2.configure(text='Save')
     Button2.configure(command=saveObs)
@@ -922,17 +890,17 @@ def DelObj():
     del objects.objects[objZ.name]    
     objfilter()
     obssVar.set('')
-    Text1.delete(1.0,tk.END)
-    Text2.delete(1.0,tk.END)
+    Text1.delete(1.0,END)
+    Text2.delete(1.0,END)
     figAlt.clf()
     figObj.clf()
     canvas1.draw()
     canvas2.draw()
-    Button2.configure(state=tk.DISABLED)
-    Button3.configure(state=tk.DISABLED)
-    Button4.configure(state=tk.DISABLED)
-    Button5.configure(state=tk.DISABLED)
-    Button6.configure(state=tk.DISABLED)
+    Button2.configure(state=DISABLED)
+    Button3.configure(state=DISABLED)
+    Button4.configure(state=DISABLED)
+    Button5.configure(state=DISABLED)
+    Button6.configure(state=DISABLED)
 
 def DelObs():
     global changed
@@ -942,10 +910,10 @@ def DelObs():
     changed=True
     obsZ=objects.objects[objZ.name]['obs']
     
-    Text2.delete(1.0,tk.END)
+    Text2.delete(1.0,END)
     obssVar.set(sortObs(obsZ))
-    Button5.configure(state=tk.DISABLED)
-    Button6.configure(state=tk.DISABLED)
+    Button5.configure(state=DISABLED)
+    Button6.configure(state=DISABLED)
 
 def EditObj():
     AddObj(objZ)      
@@ -998,18 +966,18 @@ def NewFile(event=None):
     objects=objClass.objects(constellations)
     objfilter()
     obssVar.set('')
-    Text1.delete(1.0,tk.END)
-    Text2.delete(1.0,tk.END)
+    Text1.delete(1.0,END)
+    Text2.delete(1.0,END)
     figAlt.clf()
     figObj.clf()
     canvas1.draw()
     canvas2.draw()
     settings['file']=''   
-    Button2.configure(state=tk.DISABLED)
-    Button3.configure(state=tk.DISABLED)
-    Button4.configure(state=tk.DISABLED)
-    Button5.configure(state=tk.DISABLED)
-    Button6.configure(state=tk.DISABLED)
+    Button2.configure(state=DISABLED)
+    Button3.configure(state=DISABLED)
+    Button4.configure(state=DISABLED)
+    Button5.configure(state=DISABLED)
+    Button6.configure(state=DISABLED)
     changed=False
 
 def NowTime():
@@ -1042,8 +1010,8 @@ def OpenFile(event=None):
         objects.load(name)          
         objfilter()
         obssVar.set('')
-        Text1.delete(1.0,tk.END)
-        Text2.delete(1.0,tk.END)
+        Text1.delete(1.0,END)
+        Text2.delete(1.0,END)
         figAlt.clf()
         figObj.clf()
         canvas1.draw()
@@ -1051,11 +1019,11 @@ def OpenFile(event=None):
         cwd=os.getcwd().replace('\\','/')+'/'
         if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
         settings['file']=name         
-        Button2.configure(state=tk.DISABLED)
-        Button3.configure(state=tk.DISABLED)
-        Button4.configure(state=tk.DISABLED)
-        Button5.configure(state=tk.DISABLED)
-        Button6.configure(state=tk.DISABLED)         
+        Button2.configure(state=DISABLED)
+        Button3.configure(state=DISABLED)
+        Button4.configure(state=DISABLED)
+        Button5.configure(state=DISABLED)
+        Button6.configure(state=DISABLED)         
         
 
 def SaveFile(event=None):
@@ -1085,29 +1053,27 @@ def Settings():
             TCombobox1['values']=sorted(settings['observers'])
             TCombobox1.current(sorted(settings['observers']).index(obsNameVar.get()))
             topObs.destroy()
-            top.lift()
         
-        topObs=tk.Tk()
-        topObs.lift()
+        topObs=Tk()
         topObs.geometry('300x80')
         topObs.title('Observer')
         try: topObs.iconbitmap('ObsPlanner.ico')   #win
         except: pass
         
-        obsNameVar=tk.StringVar(topObs)
+        obsNameVar=StringVar(topObs)
         
         if obs is not None: obsNameVar.set(obs)
         
-        Label1=tk.Label(topObs)
+        Label1=Label(topObs)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
         
-        Entry1=tk.Entry(topObs)
+        Entry1=Entry(topObs)
         Entry1.place(relx=0.2,rely=0.1,height=25,relwidth=0.75)
         Entry1.configure(background='white')
         Entry1.configure(textvariable=obsNameVar)
         
-        Button1=tk.Button(topObs)
+        Button1=Button(topObs)
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveObs)        
@@ -1130,19 +1096,17 @@ def Settings():
                 limits[2]=minAzmVar.get()
                 limits[3]=maxAzmVar.get()
                 topLims.destroy()
-                topSite.lift()
             
-            topLims=tk.Tk()
-            topLims.lift()
+            topLims=Tk()
             topLims.geometry('400x150')
             topLims.title('Limits')
             try: topLims.iconbitmap('ObsPlanner.ico')   #win
             except: pass
         
-            minAltVar=tk.DoubleVar(topLims)
-            maxAltVar=tk.DoubleVar(topLims)
-            minAzmVar=tk.DoubleVar(topLims)
-            maxAzmVar=tk.DoubleVar(topLims)
+            minAltVar=DoubleVar(topLims)
+            maxAltVar=DoubleVar(topLims)
+            minAzmVar=DoubleVar(topLims)
+            maxAzmVar=DoubleVar(topLims)
             
             if site is not None: limits=settings['sites'][site].limits
             else: limits=new_limits
@@ -1152,47 +1116,47 @@ def Settings():
             minAzmVar.set(limits[2])
             maxAzmVar.set(limits[3])
             
-            Label1=tk.Label(topLims)
+            Label1=Label(topLims)
             Label1.place(relx=0.25,rely=0.05,height=21,width=43)
             Label1.configure(text='Min')
             Label1.configure(anchor='w')
             
-            Label2=tk.Label(topLims)
+            Label2=Label(topLims)
             Label2.place(relx=0.62,rely=0.05,height=21,width=43)
             Label2.configure(text='Max')
             Label2.configure(anchor='w')
             
-            Label3=tk.Label(topLims)
+            Label3=Label(topLims)
             Label3.place(relx=0.05,rely=0.25,height=21,width=80 )
             Label3.configure(text='Altitude')
             Label3.configure(anchor='w')
         
-            Entry1=tk.Entry(topLims)
+            Entry1=Entry(topLims)
             Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
             Entry1.configure(background='white')
             Entry1.configure(textvariable=minAltVar)
             
-            Entry2=tk.Entry(topLims)
+            Entry2=Entry(topLims)
             Entry2.place(relx=0.62,rely=0.25,height=25,relwidth=0.35)
             Entry2.configure(background='white')
             Entry2.configure(textvariable=maxAltVar)
             
-            Label4=tk.Label(topLims)
+            Label4=Label(topLims)
             Label4.place(relx=0.05,rely=0.45,height=21,width=80)
             Label4.configure(text='Azimut')
             Label4.configure(anchor='w')
             
-            Entry3=tk.Entry(topLims)
+            Entry3=Entry(topLims)
             Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
             Entry3.configure(background='white')
             Entry3.configure(textvariable=minAzmVar)
             
-            Entry4=tk.Entry(topLims)
+            Entry4=Entry(topLims)
             Entry4.place(relx=0.62,rely=0.45,height=25,relwidth=0.35)
             Entry4.configure(background='white')
             Entry4.configure(textvariable=maxAzmVar)
             
-            Button2=tk.Button(topLims)
+            Button2=Button(topLims)
             Button2.place(relx=0.45,rely=0.7,height=29,width=58)
             Button2.configure(text='Save')
             Button2.configure(command=saveLims) 
@@ -1203,33 +1167,29 @@ def Settings():
                 else: lat=float(siteLatVar.get())
             except: 
                 messagebox.showerror('Latitude Error','Wrong Latitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
-                topSite.lift()
                 return
             try:
                 if ':' in siteLonVar.get(): lon=stars.readDMS(siteLonVar.get(),deg=True)
                 else: lon=float(siteLonVar.get())
             except: 
                 messagebox.showerror('Longitude Error','Wrong Longitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
-                topSite.lift()
                 return    
             if site is not None: del settings['sites'][site]
             settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()),limits)
             TCombobox2['values']=sorted(settings['sites'].keys())
             TCombobox2.current(sorted(settings['sites'].keys()).index(siteNameVar.get()))
             topSite.destroy()
-            top.lift()
         
-        topSite=tk.Tk()
-        topSite.lift()
+        topSite=Tk()
         topSite.geometry('230x200')
         topSite.title('Site')
         try: topSite.iconbitmap('ObsPlanner.ico')   #win
         except: pass
         
-        siteNameVar=tk.StringVar(topSite)
-        siteLatVar=tk.StringVar(topSite)
-        siteLonVar=tk.StringVar(topSite)
-        siteEleVar=tk.StringVar(topSite) 
+        siteNameVar=StringVar(topSite)
+        siteLatVar=StringVar(topSite)
+        siteLonVar=StringVar(topSite)
+        siteEleVar=StringVar(topSite) 
         new_limits=[0,90,0,360] 
         limits=new_limits       
         
@@ -1240,52 +1200,52 @@ def Settings():
             siteEleVar.set(settings['sites'][site].ele)
             limits=settings['sites'][site].limits
         
-        Label1=tk.Label(topSite)
+        Label1=Label(topSite)
         Label1.place(relx=0.05,rely=0.05,height=21,width=43)
         Label1.configure(text='Name')
         Label1.configure(anchor='w')
         
-        Entry1=tk.Entry(topSite)
+        Entry1=Entry(topSite)
         Entry1.place(relx=0.35,rely=0.05,height=25,relwidth=0.6)
         Entry1.configure(background='white')
         Entry1.configure(textvariable=siteNameVar)
         
-        Label2=tk.Label(topSite)
+        Label2=Label(topSite)
         Label2.place(relx=0.05,rely=0.25,height=21,width=57)
         Label2.configure(text='Latitude')
         Label2.configure(anchor='w')
         
-        Entry2=tk.Entry(topSite)
+        Entry2=Entry(topSite)
         Entry2.place(relx=0.35,rely=0.25,height=25,relwidth=0.6)
         Entry2.configure(background='white')
         Entry2.configure(textvariable=siteLatVar)
         
-        Label3=tk.Label(topSite)
+        Label3=Label(topSite)
         Label3.place(relx=0.05,rely=0.45,height=21,width=68)
         Label3.configure(text='Longitude')
         Label3.configure(anchor='w')
         
-        Entry3=tk.Entry(topSite)
+        Entry3=Entry(topSite)
         Entry3.place(relx=0.35,rely=0.45,height=25,relwidth=0.6)
         Entry3.configure(background='white')
         Entry3.configure(textvariable=siteLonVar)
         
-        Label4=tk.Label(topSite)
+        Label4=Label(topSite)
         Label4.place(relx=0.05,rely=0.65,height=21,width=65)
         Label4.configure(text='Elevation')
         Label4.configure(anchor='w')
         
-        Entry4=tk.Entry(topSite)
+        Entry4=Entry(topSite)
         Entry4.place(relx=0.35,rely=0.65,height=25,relwidth=0.6)
         Entry4.configure(background='white')
         Entry4.configure(textvariable=siteEleVar)
         
-        Button1=tk.Button(topSite)
+        Button1=Button(topSite)
         Button1.place(relx=0.2,rely=0.82,height=29,width=58)
         Button1.configure(text='Limits')
         Button1.configure(command=setLimits)  
         
-        Button2=tk.Button(topSite)
+        Button2=Button(topSite)
         Button2.place(relx=0.6,rely=0.82,height=29,width=58)
         Button2.configure(text='Save')
         Button2.configure(command=saveSite)     
@@ -1305,29 +1265,27 @@ def Settings():
             TCombobox3['values']=sorted(settings['telescopes'])
             TCombobox3.current(sorted(settings['telescopes']).index(telNameVar.get()))
             topTel.destroy()
-            top.lift()
         
-        topTel=tk.Tk()
-        topTel.lift()
+        topTel=Tk()
         topTel.geometry('400x80')
         topTel.title('Telescope')
         try: topTel.iconbitmap('ObsPlanner.ico')   #win
         except: pass
         
-        telNameVar=tk.StringVar(topTel)
+        telNameVar=StringVar(topTel)
         
         if tel is not None: telNameVar.set(tel)
         
-        Label1=tk.Label(topTel)
+        Label1=Label(topTel)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
         
-        Entry1=tk.Entry(topTel)
+        Entry1=Entry(topTel)
         Entry1.place(relx=0.15,rely=0.1,height=25,relwidth=0.82)
         Entry1.configure(background='white')
         Entry1.configure(textvariable=telNameVar)
         
-        Button1=tk.Button(topTel)
+        Button1=Button(topTel)
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveTel)
@@ -1343,15 +1301,12 @@ def Settings():
     def saveSet():
         if len(observerVar.get())==0: 
             messagebox.showerror('Observer Error','No default observer! Please, add one!')
-            top.lift()
             return
         if len(siteVar.get())==0: 
             messagebox.showerror('Site Error','No default site! Please, add one!')
-            top.lift()
             return
         if len(telVar.get())==0: 
             messagebox.showerror('Telescope Error','No default telescope! Please, add one!')
-            top.lift()
             return
         settings['default_obs']=observerVar.get()
         settings['default_site']=settings['sites'][siteVar.get()]
@@ -1365,33 +1320,31 @@ def Settings():
                 objselect(fake)
             else: 
                 obssVar.set('')
-                Text1.delete(1.0,tk.END)
-                Text2.delete(1.0,tk.END)
+                Text1.delete(1.0,END)
+                Text2.delete(1.0,END)
                 figAlt.clf()
                 figObj.clf()
                 canvas1.draw()
                 canvas2.draw()                   
-                Button2.configure(state=tk.DISABLED)
-                Button3.configure(state=tk.DISABLED)
-                Button4.configure(state=tk.DISABLED)
-                Button5.configure(state=tk.DISABLED)
-                Button6.configure(state=tk.DISABLED)
+                Button2.configure(state=DISABLED)
+                Button3.configure(state=DISABLED)
+                Button4.configure(state=DISABLED)
+                Button5.configure(state=DISABLED)
+                Button6.configure(state=DISABLED)
                 
-        top.destroy() 
-        root.lift()    
+        top.destroy()     
                 
-    top=tk.Tk()
-    top.lift()
+    top=Tk()
     top.geometry('500x150')
     top.title('Settings')
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
     
-    observerVar=tk.StringVar(top)
-    siteVar=tk.StringVar(top)
-    telVar=tk.StringVar(top)
+    observerVar=StringVar(top)
+    siteVar=StringVar(top)
+    telVar=StringVar(top)
     
-    Label1=tk.Label(top)
+    Label1=Label(top)
     Label1.place(relx=0.02,rely=0.02,height=21,width=111)
     Label1.configure(text='Default Observer')
     Label1.configure(anchor='w')
@@ -1405,22 +1358,22 @@ def Settings():
         TCombobox1['values']=sorted(settings['observers'])
         TCombobox1.current(sorted(settings['observers']).index(settings['default_obs']))
     
-    Button1=tk.Button(top)
+    Button1=Button(top)
     Button1.place(relx=0.69,rely=0.02,height=24,width=43)
     Button1.configure(text='Add')
     Button1.configure(command=addObserver)
     
-    Button1_1=tk.Button(top)
+    Button1_1=Button(top)
     Button1_1.place(relx=0.79,rely=0.02,height=24,width=43)
     Button1_1.configure(text='Edit')
     Button1_1.configure(command=editObserver) 
     
-    Button1_2=tk.Button(top)
+    Button1_2=Button(top)
     Button1_2.place(relx=0.89,rely=0.02,height=24,width=43)
     Button1_2.configure(text='Delete') 
     Button1_2.configure(command=delObserver)
     
-    Label2=tk.Label(top)
+    Label2=Label(top)
     Label2.place(relx=0.02,rely=0.22,height=21,width=78)
     Label2.configure(text='Default Site')
     Label2.configure(anchor='w')
@@ -1434,22 +1387,22 @@ def Settings():
         TCombobox2['values']=sorted(settings['sites'].keys())
         TCombobox2.current(sorted(settings['sites'].keys()).index(settings['default_site'].name))
     
-    Button2=tk.Button(top)
+    Button2=Button(top)
     Button2.place(relx=0.69,rely=0.22,height=24,width=43)
     Button2.configure(text='Add')
     Button2.configure(command=addSite)
     
-    Button2_1=tk.Button(top)
+    Button2_1=Button(top)
     Button2_1.place(relx=0.79,rely=0.22,height=24,width=43)
     Button2_1.configure(text='Edit')
     Button2_1.configure(command=editSite)
     
-    Button2_2=tk.Button(top)
+    Button2_2=Button(top)
     Button2_2.place(relx=0.89,rely=0.22,height=24,width=43)
     Button2_2.configure(text='Delete')
     Button2_2.configure(command=delSite)
     
-    Label3=tk.Label(top)
+    Label3=Label(top)
     Label3.place(relx=0.02,rely=0.42,height=21,width=118)
     Label3.configure(text='Default Telescope')
     Label3.configure(anchor='w')
@@ -1463,40 +1416,40 @@ def Settings():
         TCombobox3['values']=sorted(settings['telescopes'])
         TCombobox3.current(sorted(settings['telescopes']).index(settings['default_tel']))
     
-    Button3=tk.Button(top)
+    Button3=Button(top)
     Button3.place(relx=0.69,rely=0.42,height=24,width=43)
     Button3.configure(text='Add')
     Button3.configure(command=addTel)
     
-    Button3_1=tk.Button(top)
+    Button3_1=Button(top)
     Button3_1.place(relx=0.79,rely=0.42,height=24,width=43)
     Button3_1.configure(text='Edit')
     Button3_1.configure(command=editTel)
     
-    Button3_2=tk.Button(top)
+    Button3_2=Button(top)
     Button3_2.place(relx=0.89,rely=0.42,height=24,width=43)
     Button3_2.configure(text='Delete')
     Button3_2.configure(command=delTel)
     
-    Label4=tk.Label(top)
+    Label4=Label(top)
     Label4.place(relx=0.02,rely=0.62,height=21,width=78)
     Label4.configure(text='Image Path')
     Label4.configure(anchor='w')
-    Label4.configure(state=tk.DISABLED)
+    Label4.configure(state=DISABLED)
     
-    Radiobutton1=tk.Radiobutton(top)
+    Radiobutton1=Radiobutton(top)
     Radiobutton1.place(relx=0.26,rely=0.65,height=21,relwidth=0.15)
-    Radiobutton1.configure(justify=tk.LEFT)
+    Radiobutton1.configure(justify=LEFT)
     Radiobutton1.configure(text='Original')
-    Radiobutton1.configure(state=tk.DISABLED)
+    Radiobutton1.configure(state=DISABLED)
     
-    Radiobutton2=tk.Radiobutton(top)
+    Radiobutton2=Radiobutton(top)
     Radiobutton2.place(relx=0.46,rely=0.65,height=21,relwidth=0.12)
-    Radiobutton2.configure(justify=tk.LEFT)
+    Radiobutton2.configure(justify=LEFT)
     Radiobutton2.configure(text='Copy')
-    Radiobutton2.configure(state=tk.DISABLED)
+    Radiobutton2.configure(state=DISABLED)
     
-    Button4=tk.Button(top)
+    Button4=Button(top)
     Button4.place(relx=0.40,rely=0.8,height=24,width=60)
     Button4.configure(text='Save')
     Button4.configure(command=saveSet)
@@ -1627,8 +1580,8 @@ def objselect(evt):
     plotAlt(objZ.ra,objZ.dec)
     
     year,mon,day,hour,minute,sec=getDate()
-    Text1.delete(1.0,tk.END)
-    Text2.delete(1.0,tk.END)
+    Text1.delete(1.0,END)
+    Text2.delete(1.0,END)
     #vypis info o objekte
     old=sys.stdout
     #redirect output to text field
@@ -1655,11 +1608,11 @@ def objselect(evt):
     sys.stdout=old 
 
     obssVar.set(sortObs(obsZ))
-    Button2.configure(state=tk.NORMAL)
-    Button3.configure(state=tk.NORMAL)
-    Button4.configure(state=tk.NORMAL)
-    Button5.configure(state=tk.DISABLED)
-    Button6.configure(state=tk.DISABLED)
+    Button2.configure(state=NORMAL)
+    Button3.configure(state=NORMAL)
+    Button4.configure(state=NORMAL)
+    Button5.configure(state=DISABLED)
+    Button6.configure(state=DISABLED)
 
 def obsselect(evt):
     global obsZ1  #zobrazene pozorovanie       
@@ -1670,7 +1623,7 @@ def obsselect(evt):
     value=w.get(index)
     
     obsZ1=obsZ[value]    
-    Text2.delete(1.0,tk.END)
+    Text2.delete(1.0,END)
     #vypis info
     old=sys.stdout
     #redirect output to text field
@@ -1683,8 +1636,8 @@ def obsselect(evt):
     print('Note: '+obsZ1.note)    
     sys.stdout=old 
     
-    Button5.configure(state=tk.NORMAL)
-    Button6.configure(state=tk.NORMAL)
+    Button5.configure(state=NORMAL)
+    Button6.configure(state=NORMAL)
 
 constellations=stars.load()
 objects=objClass.objects(constellations)
@@ -1708,7 +1661,7 @@ else:
     settings['night_mode']=False
     noSett=True    
 
-root=tk.Tk() 
+root=Tk() 
 root.protocol('WM_DELETE_WINDOW',Exit)
 try: root.state('zoomed')  #win
 except:
@@ -1721,19 +1674,19 @@ try: root.iconbitmap('ObsPlanner.ico')   #win
 except: pass
 
 #premenne pre gui
-objsVar=tk.StringVar(root)
-objInfoVar=tk.StringVar(root)
-obssVar=tk.StringVar(root)
-dateVar=tk.StringVar(root)
-filtVar=tk.StringVar(root)      
+objsVar=StringVar(root)
+objInfoVar=StringVar(root)
+obssVar=StringVar(root)
+dateVar=StringVar(root)
+filtVar=StringVar(root)      
                                             
 #objekty
-Labelframe0=tk.LabelFrame(root)
+Labelframe0=LabelFrame(root)
 Labelframe0.place(relx=0.01,rely=0.02,relheight=0.96,relwidth=0.34)
 Labelframe0.configure(text='Objects')
 Labelframe0.configure(width=280)
 
-Label1=tk.Label(Labelframe0)
+Label1=Label(Labelframe0)
 Label1.place(relx=0.04,rely=0.01,height=21,width=39)
 Label1.configure(text='Show')
 
@@ -1756,27 +1709,27 @@ Text1=ScrolledText(Labelframe0)
 Text1.place(relx=0.04,rely=0.54,relheight=0.4,relwidth=0.92)
 Text1.configure(background='white')
 Text1.configure(width=256)
-Text1.configure(wrap=tk.WORD)
+Text1.configure(wrap=WORD)
 
-Button3_2=tk.Button(Labelframe0)
+Button3_2=Button(Labelframe0)
 Button3_2.place(relx=0.05,rely=0.95,height=24,width=47)
 Button3_2.configure(command=AddObj)
 Button3_2.configure(text='Add') 
 
-Button2=tk.Button(Labelframe0)
+Button2=Button(Labelframe0)
 Button2.place(relx=0.35,rely=0.95,height=24,width=47)  
 Button2.configure(command=EditObj)
 Button2.configure(text='Edit')
-Button2.configure(state=tk.DISABLED) 
+Button2.configure(state=DISABLED) 
 
-Button3=tk.Button(Labelframe0)
+Button3=Button(Labelframe0)
 Button3.place(relx=0.65,rely=0.95,height=24,width=47) 
 Button3.configure(command=DelObj)
 Button3.configure(text='Delete')
-Button3.configure(state=tk.DISABLED)
+Button3.configure(state=DISABLED)
 
 #pozorovania
-Labelframe1=tk.LabelFrame(root)
+Labelframe1=LabelFrame(root)
 Labelframe1.place(relx=0.36,rely=0.02,relheight=0.96,relwidth=0.3)
 Labelframe1.configure(text='Observations')
 Labelframe1.configure(width=250)
@@ -1792,60 +1745,60 @@ Text2=ScrolledText(Labelframe1)
 Text2.place(relx=0.04,rely=0.54,relheight=0.4,relwidth=0.92)
 Text2.configure(background='white')
 Text2.configure(width=234)
-Text2.configure(wrap=tk.WORD) 
+Text2.configure(wrap=WORD) 
 
-Button4=tk.Button(Labelframe1)
+Button4=Button(Labelframe1)
 Button4.place(relx=0.02,rely=0.95,height=24,width=47) 
 Button4.configure(command=AddObs)
 Button4.configure(text='Add')
-Button4.configure(state=tk.DISABLED)
+Button4.configure(state=DISABLED)
 
-Button5=tk.Button(Labelframe1)
+Button5=Button(Labelframe1)
 Button5.place(relx=0.28,rely=0.95,height=24,width=47)   
 Button5.configure(command=EditObs)
 Button5.configure(text='Edit')
-Button5.configure(state=tk.DISABLED)
+Button5.configure(state=DISABLED)
 
-Button6=tk.Button(Labelframe1)
+Button6=Button(Labelframe1)
 Button6.place(relx=0.53,rely=0.95,height=24,width=47)   
 Button6.configure(command=DelObs)
 Button6.configure(text='Delete')
-Button6.configure(state=tk.DISABLED)
+Button6.configure(state=DISABLED)
 
-Button7=tk.Button(Labelframe1)
+Button7=Button(Labelframe1)
 Button7.place(relx=0.78,rely=0.95,height=24,width=47) 
 Button7.configure(command=ShowImg)
-Button7.configure(state=tk.DISABLED)
+Button7.configure(state=DISABLED)
 Button7.configure(text='Image')
 
 #obrazky a datum
-Label0=tk.Label(root)
+Label0=Label(root)
 Label0.place(relx=0.68,rely=0.02,height=21,width=130)
 Label0.configure(text='UTC Date&Time')
 
-Entry1=tk.Entry(root)
+Entry1=Entry(root)
 Entry1.place(relx=0.78,rely=0.02,height=25,relwidth=0.12)
 Entry1.configure(background='white')
 Entry1.configure(textvariable=dateVar)
 
-Button1=tk.Button(root)
+Button1=Button(root)
 Button1.place(relx=0.92,rely=0.02,height=24,width=55)
 Button1.configure(command=NowTime)
 Button1.configure(text='Now')
 
-frame2=tk.Frame(root)
+frame2=Frame(root)
 frame2.place(relx=0.68,rely=0.08,relheight=0.44,relwidth=0.3)
 canvas2=FigureCanvasTkAgg(figAlt,frame2)
 canvas2.get_tk_widget().pack(side='top',fill='both',expand=1)
 
-frame1=tk.Frame(root)
+frame1=Frame(root)
 frame1.place(relx=0.68,rely=0.54,relheight=0.44,relwidth=0.3)         
 canvas1=FigureCanvasTkAgg(figObj,frame1)
 canvas1.get_tk_widget().pack(side='top',fill='both',expand=1)
 
 #menu
-Popupmenu1=tk.Menu(root,tearoff=0)
-fileM=tk.Menu(Popupmenu1,tearoff=0)    
+Popupmenu1=Menu(root,tearoff=0)
+fileM= Menu(Popupmenu1,tearoff=0)    
 Popupmenu1.add_cascade(menu=fileM,label='File')
 fileM.add_command(command=NewFile,label='New',accelerator='Ctrl+N')
 root.bind('<Control-n>',NewFile)
@@ -1857,8 +1810,8 @@ fileM.add_command(command=SaveAsFile,label='Save As')
 fileM.add_separator()
 fileM.add_command(command=Exit,label='Exit',accelerator='Ctrl+Q') 
 root.bind('<Control-q>',Exit)
-import_export=tk.Menu(Popupmenu1,tearoff=0) 
-Popupmenu1.add_cascade(menu=import_export,label='Import/Export',state=tk.DISABLED)  
+import_export=Menu(Popupmenu1,tearoff=0) 
+Popupmenu1.add_cascade(menu=import_export,label='Import/Export',state=DISABLED)  
 Popupmenu1.add_command(command=Settings,label='Settings')
 Popupmenu1.add_command(command=About,label='About')
 root.config(menu=Popupmenu1)
@@ -1870,4 +1823,4 @@ if not os.path.isfile('data/settings.ops'):
     messagebox.showwarning('ObsPlanner','Please, configure your settings first!')
     Settings()
 
-tk.mainloop()
+mainloop()

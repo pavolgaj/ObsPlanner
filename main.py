@@ -8,6 +8,8 @@ from tkinter import messagebox
 from tkinter import filedialog 
 import tkinter.ttk as ttk 
 
+from PIL import ImageTk,Image
+
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')  
@@ -61,8 +63,50 @@ def sortObs(zoznam):
     return obsSort    
 
 def About():
-    print('About')
-    sys.stdout.flush()
+    global img
+    top=tk.Toplevel()
+    top.lift()  
+    top.geometry('310x240')
+    top.title('About')
+    try: top.iconbitmap('ObsPlanner.ico')   #win
+    except: pass
+    top.resizable(False,False)
+
+    img=Image.open('ObsPlanner.png')
+    img=img.resize((80,80),Image.ANTIALIAS)
+    img=ImageTk.PhotoImage(img)
+    LabelImg=tk.Label(top)
+    LabelImg.place(relx=0.37,rely=0.04,height=80,width=80)
+    LabelImg.configure(image=img)    
+
+    Label1=tk.Label(top)
+    Label1.place(relx=0.0,rely=0.4,height=27,width=310)
+    Label1.configure(font='-family {DejaVu Sans} -size 14 -weight bold -slant roman -underline 0 -overstrike 0')
+    Label1.configure(text='ObsPlanner')
+
+    Label3=tk.Label(top)
+    Label3.place(relx=0.0,rely=0.52,height=21,width=310)
+    Label3.configure(text='version 0.1')
+
+    Label4=tk.Label(top)
+    Label4.place(relx=0.0,rely=0.64,height=21,width=310)
+    Label4.configure(font='-family {DejaVu Sans} -size 10 -weight normal -slant roman -underline 1 -overstrike 0')
+    Label4.configure(foreground='blue')
+    Label4.configure(cursor='hand2')
+    Label4.configure(text='http://pavolg.6f.sk')
+    Label4.bind('<Button-1>',href)
+
+    Label4_1=tk.Label(top)
+    Label4_1.place(relx=0.0,rely=0.76,height=21,width=310)
+    Label4_1.configure(font='-family {DejaVu Sans} -size 10 -weight normal -slant roman -underline 1 -overstrike 0')
+    Label4_1.configure(foreground='blue')
+    Label4_1.configure(cursor='hand2')
+    Label4_1.configure(text='https://github.com/pavolgaj/ObsPlanner')
+    Label4_1.bind('<Button-1>',href)
+
+    Label2=tk.Label(top)
+    Label2.place(relx=0.0,rely=0.88,height=21,width=310)
+    Label2.configure(text='(c) Pavol Gajdoš, 2019')
 
 def AddObj(obj=None):
     global changed
@@ -147,6 +191,7 @@ def AddObj(obj=None):
     top.title('Object')
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
+    top.resizable(False,False)
     
     nameVar=tk.StringVar(top)
     raVar=tk.StringVar(top)
@@ -284,6 +329,7 @@ def AddObs(obs=None):
         topObs.title('Observer')
         try: topObs.iconbitmap('ObsPlanner.ico')   #win
         except: pass
+        topObs.resizable(False,False)
         
         obsNameVar=tk.StringVar(topObs)
         
@@ -325,6 +371,7 @@ def AddObs(obs=None):
             topLims.title('Limits')
             try: topLims.iconbitmap('ObsPlanner.ico')   #win
             except: pass
+            topLims.resizable(False,False)
         
             minAltVar=tk.DoubleVar(topLims)
             maxAltVar=tk.DoubleVar(topLims)
@@ -412,6 +459,7 @@ def AddObs(obs=None):
         topSite.title('Site')
         try: topSite.iconbitmap('ObsPlanner.ico')   #win
         except: pass
+        topSite.resizable(False,False)
         
         siteNameVar=tk.StringVar(topSite)
         siteLatVar=tk.StringVar(topSite)
@@ -495,6 +543,7 @@ def AddObs(obs=None):
         topTel.title('Telescope')
         try: topTel.iconbitmap('ObsPlanner.ico')   #win
         except: pass
+        topTel.resizable(False,False)
         
         telNameVar=tk.StringVar(topTel)
         
@@ -597,6 +646,7 @@ def AddObs(obs=None):
         topObj.title('Object')
         try: topObj.iconbitmap('ObsPlanner.ico')   #win
         except: pass
+        topObj.resizable(False,False)
         
         nameVar=tk.StringVar(topObj)
         raVar=tk.StringVar(topObj)
@@ -752,6 +802,7 @@ def AddObs(obs=None):
     top.title('Observation') 
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
+    top.resizable(False,False)
     
     observerVar=tk.StringVar(top)
     siteVar=tk.StringVar(top)
@@ -1093,6 +1144,7 @@ def Settings():
         topObs.title('Observer')
         try: topObs.iconbitmap('ObsPlanner.ico')   #win
         except: pass
+        topObs.resizable(False,False)
         
         obsNameVar=tk.StringVar(topObs)
         
@@ -1136,6 +1188,7 @@ def Settings():
             topLims.lift()
             topLims.geometry('400x150')
             topLims.title('Limits')
+            topLims.resizable(False,False)
             try: topLims.iconbitmap('ObsPlanner.ico')   #win
             except: pass
         
@@ -1225,6 +1278,7 @@ def Settings():
         topSite.title('Site')
         try: topSite.iconbitmap('ObsPlanner.ico')   #win
         except: pass
+        topSite.resizable(False,False)
         
         siteNameVar=tk.StringVar(topSite)
         siteLatVar=tk.StringVar(topSite)
@@ -1313,6 +1367,7 @@ def Settings():
         topTel.title('Telescope')
         try: topTel.iconbitmap('ObsPlanner.ico')   #win
         except: pass
+        topTel.resizable(False,False)
         
         telNameVar=tk.StringVar(topTel)
         
@@ -1386,6 +1441,7 @@ def Settings():
     top.title('Settings')
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
+    top.resizable(False,False)
     
     observerVar=tk.StringVar(top)
     siteVar=tk.StringVar(top)
@@ -1532,6 +1588,7 @@ def plotAlt(ra,dec):
     jd1=stars.juldat(year,mon,day,hour+8,minute,sec)  #stop +8h
     jd=np.linspace(jd0,jd1,200)
     
+    #TODO circumpolarne -> prechod cez N
     a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
     if max(h)<0: 
         figAlt.clf()
@@ -1648,7 +1705,7 @@ def objselect(evt):
         r=stars.printDMS(r)
         s=stars.printDMS(s)
     print('Rise: '+r)
-    print('Transit: '+stars.printDMS(t))
+    print('Transit: '+stars.printDMS(t))  #TODO vyska?
     print('Set: '+s)
     print('---------------------')
     print('Note: '+objZ.note)

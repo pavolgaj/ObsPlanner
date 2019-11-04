@@ -1,5 +1,9 @@
-from tkinter import * 
+import tkinter as tk
 import tkinter.ttk as ttk 
+import webbrowser
+
+def href(event):
+    webbrowser.open_new(event.widget.cget("text"))
 
 class fakeEvtWidget():
     '''generate event widget for "select" action'''
@@ -24,7 +28,7 @@ class IORedirector(object):
 class StdoutRedirector(IORedirector):
     '''A class for redirecting stdout to this Text widget.'''
     def write(self,str):
-        self.text_area.insert(END,str)    
+        self.text_area.insert(tk.END,str)    
 
 class AutoScroll(object):
     '''Configure the scrollbars for a widget.''' 
@@ -45,7 +49,7 @@ class AutoScroll(object):
         master.grid_columnconfigure(0,weight=1)
         master.grid_rowconfigure(0,weight=1)
 
-        methods=Pack.__dict__.keys() | Grid.__dict__.keys() | Place.__dict__.keys()
+        methods=tk.Pack.__dict__.keys() | tk.Grid.__dict__.keys() | tk.Place.__dict__.keys()
     
         for meth in methods:
             if meth[0] != '_' and meth not in ('config','configure'): setattr(self,meth,getattr(master,meth))
@@ -71,19 +75,19 @@ def _create_container(func):
         return func(cls,container,**kw)
     return wrapped
 
-class ScrolledListBox(AutoScroll,Listbox):
+class ScrolledListBox(AutoScroll,tk.Listbox):
     '''A standard Tkinter Text widget with scrollbars that will
     automatically show/hide as needed.'''
     @_create_container
     def __init__(self,master,**kw):
-        Listbox.__init__(self,master,**kw)
+        tk.Listbox.__init__(self,master,**kw)
         AutoScroll.__init__(self,master)
         
-class ScrolledText(AutoScroll,Text):
+class ScrolledText(AutoScroll,tk.Text):
     '''A standard Tkinter Text widget with scrollbars that will
     automatically show/hide as needed.'''
     @_create_container
     def __init__(self,master,**kw):
-        Text.__init__(self,master,**kw)
+        tk.Text.__init__(self,master,**kw)
         AutoScroll.__init__(self,master)
         

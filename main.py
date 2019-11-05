@@ -2,6 +2,8 @@
 import sys
 import os
 import pickle
+import subprocess
+import shutil
 
 import tkinter as tk
 from tkinter import messagebox 
@@ -770,6 +772,21 @@ def AddObs(obs=None):
     def edObsObj():
         addObsObj(objects.objects[objVar.get()]['object'])   
     
+    def addImgObs(img=None):
+        if img is None:
+            name0=filedialog.askopenfilename(parent=top,filetypes=[('JPG Images','*.jpg'),('All files','*.*')],title='Observation - Image',defaultextension='.jpg')  #TODO... 
+        else:
+            name0=filedialog.askopenfilename(parent=top,filetypes=[('JPG Images','*.jpg'),('All files','*.*')],title='Observation - Image',defaultextension='.jpg',initialdir=img[:img.rfind('/')],initialfile=img[img.rfind('/')+1:])  #TODO...
+        if len(name0)>0: 
+            name0=name0.replace('\\','/')
+            cwd=os.getcwd().replace('\\','/')+'/'
+            if cwd in name0: name0=name0.replace(cwd,'')    #uloz relativnu cestu
+            imgVar.set(name0)
+        
+    def edImgObs():
+        addImgObs(imgVar.get())
+    
+    
     def saveObs():
         global changed
         note=TextO.get('1.0',tk.END)
@@ -778,8 +795,17 @@ def AddObs(obs=None):
             messagebox.showerror('Date/Time Error','Wrong date/time format! Correct format is "Y-m-d H:M:S". Date/time set to current time.')
             top.lift()
             return
-        if obs is not None: del objects.objects[obs.obj]['obs'][obs.date]                 
-        objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image='',note=note.strip())       
+        if obs is not None: del objects.objects[obs.obj]['obs'][obs.date]      
+        
+        path=imgVar.get().strip()
+        if settings['file_copy'] and len(path)>0:
+            #zkopiruj do images
+            #TODO test ci existuje
+            path1='images/'+objVar.get().replace(' ','_')+'_'+obsDateVar.get().replace(' ','_').replace(':','-')+path[path.find('.'):]
+            shutil.copy2(path,path1)
+            path=path1
+            
+        objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image=path,note=note.strip())       
                 
         zoznam=objfilter()
         if not objVar.get() in zoznam: 
@@ -809,6 +835,7 @@ def AddObs(obs=None):
     telVar=tk.StringVar(top)
     objVar=tk.StringVar(top)
     obsDateVar=tk.StringVar(top)
+    imgVar=tk.StringVar(top)
     
     obsDateVar.set(dateVar.get())
     
@@ -921,18 +948,26 @@ def AddObs(obs=None):
     Label6=tk.Label(top)
     Label6.place(relx=0.02,rely=0.42,height=21,width=45)
     Label6.configure(text='Image')
-    Label6.configure(state=tk.DISABLED)
+    #Label6.configure(state=tk.DISABLED)
     Label6.configure(anchor='w')
     
     Entry2=tk.Entry(top)
     Entry2.place(relx=0.27,rely=0.42,height=25,relwidth=0.45)
     Entry2.configure(background='white')
-    Entry2.configure(state=tk.DISABLED)   
+    Entry2.configure(textvariable=imgVar)
+    #Entry2.configure(state=tk.DISABLED)   
     
     Button1=tk.Button(top)
     Button1.place(relx=0.75,rely=0.42,height=25,width=43)
     Button1.configure(text='Add')
-    Button1.configure(state=tk.DISABLED)
+    Button1.configure(command=addImgObs)
+    #Button1.configure(state=tk.DISABLED)
+    
+    Button1_2=tk.Button(top)
+    Button1_2.place(relx=0.88,rely=0.42,height=25,width=43)
+    Button1_2.configure(text='Edit')
+    Button1_2.configure(command=edImgObs)
+    #Button1.configure(state=tk.DISABLED)
     
     Label7=tk.Label(top)
     Label7.place(relx=0.02,rely=0.5,height=21,width=46)
@@ -956,6 +991,7 @@ def AddObs(obs=None):
         telVar.set(obs.telescope)
         objVar.set(obs.obj)
         obsDateVar.set(obs.date)
+        imgVar.set(obs.image)
         
         #vypis info o objekte
         old=sys.stdout
@@ -1021,6 +1057,7 @@ def Exit(event=None):
         elif ans=='cancel': return
         
     if not noSett:
+        #TODO testovat zmeny
         f=open('data/settings.ops','wb')
         pickle.dump(settings,f)
         f.close()    
@@ -1074,7 +1111,7 @@ def OpenFile(event=None):
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:
-                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')         
+                name0=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file',defaultextension='.opd')         
                 name0=name0.replace('\\','/')
                 if len(name0)>0: 
                     cwd=os.getcwd().replace('\\','/')+'/'
@@ -1411,26 +1448,29 @@ def Settings():
         settings['default_obs']=observerVar.get()
         settings['default_site']=settings['sites'][siteVar.get()]
         settings['default_tel']=telVar.get()
+        settings['file_copy']=bool(copyVar.get())   #TODO info: zmena->az dalsie obr.
         noSett=False  
         
         if len(objects.objects.keys())>0:
             zoznam=objfilter()
-            if objZ.name in zoznam:
-                fake=fakeEvt(zoznam.index(objZ.name),zoznam)
-                objselect(fake)
-            else: 
-                obssVar.set('')
-                Text1.delete(1.0,tk.END)
-                Text2.delete(1.0,tk.END)
-                figAlt.clf()
-                figObj.clf()
-                canvas1.draw()
-                canvas2.draw()                   
-                Button2.configure(state=tk.DISABLED)
-                Button3.configure(state=tk.DISABLED)
-                Button4.configure(state=tk.DISABLED)
-                Button5.configure(state=tk.DISABLED)
-                Button6.configure(state=tk.DISABLED)
+            try:
+                if objZ.name in zoznam:
+                    fake=fakeEvt(zoznam.index(objZ.name),zoznam)
+                    objselect(fake)
+                else: 
+                    obssVar.set('')
+                    Text1.delete(1.0,tk.END)
+                    Text2.delete(1.0,tk.END)
+                    figAlt.clf()
+                    figObj.clf()
+                    canvas1.draw()
+                    canvas2.draw()                   
+                    Button2.configure(state=tk.DISABLED)
+                    Button3.configure(state=tk.DISABLED)
+                    Button4.configure(state=tk.DISABLED)
+                    Button5.configure(state=tk.DISABLED)
+                    Button6.configure(state=tk.DISABLED)
+            except: pass #nebol zvoleny objekt
                 
         top.destroy() 
         root.lift()    
@@ -1446,6 +1486,7 @@ def Settings():
     observerVar=tk.StringVar(top)
     siteVar=tk.StringVar(top)
     telVar=tk.StringVar(top)
+    copyVar=tk.IntVar(top)    
     
     Label1=tk.Label(top)
     Label1.place(relx=0.02,rely=0.02,height=21,width=111)
@@ -1538,19 +1579,26 @@ def Settings():
     Label4.place(relx=0.02,rely=0.62,height=21,width=78)
     Label4.configure(text='Image Path')
     Label4.configure(anchor='w')
-    Label4.configure(state=tk.DISABLED)
+    #Label4.configure(state=tk.DISABLED)
     
     Radiobutton1=tk.Radiobutton(top)
-    Radiobutton1.place(relx=0.26,rely=0.65,height=21,relwidth=0.15)
+    Radiobutton1.place(relx=0.26,rely=0.65,height=21,relwidth=0.2)
     Radiobutton1.configure(justify=tk.LEFT)
     Radiobutton1.configure(text='Original')
-    Radiobutton1.configure(state=tk.DISABLED)
+    Radiobutton1.configure(variable=copyVar)
+    Radiobutton1.configure(value=0)
+    #Radiobutton1.configure(state=tk.DISABLED)
     
     Radiobutton2=tk.Radiobutton(top)
-    Radiobutton2.place(relx=0.46,rely=0.65,height=21,relwidth=0.12)
+    Radiobutton2.place(relx=0.46,rely=0.65,height=21,relwidth=0.25)
     Radiobutton2.configure(justify=tk.LEFT)
-    Radiobutton2.configure(text='Copy')
-    Radiobutton2.configure(state=tk.DISABLED)
+    Radiobutton2.configure(text='Copy locally')
+    Radiobutton2.configure(variable=copyVar)
+    Radiobutton2.configure(value=1)
+    #Radiobutton2.configure(state=tk.DISABLED)
+    
+    if settings['file_copy']: copyVar.set(1)
+    else: copyVar.set(0)
     
     Button4=tk.Button(top)
     Button4.place(relx=0.40,rely=0.8,height=24,width=60)
@@ -1558,8 +1606,12 @@ def Settings():
     Button4.configure(command=saveSet)
 
 def ShowImg():
-    print('ShowImg')
-    sys.stdout.flush()
+    #TODO test+warnign ci subor existuje
+    #open image in default software
+    if sys.platform=='linux' or sys.platform=='linux2': subprocess.call(['xdg-open',obsZ1.image])
+    else: os.startfile(obsZ1.image)
+    #print(obsZ1.image)
+    #sys.stdout.flush()
     
 def getDate(date=None):
     if date is None: date=dateVar.get()
@@ -1717,6 +1769,7 @@ def objselect(evt):
     Button4.configure(state=tk.NORMAL)
     Button5.configure(state=tk.DISABLED)
     Button6.configure(state=tk.DISABLED)
+    Button7.configure(state=tk.DISABLED)
 
 def obsselect(evt):
     global obsZ1  #zobrazene pozorovanie       
@@ -1742,6 +1795,9 @@ def obsselect(evt):
     
     Button5.configure(state=tk.NORMAL)
     Button6.configure(state=tk.NORMAL)
+    
+    if len(obsZ1.image)>0: Button7.configure(state=tk.NORMAL)
+    else: Button7.configure(state=tk.DISABLED)
 
 constellations=stars.load()
 objects=objClass.objects(constellations)
@@ -1750,9 +1806,10 @@ objects=objClass.objects(constellations)
 if os.path.isfile('data/settings.ops'): 
     f=open('data/settings.ops','rb')
     settings=pickle.load(f)
-    f.close()    
+    f.close()   
     if os.path.isfile(settings['file'].strip()): objects.load(settings['file'].strip()) 
-    noSett=False   
+    noSett=False  
+    if not 'file_copy' in settings: settings['file_copy']=False
 else:
     settings={}
     settings['observers']=[]
@@ -1762,8 +1819,11 @@ else:
     settings['default_site']=None
     settings['default_tel']=''
     settings['file']=''
+    settings['file_copy']=False
     settings['night_mode']=False
     noSett=True    
+
+if not os.path.isdir('images'): os.mkdir('images')
 
 root=tk.Tk() 
 root.protocol('WM_DELETE_WINDOW',Exit)

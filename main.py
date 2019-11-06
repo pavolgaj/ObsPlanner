@@ -4,6 +4,7 @@ import os
 import pickle
 import subprocess
 import shutil
+import webbrowser
 
 import tkinter as tk
 from tkinter import messagebox 
@@ -1057,11 +1058,37 @@ def Exit(event=None):
         elif ans=='cancel': return
         
     if not noSett:
-        #TODO testovat zmeny
-        f=open('data/settings.ops','wb')
-        pickle.dump(settings,f)
-        f.close()    
-    
+        #testovanie zmeny nastaveni
+        if os.path.isfile('data/settings.ops'): 
+            f=open('data/settings.ops','rb')
+            settings0=pickle.load(f)
+            f.close()  
+        changedSet=False
+        for x in settings:
+            if x=='sites':
+                if not len(settings['sites'])==len(settings0['sites']):
+                    changedSet=True
+                    break 
+                for y in settings['sites']:
+                    if not (y in settings0['sites']):
+                        changedSet=True
+                        break 
+                    if (not settings['sites'][y].lat==settings0['sites'][y].lat) or (not settings['sites'][y].lon==settings0['sites'][y].lon) or (not settings['sites'][y].ele==settings0['sites'][y].ele) or (not settings['sites'][y].limits==settings0['sites'][y].limits):
+                        changedSet=True
+                        break 
+                if changedSet: break  
+            elif x=='default_site': 
+                if not settings['default_site'].name==settings0['default_site'].name:
+                    changedSet=True
+                    break 
+            else:
+                if not (settings[x]==settings0[x]):
+                    changedSet=True
+                    break
+        if changedSet: 
+            f=open('data/settings.ops','wb')
+            pickle.dump(settings,f)
+            f.close()
     root.destroy()
     root=None
     matplotlib.pyplot.close()
@@ -1757,7 +1784,7 @@ def objselect(evt):
         r=stars.printDMS(r)
         s=stars.printDMS(s)
     print('Rise: '+r)
-    print('Transit: '+stars.printDMS(t))  #TODO vyska?
+    print('Transit: '+stars.printDMS(t)+' @ '+str(round(objZ.dec+90-settings['default_site'].lat,2))+' deg')  
     print('Set: '+s)
     print('---------------------')
     print('Note: '+objZ.note)
@@ -1962,6 +1989,7 @@ canvas1.get_tk_widget().pack(side='top',fill='both',expand=1)
 
 #menu
 Popupmenu1=tk.Menu(root,tearoff=0)
+
 fileM=tk.Menu(Popupmenu1,tearoff=0)    
 Popupmenu1.add_cascade(menu=fileM,label='File')
 fileM.add_command(command=NewFile,label='New',accelerator='Ctrl+N')
@@ -1974,8 +2002,31 @@ fileM.add_command(command=SaveAsFile,label='Save As')
 fileM.add_separator()
 fileM.add_command(command=Exit,label='Exit',accelerator='Ctrl+Q') 
 root.bind('<Control-q>',Exit)
+
 import_export=tk.Menu(Popupmenu1,tearoff=0) 
-Popupmenu1.add_cascade(menu=import_export,label='Import/Export',state=tk.DISABLED)  
+Popupmenu1.add_cascade(menu=import_export,label='Import/Export') 
+importMenu=tk.Menu(import_export,tearoff=0)
+import_export.add_cascade(menu=importMenu,label='Import Objects') 
+importMenu.add_command(label='from SIPS',state=tk.DISABLED)
+importMenu.add_command(label='from MaximDL',state=tk.DISABLED)
+importMenu.add_command(label='from AstroPlanner',state=tk.DISABLED)
+importMenu.add_command(label='from APT',state=tk.DISABLED)
+exportObj=tk.Menu(import_export,tearoff=0)
+import_export.add_cascade(menu=exportObj,label='Export Selected Objects') 
+exportObj.add_command(label='to Text File',state=tk.DISABLED)
+exportObj.add_command(label='to Excel',state=tk.DISABLED)
+exportObj.add_command(label='to SIPS',state=tk.DISABLED)
+exportObj.add_command(label='to MaximDL',state=tk.DISABLED)
+exportObj.add_command(label='to APT ?',state=tk.DISABLED)
+exportObs=tk.Menu(import_export,tearoff=0)
+import_export.add_cascade(menu=exportObs,label='Export Observations of Object') 
+exportObs.add_command(label='to Text File',state=tk.DISABLED)
+exportObs.add_command(label='to Excel',state=tk.DISABLED)
+exportObsAll=tk.Menu(import_export,tearoff=0)
+import_export.add_cascade(menu=exportObsAll,label='Export All Observations') 
+exportObsAll.add_command(label='to Text File',state=tk.DISABLED)
+exportObsAll.add_command(label='to Excel',state=tk.DISABLED)
+
 Popupmenu1.add_command(command=Settings,label='Settings')
 Popupmenu1.add_command(command=About,label='About')
 root.config(menu=Popupmenu1)

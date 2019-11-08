@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['/media/pavolg/Data/Palko/skola/python/ObsPlanner'],
+             pathex=['D:\\Palko\\skola\\python\\ObsPlanner'],
              binaries=[],
-             datas=[('ObsPlanner.png', '.'), ('data/bound_20.dat', 'data'), ('data/lines.txt', 'data'), ('data/stars.txt', 'data'), ('data/objects-messier.opd', 'data')],
+             datas=[('simpleio.dll', '.'), ('ObsPlanner.ico', '.'), ('ObsPlanner.png', '.'), ('data/bound_20.dat', 'data'), ('data/lines.txt', 'data'), ('data/stars.txt', 'data'), ('data/objects-messier.opd', 'data')],
              hiddenimports=['PIL', 'PIL._imagingtk', 'PIL._tkinter_finder'],
              hookspath=[],
              runtime_hooks=[],

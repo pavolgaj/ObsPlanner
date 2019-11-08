@@ -89,7 +89,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1')
+    Label3.configure(text='version 0.1.1')
 
     Label4=tk.Label(top)
     Label4.place(relx=0.0,rely=0.64,height=21,width=310)
@@ -1081,6 +1081,9 @@ def Exit(event=None):
                 if not settings['default_site'].name==settings0['default_site'].name:
                     changedSet=True
                     break 
+            elif not x in settings0:
+                changedSet=True
+                break
             else:
                 if not (settings[x]==settings0[x]):
                     changedSet=True
@@ -1636,7 +1639,9 @@ def ShowImg():
     #TODO test+warnign ci subor existuje
     #open image in default software
     if sys.platform=='linux' or sys.platform=='linux2': subprocess.call(['xdg-open',obsZ1.image])
-    else: os.startfile(obsZ1.image)
+    else: 
+        try: os.startfile(obsZ1.image)
+        except: os.startfile(os.getcwd().replace('\\','/')+'/'+obsZ1.image)   #problem s relativnou cestou
     #print(obsZ1.image)
     #sys.stdout.flush()
     
@@ -1666,8 +1671,7 @@ def plotAlt(ra,dec):
     jd0=stars.juldat(year,mon,day,hour-2,minute,sec)  #start -2h
     jd1=stars.juldat(year,mon,day,hour+8,minute,sec)  #stop +8h
     jd=np.linspace(jd0,jd1,200)
-    
-    #TODO circumpolarne -> prechod cez N
+
     a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
     if max(h)<0: 
         figAlt.clf()
@@ -1681,12 +1685,15 @@ def plotAlt(ra,dec):
         ax.set_axis_off()
         canvas2.draw()
         return
-    h0=h[np.where(h>0)]
-    a0=a[np.where(h>0)]
+    h0=np.ma.array(h[np.where(h>-5)])
+    a0=np.ma.array(a[np.where(h>-5)])
+    i=np.where((np.abs(np.diff(a0))>10)*(np.abs(np.diff(np.sign(a0-300)))>0))[0]   #prechod cez N=360     
+    a0[i]=np.ma.masked
+    h0[i]=np.ma.masked
     ax.plot(a0,h0,'k-')
     
     ax.set_xlim(min(a0)-5,max(a0)+5)
-    ax.set_ylim(min(h0),max(h)+5) 
+    ax.set_ylim(max(0,min(h0)-5),max(h)+5)  
     
     #znacky po hodinach
     jdH=np.arange(stars.juldat(year,mon,day,hour-1,0,0),stars.juldat(year,mon,day,hour+7,0,1),1./24.)
@@ -1695,10 +1702,10 @@ def plotAlt(ra,dec):
         if h>0:
             ax.plot(a,h,'ko') 
             if hour-1+i>=24: 
-                t=ax.text(a,h-max(h0)/10.,hour-1+i-24)
+                t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i-24)
                 t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground='w')])
             else: 
-                t=ax.text(a,h-max(h0)/10.,hour-1+i)   
+                t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i)   
                 t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground='w')])                  
     
     #aktualna poloha

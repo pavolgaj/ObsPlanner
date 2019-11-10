@@ -3,7 +3,16 @@ import tkinter.ttk as ttk
 import webbrowser
 
 def href(event):
-    webbrowser.open_new(event.widget.cget("text"))
+    if sys.platform=='linux' or sys.platform=='linux2': 
+        myEnv = dict(os.environ)
+        lp_key = 'LD_LIBRARY_PATH'
+        lp_orig = myEnv.get(lp_key + '_ORIG')
+        if lp_orig is not None: myEnv[lp_key] = lp_orig
+        else: lp = myEnv.get(lp_key)
+        if lp is not None: myEnv.pop(lp_key)
+        subprocess.call(['xdg-open',event.widget.cget("text")],env=myEnv)
+    else: webbrowser.open_new(event.widget.cget("text"))
+    #except: subprocess.Popen(['xdg-open',event.widget.cget("text")])   #problem na Linuxe  
 
 class fakeEvtWidget():
     '''generate event widget for "select" action'''

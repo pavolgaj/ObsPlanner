@@ -5,6 +5,7 @@ import pickle
 import subprocess
 import shutil
 import webbrowser
+import copy
 
 import tkinter as tk
 from tkinter import messagebox 
@@ -89,7 +90,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1.1')
+    Label3.configure(text='version 0.1.2')
 
     Label4=tk.Label(top)
     Label4.place(relx=0.0,rely=0.64,height=21,width=310)
@@ -181,12 +182,18 @@ def AddObj(obj=None):
         except: 
             messagebox.showerror('DEC Error','Wrong DEC format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')  
             top.lift()
-            return     
+            return 
+        found=[]    
         for const in constellations:
             if constellations[const].testPoint(ra,dec): 
-                constVar.set(const)
-                #TODO: cez vsetky a upozornenie, ak viac
-                return  
+                found.append(const)
+        if len(found)==1: constVar.set(found[0])
+        elif len(found)==0: 
+            messagebox.showwarning('Constellation','Constellation not detected! Please, add it manually.') 
+            top.lift()
+        else: 
+            messagebox.showwarning('Constellation','Multiple possible constellations detected ('+', '.join(found)+')! Please, add it manually.')
+            top.lift()
                     
     top=tk.Tk()
     top.lift()
@@ -316,7 +323,6 @@ def AddObj(obj=None):
 
 def AddObs(obs=None):
     global changed
-    #TODO...
     def addObserver(obs=None):
         def saveObs():
             if obs is not None: settings['observers'].remove(obs)
@@ -774,10 +780,12 @@ def AddObs(obs=None):
         addObsObj(objects.objects[objVar.get()]['object'])   
     
     def addImgObs(img=None):
+        filetypes=[('JPG Images','*.jpg;*.jpeg'),('TIFF Images','*.tiff'),('PNG Images','*.png'),('FITS Images','*.fit;*.fits;*.fts'),\
+        ('BMP Images','*.bmp'),('XISF Images','*.xisf'),('All files','*.*')]
         if img is None:
-            name0=filedialog.askopenfilename(parent=top,filetypes=[('JPG Images','*.jpg'),('All files','*.*')],title='Observation - Image',defaultextension='.jpg')  #TODO... 
+            name0=filedialog.askopenfilename(parent=top,filetypes=filetypes,title='Observation - Image',defaultextension='.jpg')   
         else:
-            name0=filedialog.askopenfilename(parent=top,filetypes=[('JPG Images','*.jpg'),('All files','*.*')],title='Observation - Image',defaultextension='.jpg',initialdir=img[:img.rfind('/')],initialfile=img[img.rfind('/')+1:])  #TODO...
+            name0=filedialog.askopenfilename(parent=top,filetypes=filetypes,title='Observation - Image',defaultextension='.jpg',initialdir=img[:img.rfind('/')],initialfile=img[img.rfind('/')+1:])  
         if len(name0)>0: 
             name0=name0.replace('\\','/')
             cwd=os.getcwd().replace('\\','/')+'/'
@@ -799,11 +807,14 @@ def AddObs(obs=None):
         if obs is not None: del objects.objects[obs.obj]['obs'][obs.date]      
         
         path=imgVar.get().strip()
+        if not os.path.isfile(path):
+            messagebox.showerror('ObsPlanner','Image "'+path+'" not found!')
+            top.lift()
+            return
         if settings['file_copy'] and len(path)>0:
-            #zkopiruj do images
-            #TODO test ci existuje
+            #zkopiruj do images           
             path1='images/'+objVar.get().replace(' ','_')+'_'+obsDateVar.get().replace(' ','_').replace(':','-')+path[path.find('.'):]
-            shutil.copy2(path,path1)
+            if not (path==path1): shutil.copy2(path,path1)
             path=path1
             
         objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image=path,note=note.strip())       
@@ -949,26 +960,22 @@ def AddObs(obs=None):
     Label6=tk.Label(top)
     Label6.place(relx=0.02,rely=0.42,height=21,width=45)
     Label6.configure(text='Image')
-    #Label6.configure(state=tk.DISABLED)
     Label6.configure(anchor='w')
     
     Entry2=tk.Entry(top)
     Entry2.place(relx=0.27,rely=0.42,height=25,relwidth=0.45)
     Entry2.configure(background='white')
-    Entry2.configure(textvariable=imgVar)
-    #Entry2.configure(state=tk.DISABLED)   
+    Entry2.configure(textvariable=imgVar) 
     
     Button1=tk.Button(top)
     Button1.place(relx=0.75,rely=0.42,height=25,width=43)
     Button1.configure(text='Add')
     Button1.configure(command=addImgObs)
-    #Button1.configure(state=tk.DISABLED)
     
     Button1_2=tk.Button(top)
     Button1_2.place(relx=0.88,rely=0.42,height=25,width=43)
     Button1_2.configure(text='Edit')
     Button1_2.configure(command=edImgObs)
-    #Button1.configure(state=tk.DISABLED)
     
     Label7=tk.Label(top)
     Label7.place(relx=0.02,rely=0.5,height=21,width=46)
@@ -1059,10 +1066,6 @@ def Exit(event=None):
         
     if not noSett:
         #testovanie zmeny nastaveni
-        if os.path.isfile('data/settings.ops'): 
-            f=open('data/settings.ops','rb')
-            settings0=pickle.load(f)
-            f.close()  
         changedSet=False
         for x in settings:
             if x=='sites':
@@ -1195,13 +1198,15 @@ def SaveAsFile():
         changed=False
 
 def Settings():
-    #TODO: blokovanie tlacidiel
+    global settings
     def addObserver(obs=None):
         def saveObs():
-            if obs is not None: settings['observers'].remove(obs)
-            settings['observers'].append(obsNameVar.get())
-            TCombobox1['values']=sorted(settings['observers'])
-            TCombobox1.current(sorted(settings['observers']).index(obsNameVar.get()))
+            if obs is not None: settings1['observers'].remove(obs)
+            settings1['observers'].append(obsNameVar.get())
+            TCombobox1['values']=sorted(settings1['observers'])
+            TCombobox1.current(sorted(settings1['observers']).index(obsNameVar.get()))
+            Button1_1.configure(state=tk.NORMAL)
+            Button1_2.configure(state=tk.NORMAL)
             topObs.destroy()
             top.lift()
         
@@ -1235,9 +1240,13 @@ def Settings():
         addObserver(observerVar.get())
         
     def delObserver():
-        settings['observers'].remove(observerVar.get())
-        TCombobox1['values']=sorted(settings['observers'])
-        TCombobox1.current(0)
+        settings1['observers'].remove(observerVar.get())
+        TCombobox1['values']=sorted(settings1['observers'])          
+        if len(TCombobox1['values'])==0: 
+            Button1_1.configure(state=tk.DISABLED)
+            Button1_2.configure(state=tk.DISABLED)
+            TCombobox1.set('')
+        else: TCombobox1.current(0)
             
     def addSite(site=None):  
         def setLimits():
@@ -1264,7 +1273,7 @@ def Settings():
             minAzmVar=tk.DoubleVar(topLims)
             maxAzmVar=tk.DoubleVar(topLims)
             
-            if site is not None: limits=settings['sites'][site].limits
+            if site is not None: limits=settings1['sites'][site].limits
             else: limits=new_limits
             
             minAltVar.set(limits[0])
@@ -1332,10 +1341,12 @@ def Settings():
                 messagebox.showerror('Longitude Error','Wrong Longitude format! Correct format is "D:M:S" or "D.d" (decimal number in degrees).')
                 topSite.lift()
                 return    
-            if site is not None: del settings['sites'][site]
-            settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()),limits)
-            TCombobox2['values']=sorted(settings['sites'].keys())
-            TCombobox2.current(sorted(settings['sites'].keys()).index(siteNameVar.get()))
+            if site is not None: del settings1['sites'][site]
+            settings1['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()),limits)
+            TCombobox2['values']=sorted(settings1['sites'].keys())
+            TCombobox2.current(sorted(settings1['sites'].keys()).index(siteNameVar.get()))
+            Button2_1.configure(state=tk.NORMAL)
+            Button2_2.configure(state=tk.NORMAL)
             topSite.destroy()
             top.lift()
         
@@ -1356,10 +1367,10 @@ def Settings():
         
         if site is not None: 
             siteNameVar.set(site)
-            siteLatVar.set(stars.printDMS(settings['sites'][site].lat))
-            siteLonVar.set(stars.printDMS(settings['sites'][site].lon))
-            siteEleVar.set(settings['sites'][site].ele)
-            limits=settings['sites'][site].limits
+            siteLatVar.set(stars.printDMS(settings1['sites'][site].lat))
+            siteLonVar.set(stars.printDMS(settings1['sites'][site].lon))
+            siteEleVar.set(settings1['sites'][site].ele)
+            limits=settings1['sites'][site].limits
         
         Label1=tk.Label(topSite)
         Label1.place(relx=0.05,rely=0.05,height=21,width=43)
@@ -1415,16 +1426,22 @@ def Settings():
         addSite(siteVar.get())
             
     def delSite():
-        del settings['sites'][siteVar.get()]
-        TCombobox2['values']=sorted(settings['sites'])
-        TCombobox2.current(0)
+        del settings1['sites'][siteVar.get()]
+        TCombobox2['values']=sorted(settings1['sites'])         
+        if len(TCombobox2['values'])==0: 
+            Button2_1.configure(state=tk.DISABLED)
+            Button2_2.configure(state=tk.DISABLED)
+            TCombobox2.set('')
+        else: TCombobox2.current(0)
             
     def addTel(tel=None):
         def saveTel():
-            if tel is not None: settings['telescopes'].remove(tel)
-            settings['telescopes'].append(telNameVar.get())
-            TCombobox3['values']=sorted(settings['telescopes'])
-            TCombobox3.current(sorted(settings['telescopes']).index(telNameVar.get()))
+            if tel is not None: settings1['telescopes'].remove(tel)
+            settings1['telescopes'].append(telNameVar.get())
+            TCombobox3['values']=sorted(settings1['telescopes'])
+            TCombobox3.current(sorted(settings1['telescopes']).index(telNameVar.get()))
+            Button3_1.configure(state=tk.NORMAL)
+            Button3_2.configure(state=tk.NORMAL)
             topTel.destroy()
             top.lift()
         
@@ -1458,11 +1475,16 @@ def Settings():
         addTel(telVar.get())
             
     def delTel():
-        settings['telescopes'].remove(telVar.get())
-        TCombobox3['values']=sorted(settings['telescopes'])
-        TCombobox3.current(0)
+        settings1['telescopes'].remove(telVar.get())
+        TCombobox3['values']=sorted(settings1['telescopes'])
+        if len(TCombobox3['values'])==0: 
+            Button3_1.configure(state=tk.DISABLED)
+            Button3_2.configure(state=tk.DISABLED)
+            TCombobox3.set('')
+        else: TCombobox3.current(0)
             
     def saveSet():
+        global settings
         if len(observerVar.get())==0: 
             messagebox.showerror('Observer Error','No default observer! Please, add one!')
             top.lift()
@@ -1475,10 +1497,13 @@ def Settings():
             messagebox.showerror('Telescope Error','No default telescope! Please, add one!')
             top.lift()
             return
-        settings['default_obs']=observerVar.get()
-        settings['default_site']=settings['sites'][siteVar.get()]
-        settings['default_tel']=telVar.get()
-        settings['file_copy']=bool(copyVar.get())   #TODO info: zmena->az dalsie obr.
+        settings1['default_obs']=observerVar.get()
+        settings1['default_site']=settings1['sites'][siteVar.get()]
+        settings1['default_tel']=telVar.get()
+        if not (settings1['file_copy']==bool(copyVar.get())):
+            messagebox.showinfo('Images','New image location will be applied only on new images. Old images are displayed from old location.') 
+        settings1['file_copy']=bool(copyVar.get()) 
+        settings=copy.deepcopy(settings1)
         noSett=False  
         
         if len(objects.objects.keys())>0:
@@ -1513,6 +1538,8 @@ def Settings():
     except: pass
     top.resizable(False,False)
     
+    settings1=copy.deepcopy(settings)
+    
     observerVar=tk.StringVar(top)
     siteVar=tk.StringVar(top)
     telVar=tk.StringVar(top)
@@ -1528,9 +1555,9 @@ def Settings():
     TCombobox1.configure(textvariable=observerVar)
     TCombobox1.configure(takefocus='')
     TCombobox1.configure(state='readonly')
-    if len(settings['observers'])>0:
-        TCombobox1['values']=sorted(settings['observers'])
-        TCombobox1.current(sorted(settings['observers']).index(settings['default_obs']))
+    if len(settings1['observers'])>0:
+        TCombobox1['values']=sorted(settings1['observers'])
+        TCombobox1.current(sorted(settings1['observers']).index(settings1['default_obs']))
     
     Button1=tk.Button(top)
     Button1.place(relx=0.69,rely=0.02,height=24,width=43)
@@ -1541,11 +1568,13 @@ def Settings():
     Button1_1.place(relx=0.79,rely=0.02,height=24,width=43)
     Button1_1.configure(text='Edit')
     Button1_1.configure(command=editObserver) 
+    if len(TCombobox1['values'])==0: Button1_1.configure(state=tk.DISABLED)
     
     Button1_2=tk.Button(top)
     Button1_2.place(relx=0.89,rely=0.02,height=24,width=43)
     Button1_2.configure(text='Delete') 
     Button1_2.configure(command=delObserver)
+    if len(TCombobox1['values'])==0: Button1_2.configure(state=tk.DISABLED)
     
     Label2=tk.Label(top)
     Label2.place(relx=0.02,rely=0.22,height=21,width=78)
@@ -1557,9 +1586,9 @@ def Settings():
     TCombobox2.configure(textvariable=siteVar)
     TCombobox2.configure(takefocus='')
     TCombobox2.configure(state='readonly')
-    if len(settings['sites'])>0:
-        TCombobox2['values']=sorted(settings['sites'].keys())
-        TCombobox2.current(sorted(settings['sites'].keys()).index(settings['default_site'].name))
+    if len(settings1['sites'])>0:
+        TCombobox2['values']=sorted(settings1['sites'].keys())
+        TCombobox2.current(sorted(settings1['sites'].keys()).index(settings1['default_site'].name))
     
     Button2=tk.Button(top)
     Button2.place(relx=0.69,rely=0.22,height=24,width=43)
@@ -1570,11 +1599,13 @@ def Settings():
     Button2_1.place(relx=0.79,rely=0.22,height=24,width=43)
     Button2_1.configure(text='Edit')
     Button2_1.configure(command=editSite)
+    if len(TCombobox2['values'])==0: Button2_1.configure(state=tk.DISABLED)
     
     Button2_2=tk.Button(top)
     Button2_2.place(relx=0.89,rely=0.22,height=24,width=43)
     Button2_2.configure(text='Delete')
     Button2_2.configure(command=delSite)
+    if len(TCombobox2['values'])==0: Button2_2.configure(state=tk.DISABLED)
     
     Label3=tk.Label(top)
     Label3.place(relx=0.02,rely=0.42,height=21,width=118)
@@ -1586,9 +1617,9 @@ def Settings():
     TCombobox3.configure(textvariable=telVar)
     TCombobox3.configure(takefocus='')
     TCombobox3.configure(state='readonly')
-    if len(settings['telescopes'])>0:
-        TCombobox3['values']=sorted(settings['telescopes'])
-        TCombobox3.current(sorted(settings['telescopes']).index(settings['default_tel']))
+    if len(settings1['telescopes'])>0:
+        TCombobox3['values']=sorted(settings1['telescopes'])
+        TCombobox3.current(sorted(settings1['telescopes']).index(settings1['default_tel']))
     
     Button3=tk.Button(top)
     Button3.place(relx=0.69,rely=0.42,height=24,width=43)
@@ -1599,17 +1630,18 @@ def Settings():
     Button3_1.place(relx=0.79,rely=0.42,height=24,width=43)
     Button3_1.configure(text='Edit')
     Button3_1.configure(command=editTel)
+    if len(TCombobox3['values'])==0: Button3_1.configure(state=tk.DISABLED)
     
     Button3_2=tk.Button(top)
     Button3_2.place(relx=0.89,rely=0.42,height=24,width=43)
     Button3_2.configure(text='Delete')
     Button3_2.configure(command=delTel)
+    if len(TCombobox3['values'])==0: Button3_2.configure(state=tk.DISABLED)
     
     Label4=tk.Label(top)
     Label4.place(relx=0.02,rely=0.62,height=21,width=78)
     Label4.configure(text='Image Path')
     Label4.configure(anchor='w')
-    #Label4.configure(state=tk.DISABLED)
     
     Radiobutton1=tk.Radiobutton(top)
     Radiobutton1.place(relx=0.26,rely=0.65,height=21,relwidth=0.2)
@@ -1617,7 +1649,6 @@ def Settings():
     Radiobutton1.configure(text='Original')
     Radiobutton1.configure(variable=copyVar)
     Radiobutton1.configure(value=0)
-    #Radiobutton1.configure(state=tk.DISABLED)
     
     Radiobutton2=tk.Radiobutton(top)
     Radiobutton2.place(relx=0.46,rely=0.65,height=21,relwidth=0.25)
@@ -1625,9 +1656,8 @@ def Settings():
     Radiobutton2.configure(text='Copy locally')
     Radiobutton2.configure(variable=copyVar)
     Radiobutton2.configure(value=1)
-    #Radiobutton2.configure(state=tk.DISABLED)
     
-    if settings['file_copy']: copyVar.set(1)
+    if settings1['file_copy']: copyVar.set(1)
     else: copyVar.set(0)
     
     Button4=tk.Button(top)
@@ -1636,14 +1666,26 @@ def Settings():
     Button4.configure(command=saveSet)
 
 def ShowImg():
-    #TODO test+warnign ci subor existuje
+    #test+warnign ci subor existuje       
+    subor=obsZ1.image
+    if not os.path.isfile(subor):
+        if os.path.isfile(os.getcwd().replace('\\','/')+'/'+obsZ1.image): 
+            subor=os.getcwd().replace('\\','/')+'/'+obsZ1.image     #problem s relativnou cestou vo Win
+        else:
+            messagebox.showerror('ObsPlanner','Image "'+subor+'" not found!')
+            return                
     #open image in default software
-    if sys.platform=='linux' or sys.platform=='linux2': subprocess.call(['xdg-open',obsZ1.image])
+    if sys.platform=='linux' or sys.platform=='linux2': 
+        myEnv = dict(os.environ)
+        lp_key = 'LD_LIBRARY_PATH'
+        lp_orig = myEnv.get(lp_key + '_ORIG')
+        if lp_orig is not None: myEnv[lp_key] = lp_orig
+        else: lp = myEnv.get(lp_key)
+        if lp is not None: myEnv.pop(lp_key)
+        subprocess.call(['xdg-open',subor],env=myEnv)       #call
     else: 
-        try: os.startfile(obsZ1.image)
-        except: os.startfile(os.getcwd().replace('\\','/')+'/'+obsZ1.image)   #problem s relativnou cestou
-    #print(obsZ1.image)
-    #sys.stdout.flush()
+        try: os.startfile(subor)
+        except: os.startfile(os.getcwd().replace('\\','/')+'/'+obsZ1.image)     #problem s relativnou cestou vo Win
     
 def getDate(date=None):
     if date is None: date=dateVar.get()
@@ -1856,6 +1898,7 @@ else:
     settings['file_copy']=False
     settings['night_mode']=False
     noSett=True    
+settings0=copy.deepcopy(settings)
 
 if not os.path.isdir('images'): os.mkdir('images')
 

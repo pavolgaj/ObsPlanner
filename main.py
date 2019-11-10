@@ -1063,7 +1063,7 @@ def Exit(event=None):
                 else: return
             objects.save(settings['file'])
         elif ans=='cancel': return
-        
+     
     if not noSett:
         #testovanie zmeny nastaveni
         changedSet=False
@@ -1198,7 +1198,7 @@ def SaveAsFile():
         changed=False
 
 def Settings():
-    global settings
+    global settings,noSett
     def addObserver(obs=None):
         def saveObs():
             if obs is not None: settings1['observers'].remove(obs)
@@ -1484,7 +1484,7 @@ def Settings():
         else: TCombobox3.current(0)
             
     def saveSet():
-        global settings
+        global settings,noSett
         if len(observerVar.get())==0: 
             messagebox.showerror('Observer Error','No default observer! Please, add one!')
             top.lift()

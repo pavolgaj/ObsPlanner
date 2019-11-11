@@ -1,6 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk 
 import webbrowser
+import sys
+import os
+import subprocess
 
 def href(event):
     if sys.platform=='linux' or sys.platform=='linux2': 

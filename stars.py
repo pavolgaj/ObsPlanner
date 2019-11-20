@@ -10,7 +10,7 @@ def juldat(year,mon,day,h=0,m=0,s=0):
     a=int(year/100)
     b=2-a+int(a/4)
     jd=int(365.25*(year+4716))+int(30.6001*(mon+1))+day+h/24.+m/1440.+s/86400.+b-1524.5
-    return jd 
+    return jd
     
 def printDMS(x):
         #output in format d:m:s
@@ -46,18 +46,18 @@ class star:
         self.size=size
         self.type=typ
         self.note=note
-        self.const=const         
-           
-    def altAz(self,jd,lon,lat):        
+        self.const=const
+
+    def altAz(self,jd,lon,lat):
         #type of output (same as input - number, list, numpy.array)
         out_type='lst'
-        if (isinstance(jd,int) or isinstance(jd,float)): 
-            #all input args are numbers        
-            out_type='num' 
+        if (isinstance(jd,int) or isinstance(jd,float)):
+            #all input args are numbers
+            out_type='num'
             
         if isinstance(jd,np.ndarray):
             #numpy.array
-            out_type='np' 
+            out_type='np'
             
         if isinstance(jd,list): jd=np.array(jd)
         
@@ -66,7 +66,7 @@ class star:
         sid=280.46061837+360.98564736629*(jd-2451545.0)+0.000387933*T**2-T**3/38710000
         sid=sid%360+lon 
     
-        t=sid-self.raD        
+        t=sid-self.raD
         if out_type=='num': t=np.array([t])
         
         t=np.deg2rad(t)
@@ -88,30 +88,30 @@ class star:
         elif out_type=='lst':
             alt=alt.tolist()
             azm=azm.tolist()
-        return azm,alt 
+        return azm,alt
     
     def rise(self,jd,lon,lat):
         '''calculate time of rising, transit and setting; jd - at Oh UT'''
         #sidereal time on Greenwich in degrees or hours
         T=(jd-2451545.0)/36525
         sid=280.46061837+360.98564736629*(jd-2451545.0)+0.000387933*T**2-T**3/38710000
-        sid=sid%360+lon             
+        sid=sid%360+lon
 
         dec=np.deg2rad(self.dec)
         lat=np.deg2rad(lat)
         
-        ha=np.arccos(-np.tan(lat)*np.tan(dec)) 
+        ha=np.arccos(-np.tan(lat)*np.tan(dec))
         ha=np.rad2deg(ha)
         
         t=(self.raD-sid)/15.  #transit
         t=t%24
-        if np.isnan(ha): return 'NA',t,'NA'    #nie je vychod/zapad 
+        if np.isnan(ha): return 'NA',t,'NA'    #nie je vychod/zapad
         r=t-ha/15.           #rise
         r=r%24
         s=t+ha/15.           #set
         s=s%24
 
-        return r,t,s 
+        return r,t,s
         
 class constellation:
     def __init__(self,name):
@@ -124,31 +124,31 @@ class constellation:
         
     def detect(self):
         ra=np.array([self.stars[x].ra for x in self.stars])
-        dec=np.array([self.stars[x].dec for x in self.stars])      
+        dec=np.array([self.stars[x].dec for x in self.stars])
 
-        if np.max(np.abs(dec))>75: self.projection='polar'           
+        if np.max(np.abs(dec))>75: self.projection='polar'
         else:            
             if np.max(ra)-np.min(ra)>12: self.prechod=True  #prechod cez 24h
+            
+    def _transform(self,ra,dec,coef=1):
+        '''transf. coordinates for plot'''
+        if self.projection=='polar':
+            f=-np.deg2rad(15*ra)
+            r=90-coef*dec
+            ra=r*np.cos(f)
+            dec=r*np.sin(f)
+        if self.prechod: #prechod cez 24h 
+            if isinstance(ra,np.ndarray): ra[ra>12]-=24
+            elif ra>12: ra-=24
+        return ra,dec
     
     def plot(self,fig=None):
-        '''plot starmap of constellation'''
-        def transform(ra,dec):
-            '''transf. coordinates for plot'''
-            if self.projection=='polar':
-                f=-np.deg2rad(15*ra)
-                r=90-coef*dec
-                ra=r*np.cos(f)
-                dec=r*np.sin(f)
-            if self.prechod: #prechod cez 24h
-                try: 
-                    if ra>12: ra-=24  
-                except: ra[ra>12]-=24
-            return ra,dec
+        '''plot starmap of constellation'''       
         
         #stars
         ra=np.array([self.stars[x].ra for x in self.stars])
         dec=np.array([self.stars[x].dec for x in self.stars])
-        mag=np.array([self.stars[x].mag for x in self.stars])  
+        mag=np.array([self.stars[x].mag for x in self.stars])
         
         coef=1
         if fig is None: self.fig=mpl.gcf()
@@ -157,7 +157,9 @@ class constellation:
             self.fig.clf()
         self.ax=self.fig.add_subplot(111)
         
-        if not self.projection=='polar': mpl.gca().invert_xaxis()         
+        if self.projection=='polar':
+            if max(dec)<0: coef=-1
+        else: mpl.gca().invert_xaxis()
             
         self.ax.set_yticklabels([])
         self.ax.set_xticklabels([])
@@ -166,35 +168,35 @@ class constellation:
         self.fig.tight_layout()
             
         #stars
-        ra,dec=transform(ra,dec)          
+        ra,dec=self._transform(ra,dec,coef)
         for i in np.where(mag<1): self.ax.plot(ra[i],dec[i],'k.',markersize=7)
-        for i in np.where(mag<2): self.ax.plot(ra[i],dec[i],'k.',markersize=6)    
+        for i in np.where(mag<2): self.ax.plot(ra[i],dec[i],'k.',markersize=6)
         for i in np.where(mag<3): self.ax.plot(ra[i],dec[i],'k.',markersize=4)
         for i in np.where(mag<4): self.ax.plot(ra[i],dec[i],'k.',markersize=3)
         for i in np.where(mag<5): self.ax.plot(ra[i],dec[i],'k.',markersize=2)
-        self.ax.plot(ra,dec,'k.',markersize=1) 
+        self.ax.plot(ra,dec,'k.',markersize=1)
         
         #lines
         for l in self.lines:
             for i in range(len(l)-1):
-                ra0,dec0=transform(l[i][0],l[i][1])
-                ra1,dec1=transform(l[i+1][0],l[i+1][1])                                            
+                ra0,dec0=self._transform(l[i][0],l[i][1],coef)
+                ra1,dec1=self._transform(l[i+1][0],l[i+1][1],coef)
                 self.ax.plot([ra0,ra1],[dec0,dec1],'k',linewidth=0.5)
         
         #borders
-        for l in self.border:
+        for l in self.border: #cez casti suhvezdia (Ser)
             for i in range(len(l)-1):
-                ra0,dec0=transform(l[i][0],l[i][1])
-                ra1,dec1=transform(l[i+1][0],l[i+1][1])                                             
+                ra0,dec0=self._transform(l[i][0],l[i][1],coef)
+                ra1,dec1=self._transform(l[i+1][0],l[i+1][1],coef)                                             
                 self.ax.plot([ra0,ra1],[dec0,dec1],'k--',linewidth=0.5)
-            ra0,dec0=transform(l[-1][0],l[-1][1])
-            ra1,dec1=transform(l[0][0],l[0][1])
+            ra0,dec0=self._transform(l[-1][0],l[-1][1],coef)
+            ra1,dec1=self._transform(l[0][0],l[0][1],coef)
             if not self.projection=='polar': self.ax.set_xlim(self.ax.get_xlim()[::-1])
             self.ax.plot([ra0,ra1],[dec0,dec1],'k--',linewidth=0.5)
             
     def testPoint(self,ra,dec):
         '''test if point is in constellation'''
-        for l in self.border:
+        for l in self.border:  #cez casti suhvezdia (Ser)
             ra0=[]
             dec0=[]
             poly=[]
@@ -203,22 +205,14 @@ class constellation:
                 dec0.append(i[1])
             ra0=np.array(ra0)
             dec0=np.array(dec0)
-            if self.prechod:
-                #prechod cez 24h
-                ra0[ra0>12]-=24
-                if ra>12: ra-=24
+            
+            coef=1
             if self.projection=='polar':
                 if max(dec0)<0: coef=-1
-                else: coef=1
-                f0=-np.deg2rad(15*ra0)
-                r0=90-coef*dec0
-                ra0=r0*np.cos(f0)
-                dec0=r0*np.sin(f0)
-                
-                f=-np.deg2rad(15*ra)
-                r=90-coef*dec
-                ra=r*np.cos(f)
-                dec=r*np.sin(f)                
+            
+            ra,dec=self._transform(ra,dec,coef)
+            ra0,dec0=self._transform(ra0,dec0,coef)
+            
             for i in range(len(ra0)):
                 poly.append([ra0[i],dec0[i]])
                 

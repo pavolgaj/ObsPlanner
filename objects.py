@@ -14,7 +14,7 @@ class objects:
     
     def add(self,name,ra,dec,mag,size='',typ='',note='',const=''):
         '''add object'''
-        obj=stars.star(name,ra,dec,mag,size,typ,note,const)           
+        obj=stars.star(name,ra,dec,mag,size,typ,note,const)
         self.objects[name]={'object':obj,'obs':{}}
 
     def addObs(self,obj,date,observer,telescope,site,image='',note=''):

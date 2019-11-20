@@ -132,6 +132,19 @@ class constellation:
     
     def plot(self,fig=None):
         '''plot starmap of constellation'''
+        def transform(ra,dec):
+            '''transf. coordinates for plot'''
+            if self.projection=='polar':
+                f=-np.deg2rad(15*ra)
+                r=90-coef*dec
+                ra=r*np.cos(f)
+                dec=r*np.sin(f)
+            if self.prechod: #prechod cez 24h
+                try: 
+                    if ra>12: ra-=24  
+                except: ra[ra>12]-=24
+            return ra,dec
+        
         #stars
         ra=np.array([self.stars[x].ra for x in self.stars])
         dec=np.array([self.stars[x].dec for x in self.stars])
@@ -143,14 +156,8 @@ class constellation:
             self.fig=fig
             self.fig.clf()
         self.ax=self.fig.add_subplot(111)
-        if self.projection=='polar':
-            if max(dec)<0: coef=-1
-            r=90-coef*dec
-            f=-np.deg2rad(15*ra)
-            ra=r*np.cos(f)
-            dec=r*np.sin(f)           
-        else:            
-            mpl.gca().invert_xaxis()              
+        
+        if not self.projection=='polar': mpl.gca().invert_xaxis()         
             
         self.ax.set_yticklabels([])
         self.ax.set_xticklabels([])
@@ -159,8 +166,7 @@ class constellation:
         self.fig.tight_layout()
             
         #stars
-        if self.prechod: ra[ra>12]-=24 #prechod cez 24h            
-        
+        ra,dec=transform(ra,dec)          
         for i in np.where(mag<1): self.ax.plot(ra[i],dec[i],'k.',markersize=7)
         for i in np.where(mag<2): self.ax.plot(ra[i],dec[i],'k.',markersize=6)    
         for i in np.where(mag<3): self.ax.plot(ra[i],dec[i],'k.',markersize=4)
@@ -171,64 +177,19 @@ class constellation:
         #lines
         for l in self.lines:
             for i in range(len(l)-1):
-                ra0=l[i][0]
-                ra1=l[i+1][0]
-                dec0=l[i][1]
-                dec1=l[i+1][1]
-                if self.projection=='polar':
-                    f0=-np.deg2rad(15*ra0)
-                    f1=-np.deg2rad(15*ra1)
-                    r0=90-coef*dec0
-                    r1=90-coef*dec1
-                    ra0=r0*np.cos(f0)
-                    dec0=r0*np.sin(f0)
-                    ra1=r1*np.cos(f1)
-                    dec1=r1*np.sin(f1)
-                if self.prechod:
-                    #prechod cez 24h
-                    if ra0>12: ra0-=24  
-                    if ra1>12: ra1-=24                               
+                ra0,dec0=transform(l[i][0],l[i][1])
+                ra1,dec1=transform(l[i+1][0],l[i+1][1])                                            
                 self.ax.plot([ra0,ra1],[dec0,dec1],'k',linewidth=0.5)
         
         #borders
         for l in self.border:
             for i in range(len(l)-1):
-                ra0=l[i][0]
-                ra1=l[i+1][0]
-                dec0=l[i][1]
-                dec1=l[i+1][1]
-                if self.projection=='polar':
-                    f0=-np.deg2rad(15*ra0)
-                    f1=-np.deg2rad(15*ra1)
-                    r0=90-coef*dec0
-                    r1=90-coef*dec1
-                    ra0=r0*np.cos(f0)
-                    dec0=r0*np.sin(f0)
-                    ra1=r1*np.cos(f1)
-                    dec1=r1*np.sin(f1)
-                if self.prechod:
-                    #prechod cez 24h
-                    if ra0>12: ra0-=24  
-                    if ra1>12: ra1-=24                               
+                ra0,dec0=transform(l[i][0],l[i][1])
+                ra1,dec1=transform(l[i+1][0],l[i+1][1])                                             
                 self.ax.plot([ra0,ra1],[dec0,dec1],'k--',linewidth=0.5)
-            ra0=l[-1][0]
-            ra1=l[0][0]
-            dec0=l[-1][1]
-            dec1=l[0][1]
-            if self.projection=='polar':
-                f0=-np.deg2rad(15*ra0)
-                f1=-np.deg2rad(15*ra1)
-                r0=90-coef*dec0
-                r1=90-coef*dec1
-                ra0=r0*np.cos(f0)
-                dec0=r0*np.sin(f0)
-                ra1=r1*np.cos(f1)
-                dec1=r1*np.sin(f1)
-            else: self.ax.set_xlim(self.ax.get_xlim()[::-1])
-            if self.prechod:
-                #prechod cez 24h
-                if ra0>12: ra0-=24  
-                if ra1>12: ra1-=24                               
+            ra0,dec0=transform(l[-1][0],l[-1][1])
+            ra1,dec1=transform(l[0][0],l[0][1])
+            if not self.projection=='polar': self.ax.set_xlim(self.ax.get_xlim()[::-1])
             self.ax.plot([ra0,ra1],[dec0,dec1],'k--',linewidth=0.5)
             
     def testPoint(self,ra,dec):

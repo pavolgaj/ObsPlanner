@@ -1,6 +1,4 @@
-import numpy as np
 import stars
-import os
 import pickle 
 from observation import *
 

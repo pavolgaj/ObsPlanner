@@ -1,5 +1,5 @@
 import tkinter as tk
-import tkinter.ttk as ttk 
+import tkinter.ttk as ttk
 import webbrowser
 import sys
 import os
@@ -7,7 +7,7 @@ import subprocess
 
 def href(event):
     '''open hypertext href'''
-    if sys.platform=='linux' or sys.platform=='linux2': 
+    if sys.platform=='linux' or sys.platform=='linux2':
         myEnv = dict(os.environ)
         lp_key = 'LD_LIBRARY_PATH'
         lp_orig = myEnv.get(lp_key + '_ORIG')
@@ -40,10 +40,10 @@ class IORedirector(object):
 class StdoutRedirector(IORedirector):
     '''A class for redirecting stdout to this Text widget.'''
     def write(self,str):
-        self.text_area.insert(tk.END,str)    
+        self.text_area.insert(tk.END,str)
 
 class AutoScroll(object):
-    '''Configure the scrollbars for a widget.''' 
+    '''Configure the scrollbars for a widget.'''
     def __init__(self,master):
         try: vsb=ttk.Scrollbar(master,orient='vertical',command=self.yview)
         except: pass
@@ -102,4 +102,3 @@ class ScrolledText(AutoScroll,tk.Text):
     def __init__(self,master,**kw):
         tk.Text.__init__(self,master,**kw)
         AutoScroll.__init__(self,master)
-        

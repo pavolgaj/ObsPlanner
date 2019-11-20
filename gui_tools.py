@@ -62,7 +62,7 @@ class AutoScroll(object):
         master.grid_rowconfigure(0,weight=1)
 
         methods=tk.Pack.__dict__.keys() | tk.Grid.__dict__.keys() | tk.Place.__dict__.keys()
-    
+
         for meth in methods:
             if meth[0] != '_' and meth not in ('config','configure'): setattr(self,meth,getattr(master,meth))
 

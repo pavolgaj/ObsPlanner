@@ -37,14 +37,14 @@ class siteClass():
         if limits is None: self.limits=[0,90,0,360]     #min_alt,max_alt,min_az,max_az
         else: self.limits=limits
 
-#grafy
+#graphs
 figObj=Figure()
 figAlt=Figure()
 
 changed=False
 
 def sort(zoznam):
-    #zoradenie objektov->pridanie nul
+    #sorting objects -> adding "0" between letters and digits
     objSort=[]
     order={}
     for x in zoznam:
@@ -59,7 +59,7 @@ def sort(zoznam):
     return objSort
 
 def sortObs(zoznam):
-    #zoradenie pozorovani
+    #sort observations by JulDate
     obsSort=[]
     order={}
     for x in zoznam: order[zoznam[x].jd]=x

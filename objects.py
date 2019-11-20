@@ -6,7 +6,7 @@ class objects:
     def __init__(self,constellations):
         self.objects={}
         self.constellations=constellations
-        
+
     def load(self,name):
         f=open(name,'rb')
         self.objects=pickle.load(f)

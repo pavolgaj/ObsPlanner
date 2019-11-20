@@ -1,8 +1,8 @@
 import stars
-import pickle 
+import pickle
 from observation import *
 
-class objects:    
+class objects:
     def __init__(self,constellations):
         self.objects={}
         self.constellations=constellations
@@ -11,7 +11,7 @@ class objects:
         f=open(name,'rb')
         self.objects=pickle.load(f)
         f.close()
-    
+
     def add(self,name,ra,dec,mag,size='',typ='',note='',const=''):
         '''add object'''
         obj=stars.star(name,ra,dec,mag,size,typ,note,const)

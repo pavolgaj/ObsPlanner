@@ -94,7 +94,7 @@ class ScrolledListBox(AutoScroll,tk.Listbox):
     def __init__(self,master,**kw):
         tk.Listbox.__init__(self,master,**kw)
         AutoScroll.__init__(self,master)
-        
+
 class ScrolledText(AutoScroll,tk.Text):
     '''A standard Tkinter Text widget with scrollbars that will
     automatically show/hide as needed.'''

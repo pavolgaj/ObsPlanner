@@ -6,6 +6,7 @@ import os
 import subprocess
 
 def href(event):
+    '''open hypertext href'''
     if sys.platform=='linux' or sys.platform=='linux2': 
         myEnv = dict(os.environ)
         lp_key = 'LD_LIBRARY_PATH'
@@ -15,7 +16,6 @@ def href(event):
         if lp is not None: myEnv.pop(lp_key)
         subprocess.call(['xdg-open',event.widget.cget("text")],env=myEnv)
     else: webbrowser.open_new(event.widget.cget("text"))
-    #except: subprocess.Popen(['xdg-open',event.widget.cget("text")])   #problem na Linuxe  
 
 class fakeEvtWidget():
     '''generate event widget for "select" action'''

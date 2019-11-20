@@ -13,7 +13,7 @@ def juldat(year,mon,day,h=0,m=0,s=0):
     return jd 
     
 def printDMS(x):
-        #vystup v tvare d:m:s
+        #output in format d:m:s
         sgn=''
         if np.sign(x)<0: sgn='-'
         x=abs(x)
@@ -24,7 +24,7 @@ def printDMS(x):
         return xx
 
 def readDMS(x,deg=True):
-        #vystup v tvare d:m:s
+        #input in format d:m:s
         sgn=1
         if x[0]=='-':
             sgn=-1
@@ -132,12 +132,10 @@ class constellation:
     
     def plot(self,fig=None):
         '''plot starmap of constellation'''
-        #hviezdy
+        #stars
         ra=np.array([self.stars[x].ra for x in self.stars])
         dec=np.array([self.stars[x].dec for x in self.stars])
-        mag=np.array([self.stars[x].mag for x in self.stars])
-        
-        #mpl.figure()        
+        mag=np.array([self.stars[x].mag for x in self.stars])  
         
         coef=1
         if fig is None: self.fig=mpl.gcf()
@@ -146,7 +144,6 @@ class constellation:
             self.fig.clf()
         self.ax=self.fig.add_subplot(111)
         if self.projection=='polar':
-            #ax=mpl.subplot(111, polar=True)
             if max(dec)<0: coef=-1
             r=90-coef*dec
             f=-np.deg2rad(15*ra)
@@ -161,10 +158,8 @@ class constellation:
         self.ax.set_axis_off()
         self.fig.tight_layout()
             
-        #hviezdy
-        if self.prechod:
-            #prechod cez 24h
-            ra[ra>12]-=24
+        #stars
+        if self.prechod: ra[ra>12]-=24 #prechod cez 24h            
         
         for i in np.where(mag<1): self.ax.plot(ra[i],dec[i],'k.',markersize=7)
         for i in np.where(mag<2): self.ax.plot(ra[i],dec[i],'k.',markersize=6)    
@@ -173,7 +168,7 @@ class constellation:
         for i in np.where(mag<5): self.ax.plot(ra[i],dec[i],'k.',markersize=2)
         self.ax.plot(ra,dec,'k.',markersize=1) 
         
-        #spojnice
+        #lines
         for l in self.lines:
             for i in range(len(l)-1):
                 ra0=l[i][0]
@@ -195,7 +190,7 @@ class constellation:
                     if ra1>12: ra1-=24                               
                 self.ax.plot([ra0,ra1],[dec0,dec1],'k',linewidth=0.5)
         
-        #hranice
+        #borders
         for l in self.border:
             for i in range(len(l)-1):
                 ra0=l[i][0]
@@ -291,7 +286,7 @@ class constellation:
 def load():        
     constellations={}
 
-    #nacitanie hviezd
+    #loading stars
     i=1
     f=open('data/stars.txt','r')
     lines=f.readlines()
@@ -303,7 +298,7 @@ def load():
         if not const in constellations: constellations[const]=constellation(const)
         constellations[const].stars[i]=star(i,float(dat[0]),float(dat[1]),float(dat[2]))
         i+=1
-    #opakujuce sa hviezdy
+    #repeating stars
     constellations['Peg'].stars[1]=constellations['And'].stars[1]
     constellations['Aur'].stars[2728]=constellations['Tau'].stars[2728]
     constellations['Oph'].stars[2583]=constellations['Ser'].stars[2583]
@@ -319,7 +314,7 @@ def load():
     for l in lines:
         if l[0]=='#': 
             if not 'stop' in l:
-                #nove suhv.
+                #new const.
                 name=l[1:].strip()
                 const=constellations[name]
             else:
@@ -331,7 +326,7 @@ def load():
         i=int(l)
         old.append([const.stars[i].ra,const.stars[i].dec])
     
-    #nacitanie hranic
+    #load borders
     f=open('data/bound_20.dat','r')
     lines=f.readlines()
     f.close() 
@@ -350,14 +345,4 @@ def load():
     for const in constellations: constellations[const].detect()
        
     return constellations
-    
-#for name in constellations:
-#    constellations[name].plot()
-#    mpl.savefig('img/'+name+'.png')
-#    mpl.close()
 
-#aa=constellations['UMa']    
-
-#aa.plot()
-
-#c=constellations['CMa']

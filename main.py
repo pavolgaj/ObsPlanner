@@ -147,16 +147,18 @@ def AddObj(obj=None):
             objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
         else:
             if not name==obj.name:
-                ans=messagebox.askquestion('Edit Object','Object name was changed. Old object (with all observations) will be deleted! Do you want to continue?',type='yesno')
+                ans=messagebox.askquestion('Edit Object',\
+                'Object name was changed. Old object (with all observations) will be deleted! Do you want to continue?',type='yesno')
                 if ans=='no':
                     top.lift()
                     return
                 del objects.objects[obj.name]
-                objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+                objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),\
+                constVar.get().strip())
             else: objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
 
         zoznam=objfilter()
-        if not name in zoznam:
+        if name not in zoznam:
             filtVar.set('All')
             zoznam=objfilter()
         fake=fakeEvt(zoznam.index(name),zoznam)
@@ -1057,7 +1059,8 @@ def Exit(event=None):
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:
-                name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')
+                name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
+                title='Save file',defaultextension='.opd')
                 name=name.replace('\\','/')
                 if len(name)>0:
                     cwd=os.getcwd().replace('\\','/')+'/'

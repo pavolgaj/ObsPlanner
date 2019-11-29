@@ -8,4 +8,12 @@
 
 Program is still in development...
 
+### Requirements
+* python3
+* numpy
+* matplotlib
+* PIL/Pillow
+
+Run program using ``python main.py`` or ``python3 main.py``. Or, try complited files for Windows or Linux.
+
 ![alt text](http://pavolg.6f.sk/files/main.jpg)

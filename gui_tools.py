@@ -1,12 +1,13 @@
 import tkinter as tk
-import tkinter.ttk as ttk 
+import tkinter.ttk as ttk
 import webbrowser
 import sys
 import os
 import subprocess
 
 def href(event):
-    if sys.platform=='linux' or sys.platform=='linux2': 
+    '''open hypertext href'''
+    if sys.platform=='linux' or sys.platform=='linux2':
         myEnv = dict(os.environ)
         lp_key = 'LD_LIBRARY_PATH'
         lp_orig = myEnv.get(lp_key + '_ORIG')
@@ -15,7 +16,6 @@ def href(event):
         if lp is not None: myEnv.pop(lp_key)
         subprocess.call(['xdg-open',event.widget.cget("text")],env=myEnv)
     else: webbrowser.open_new(event.widget.cget("text"))
-    #except: subprocess.Popen(['xdg-open',event.widget.cget("text")])   #problem na Linuxe  
 
 class fakeEvtWidget():
     '''generate event widget for "select" action'''
@@ -40,10 +40,10 @@ class IORedirector(object):
 class StdoutRedirector(IORedirector):
     '''A class for redirecting stdout to this Text widget.'''
     def write(self,str):
-        self.text_area.insert(tk.END,str)    
+        self.text_area.insert(tk.END,str)
 
 class AutoScroll(object):
-    '''Configure the scrollbars for a widget.''' 
+    '''Configure the scrollbars for a widget.'''
     def __init__(self,master):
         try: vsb=ttk.Scrollbar(master,orient='vertical',command=self.yview)
         except: pass
@@ -62,7 +62,7 @@ class AutoScroll(object):
         master.grid_rowconfigure(0,weight=1)
 
         methods=tk.Pack.__dict__.keys() | tk.Grid.__dict__.keys() | tk.Place.__dict__.keys()
-    
+
         for meth in methods:
             if meth[0] != '_' and meth not in ('config','configure'): setattr(self,meth,getattr(master,meth))
 
@@ -94,7 +94,7 @@ class ScrolledListBox(AutoScroll,tk.Listbox):
     def __init__(self,master,**kw):
         tk.Listbox.__init__(self,master,**kw)
         AutoScroll.__init__(self,master)
-        
+
 class ScrolledText(AutoScroll,tk.Text):
     '''A standard Tkinter Text widget with scrollbars that will
     automatically show/hide as needed.'''
@@ -102,4 +102,3 @@ class ScrolledText(AutoScroll,tk.Text):
     def __init__(self,master,**kw):
         tk.Text.__init__(self,master,**kw)
         AutoScroll.__init__(self,master)
-        

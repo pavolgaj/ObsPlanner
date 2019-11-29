@@ -813,15 +813,16 @@ def AddObs(obs=None):
         if obs is not None: del objects.objects[obs.obj]['obs'][obs.date]
 
         path=imgVar.get().strip()
-        if not os.path.isfile(path):
-            messagebox.showerror('ObsPlanner','Image "'+path+'" not found!')
-            top.lift()
-            return
-        if settings['file_copy'] and len(path)>0:
-            #zkopiruj do images
-            path1='images/'+objVar.get().replace(' ','_')+'_'+obsDateVar.get().replace(' ','_').replace(':','-')+path[path.find('.'):]
-            if not (path==path1): shutil.copy2(path,path1)
-            path=path1
+        if len(path)>0:
+            if not os.path.isfile(path):
+                messagebox.showerror('ObsPlanner','Image "'+path+'" not found!')
+                top.lift()
+                return
+            if settings['file_copy'] and len(path)>0:
+                #zkopiruj do images
+                path1='images/'+objVar.get().replace(' ','_')+'_'+obsDateVar.get().replace(' ','_').replace(':','-')+path[path.find('.'):]
+                if not (path==path1): shutil.copy2(path,path1)
+                path=path1
 
         objects.addObs(objVar.get(),dt,observerVar.get(),telVar.get(),settings['sites'][siteVar.get()],image=path,note=note.strip())
 
@@ -1052,11 +1053,11 @@ def EditObj():
     AddObj(objZ)
 
 def EditObs():
-    AddObs(obsZ1)
+    AddObs(obsZ1)    
 
 def Exit(event=None):
     global root
-    if changed:
+    if changed: 
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:
@@ -1069,8 +1070,7 @@ def Exit(event=None):
                     settings['file']=name
                 else: return
             objects.save(settings['file'])
-        elif ans=='cancel': return
-
+        elif ans=='cancel': return     
     if not noSett:
         #testovanie zmeny nastaveni
         changedSet=False
@@ -1110,7 +1110,7 @@ def Exit(event=None):
 def NewFile(event=None):
     global changed
     global objects
-    if changed:
+    if changed: 
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:
@@ -1124,7 +1124,6 @@ def NewFile(event=None):
                 else: return
             objects.save(settings['file'])
         elif ans=='cancel': return
-
     objects=objClass.objects(constellations)
     objfilter()
     obssVar.set('')

@@ -89,7 +89,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1.2')
+    Label3.configure(text='version 0.1.3')
 
     Label4=tk.Label(top)
     Label4.place(relx=0.0,rely=0.64,height=21,width=310)

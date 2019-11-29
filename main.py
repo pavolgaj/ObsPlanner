@@ -155,7 +155,8 @@ def AddObj(obj=None):
                 del objects.objects[obj.name]
                 objects.add(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),\
                 constVar.get().strip())
-            else: objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),typeVar.get().strip(),note.strip(),constVar.get().strip())
+            else: objects.objects[name]['object']=stars.star(name,ra,dec,magVar.get().strip(),sizeVar.get().strip(),\
+            typeVar.get().strip(),note.strip(),constVar.get().strip())
 
         zoznam=objfilter()
         if name not in zoznam:
@@ -1779,7 +1780,8 @@ def objfilter(event=None):
         jd=stars.juldat(year,mon,day,hour,minute,sec)
         for ob in objects.objects.values():
             a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-            if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
+            if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1])\
+             and (h>settings['default_site'].limits[0]):
                 zoznam.append(ob['object'].name)
     elif filt=='Above horizont':
         year,mon,day,hour,minute,sec=getDate()
@@ -1894,7 +1896,7 @@ if os.path.isfile('data/settings.ops'):
     f.close()
     if os.path.isfile(settings['file'].strip()): objects.load(settings['file'].strip())
     noSett=False
-    if not 'file_copy' in settings: settings['file_copy']=False
+    if 'file_copy' not in settings: settings['file_copy']=False
 else:
     settings={}
     settings['observers']=[]

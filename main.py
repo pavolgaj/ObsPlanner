@@ -1053,11 +1053,11 @@ def EditObj():
     AddObj(objZ)
 
 def EditObs():
-    AddObs(obsZ1)    
+    AddObs(obsZ1)
 
 def Exit(event=None):
     global root
-    if changed: 
+    if changed:
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:
@@ -1070,7 +1070,7 @@ def Exit(event=None):
                     settings['file']=name
                 else: return
             objects.save(settings['file'])
-        elif ans=='cancel': return     
+        elif ans=='cancel': return
     if not noSett:
         #testovanie zmeny nastaveni
         changedSet=False
@@ -1110,7 +1110,7 @@ def Exit(event=None):
 def NewFile(event=None):
     global changed
     global objects
-    if changed: 
+    if changed:
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:

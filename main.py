@@ -26,6 +26,7 @@ import datetime
 import stars
 import objects as objClass
 from gui_tools import *
+import objects_import
 
 class siteClass():
     def __init__(self,name,lat,lon,ele,limits=None):
@@ -89,7 +90,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1.3')
+    Label3.configure(text='version 0.1.4')
 
     Label4=tk.Label(top)
     Label4.place(relx=0.0,rely=0.64,height=21,width=310)
@@ -109,7 +110,7 @@ def About():
 
     Label2=tk.Label(top)
     Label2.place(relx=0.0,rely=0.88,height=21,width=310)
-    Label2.configure(text='(c) Pavol Gajdoš, 2019')
+    Label2.configure(text='(c) Pavol Gajdoš, 2019 - 2020')
 
 def AddObj(obj=None):
     global changed
@@ -1152,8 +1153,8 @@ def OpenFile(event=None):
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:
-                name0=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
-                title='Open file',defaultextension='.opd')
+                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
+                title='Save file',defaultextension='.opd')
                 name0=name0.replace('\\','/')
                 if len(name0)>0:
                     cwd=os.getcwd().replace('\\','/')+'/'
@@ -1674,6 +1675,156 @@ def Settings():
     Button4.configure(text='Save')
     Button4.configure(command=saveSet)
 
+def join():
+    global changed
+    global objects
+    if changed:
+        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
+        if ans=='yes':
+            if len(settings['file'])==0:
+                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
+                title='Save file',defaultextension='.opd')
+                name0=name0.replace('\\','/')
+                if len(name0)>0:
+                    cwd=os.getcwd().replace('\\','/')+'/'
+                    if cwd in name0: name0=name0.replace(cwd,'')    #uloz relativnu cestu
+                    settings['file']=name0
+                else: return
+            objects.save(settings['file'])
+        elif ans=='cancel': return
+        changed=False
+
+    name1=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file - 1st file')
+    name1=name1.replace('\\','/')
+
+    name2=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file - 2nd file')
+    name2=name2.replace('\\','/')
+
+    if len(name1)*len(name2)>0:
+        objects=objects_import.join(name1,name2)
+        #objects=objClass.objects(constellations)
+        #objects.load(name)
+        objfilter()
+        obssVar.set('')
+        Text1.delete(1.0,tk.END)
+        Text2.delete(1.0,tk.END)
+        figAlt.clf()
+        figObj.clf()
+        canvas1.draw()
+        canvas2.draw()
+        cwd=os.getcwd().replace('\\','/')+'/'
+        #if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
+        settings['file']=''
+        Button2.configure(state=tk.DISABLED)
+        Button3.configure(state=tk.DISABLED)
+        Button4.configure(state=tk.DISABLED)
+        Button5.configure(state=tk.DISABLED)
+        Button6.configure(state=tk.DISABLED)
+        changed=True
+
+def maximI():
+    global changed
+    global objects
+    if changed:
+        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
+        if ans=='yes':
+            if len(settings['file'])==0:
+                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
+                title='Save file',defaultextension='.opd')
+                name0=name0.replace('\\','/')
+                if len(name0)>0:
+                    cwd=os.getcwd().replace('\\','/')+'/'
+                    if cwd in name0: name0=name0.replace(cwd,'')    #uloz relativnu cestu
+                    settings['file']=name0
+                else: return
+            objects.save(settings['file'])
+        elif ans=='cancel': return
+        changed=False
+
+    name=filedialog.askopenfilename(parent=root,filetypes=[('MaximDL catalog','stars.csv'),('All files','*.*')],title='Import from MaximDL')
+    name=name.replace('\\','/')
+
+    if len(name)>0:
+        objects=objects_import.maximI(name)
+        #objects=objClass.objects(constellations)
+        #objects.load(name)
+        objfilter()
+        obssVar.set('')
+        Text1.delete(1.0,tk.END)
+        Text2.delete(1.0,tk.END)
+        figAlt.clf()
+        figObj.clf()
+        canvas1.draw()
+        canvas2.draw()
+        cwd=os.getcwd().replace('\\','/')+'/'
+        #if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
+        settings['file']=''
+        Button2.configure(state=tk.DISABLED)
+        Button3.configure(state=tk.DISABLED)
+        Button4.configure(state=tk.DISABLED)
+        Button5.configure(state=tk.DISABLED)
+        Button6.configure(state=tk.DISABLED)
+        changed=True
+
+def maximE():
+    zoznam=list(objsVar.get())
+    objE={}
+    for o in zoznam: objE[o]=objects.objects[o]
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('MaximDL catalog','stars.csv'),('All files','*.*')],title='Export to MaximDL',defaultextension='.csv',initialfile='stars.csv')
+    if len(name)>0: objects_import.maximE(objE,name)
+
+def sipsE():
+    zoznam=list(objsVar.get())
+    objE={}
+    for o in zoznam: objE[o]=objects.objects[o]
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('SIPS catalog','catalog.ini'),('All files','*.*')],title='Export to SIPS',defaultextension='.ini',initialfile='catalog.ini')
+    if len(name)>0: objects_import.sipsE(objE,name)
+
+def aptE():
+    zoznam=list(objsVar.get())
+    objE={}
+    for o in zoznam: objE[o]=objects.objects[o]
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('APT native format','APT_CustomObjectsList.xml'),('All files','*.*')],title='Export to APT',defaultextension='.xml',initialfile='APT_CustomObjectsList.xml')
+    if len(name)>0: objects_import.aptE(objE,name)
+
+def textE():
+    zoznam=list(objsVar.get())
+    objE={}
+    for o in zoznam: objE[o]=objects.objects[o]
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export to TextFile',defaultextension='.txt')
+    if len(name)>0: objects_import.textE(objE,name)
+
+def excelE():
+    zoznam=list(objsVar.get())
+    year,mon,day,hour,minute,sec=getDate()
+    objE={}
+    for o in zoznam: objE[o]=objects.objects[o]
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export to Excel File',defaultextension='.xls')
+    if len(name)>0: objects_import.excelE(objE,name,stars.juldat(year,mon,day,hour,minute,sec),stars.juldat(year,mon,day+round(hour/24.),0,0,0),\
+    settings['default_site'].lon,settings['default_site'].lat)
+
+def textObsE(allObj=False):
+    if allObj: zoznam=list(objsVar.get())
+    else: zoznam=[objZ.name]
+    objE={}
+    for o in zoznam: objE[o]=objects.objects[o]
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export Observations to TextFile',defaultextension='.txt')
+    if len(name)>0: objects_import.textObsE(objE,name)
+
+def textObsAllE():
+    textObsE(allObj=True)
+
+def excelObsE(allObj=False):
+    if allObj: zoznam=list(objsVar.get())
+    else: zoznam=[objZ.name]
+    objE={}
+    for o in zoznam: objE[o]=objects.objects[o]
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export Observations to Excel File',defaultextension='.xls')
+    if len(name)>0: objects_import.excelObsE(objE,name)
+
+def excelObsAllE():
+    excelObsE(allObj=True)
+
 def ShowImg():
     #test+warnign ci subor existuje
     subor=obsZ1.image
@@ -1925,9 +2076,9 @@ try: root.iconbitmap('ObsPlanner.ico')   #win
 except: pass
 
 #premenne pre gui
-objsVar=tk.StringVar(root)
+objsVar=tk.Variable(root)
 objInfoVar=tk.StringVar(root)
-obssVar=tk.StringVar(root)
+obssVar=tk.Variable(root)
 dateVar=tk.StringVar(root)
 filtVar=tk.StringVar(root)
 
@@ -2063,29 +2214,38 @@ fileM.add_separator()
 fileM.add_command(command=Exit,label='Exit',accelerator='Ctrl+Q')
 root.bind('<Control-q>',Exit)
 
+#TODO blokovanie...
 import_export=tk.Menu(Popupmenu1,tearoff=0)
 Popupmenu1.add_cascade(menu=import_export,label='Import/Export')
 importMenu=tk.Menu(import_export,tearoff=0)
 import_export.add_cascade(menu=importMenu,label='Import Objects')
-importMenu.add_command(label='from SIPS',state=tk.DISABLED)
-importMenu.add_command(label='from MaximDL',state=tk.DISABLED)
-importMenu.add_command(label='from AstroPlanner',state=tk.DISABLED)
 importMenu.add_command(label='from APT',state=tk.DISABLED)
+importMenu.add_command(label='from AstroPlanner',state=tk.DISABLED)
+importMenu.add_command(label='from MaximDL',command=maximI)
+importMenu.add_command(label='from SIPS',state=tk.DISABLED)
+
+import_export.add_separator()
+import_export.add_command(command=join,label='Join Files')
+
+import_export.add_separator()
 exportObj=tk.Menu(import_export,tearoff=0)
 import_export.add_cascade(menu=exportObj,label='Export Selected Objects')
-exportObj.add_command(label='to Text File',state=tk.DISABLED)
-exportObj.add_command(label='to Excel',state=tk.DISABLED)
-exportObj.add_command(label='to SIPS',state=tk.DISABLED)
-exportObj.add_command(label='to MaximDL',state=tk.DISABLED)
-exportObj.add_command(label='to APT ?',state=tk.DISABLED)
+exportObj.add_command(label='to APT',command=aptE)
+exportObj.add_command(label='to Excel',command=excelE)
+exportObj.add_command(label='to MaximDL',command=maximE)
+exportObj.add_command(label='to SIPS',command=sipsE)
+exportObj.add_command(label='to Text File',command=textE)
+
+
 exportObs=tk.Menu(import_export,tearoff=0)
 import_export.add_cascade(menu=exportObs,label='Export Observations of Object')
-exportObs.add_command(label='to Text File',state=tk.DISABLED)
-exportObs.add_command(label='to Excel',state=tk.DISABLED)
+exportObs.add_command(label='to Excel',command=excelObsE)
+exportObs.add_command(label='to Text File',command=textObsE)
+
 exportObsAll=tk.Menu(import_export,tearoff=0)
 import_export.add_cascade(menu=exportObsAll,label='Export All Observations')
-exportObsAll.add_command(label='to Text File',state=tk.DISABLED)
-exportObsAll.add_command(label='to Excel',state=tk.DISABLED)
+exportObsAll.add_command(label='to Excel',command=excelObsAllE)
+exportObsAll.add_command(label='to Text File',command=textObsAllE)
 
 Popupmenu1.add_command(command=Settings,label='Settings')
 Popupmenu1.add_command(command=About,label='About')

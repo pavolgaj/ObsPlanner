@@ -13,7 +13,7 @@ Program is still in development...
 * numpy
 * matplotlib
 * PIL/Pillow
-* xlwt (recomended)
+* xlwt (recommended)
 
 Run program using ``python main.py`` or ``python3 main.py``. Or, try complited files for Windows or Linux.
 

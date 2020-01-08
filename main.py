@@ -1770,28 +1770,32 @@ def maximE():
     zoznam=list(objsVar.get())
     objE={}
     for o in zoznam: objE[o]=objects.objects[o]
-    name=filedialog.asksaveasfilename(parent=root,filetypes=[('MaximDL catalog','stars.csv'),('All files','*.*')],title='Export to MaximDL',defaultextension='.csv',initialfile='stars.csv')
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('MaximDL catalog','stars.csv'),('All files','*.*')],title='Export to MaximDL',\
+        defaultextension='.csv',initialfile='stars.csv')
     if len(name)>0: objects_import.maximE(objE,name)
 
 def sipsE():
     zoznam=list(objsVar.get())
     objE={}
     for o in zoznam: objE[o]=objects.objects[o]
-    name=filedialog.asksaveasfilename(parent=root,filetypes=[('SIPS catalog','catalog.ini'),('All files','*.*')],title='Export to SIPS',defaultextension='.ini',initialfile='catalog.ini')
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('SIPS catalog','catalog.ini'),('All files','*.*')],title='Export to SIPS',\
+        defaultextension='.ini',initialfile='catalog.ini')
     if len(name)>0: objects_import.sipsE(objE,name)
 
 def aptE():
     zoznam=list(objsVar.get())
     objE={}
     for o in zoznam: objE[o]=objects.objects[o]
-    name=filedialog.asksaveasfilename(parent=root,filetypes=[('APT native format','APT_CustomObjectsList.xml'),('All files','*.*')],title='Export to APT',defaultextension='.xml',initialfile='APT_CustomObjectsList.xml')
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('APT native format','APT_CustomObjectsList.xml'),('All files','*.*')],title='Export to APT',\
+        defaultextension='.xml',initialfile='APT_CustomObjectsList.xml')
     if len(name)>0: objects_import.aptE(objE,name)
 
 def textE():
     zoznam=list(objsVar.get())
     objE={}
     for o in zoznam: objE[o]=objects.objects[o]
-    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export to TextFile',defaultextension='.txt')
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export to TextFile',\
+        defaultextension='.txt')
     if len(name)>0: objects_import.textE(objE,name)
 
 def excelE():
@@ -1799,7 +1803,8 @@ def excelE():
     year,mon,day,hour,minute,sec=getDate()
     objE={}
     for o in zoznam: objE[o]=objects.objects[o]
-    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export to Excel File',defaultextension='.xls')
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export to Excel File',\
+        defaultextension='.xls')
     if len(name)>0: objects_import.excelE(objE,name,stars.juldat(year,mon,day,hour,minute,sec),stars.juldat(year,mon,day+round(hour/24.),0,0,0),\
     settings['default_site'].lon,settings['default_site'].lat)
 
@@ -1808,7 +1813,8 @@ def textObsE(allObj=False):
     else: zoznam=[objZ.name]
     objE={}
     for o in zoznam: objE[o]=objects.objects[o]
-    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export Observations to TextFile',defaultextension='.txt')
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export Observations to TextFile',\
+        defaultextension='.txt')
     if len(name)>0: objects_import.textObsE(objE,name)
 
 def textObsAllE():
@@ -1819,7 +1825,8 @@ def excelObsE(allObj=False):
     else: zoznam=[objZ.name]
     objE={}
     for o in zoznam: objE[o]=objects.objects[o]
-    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export Observations to Excel File',defaultextension='.xls')
+    name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export Observations to Excel File',\
+        defaultextension='.xls')
     if len(name)>0: objects_import.excelObsE(objE,name)
 
 def excelObsAllE():
@@ -1951,7 +1958,8 @@ def objfilter(event=None):
         for ob in objects.objects.values():
             if len(ob['obs'])==0:
                 a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
+                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1])\
+                    and (h>settings['default_site'].limits[0]):
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
     objsVar.set(zoznam)

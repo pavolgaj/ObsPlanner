@@ -1982,7 +1982,8 @@ def objfilter(event=None):
         for ob in objects.objects.values():
             if len(ob['obs'])==0:
                 a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
+                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1])\
+                 and (h>settings['default_site'].limits[0]):
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
     objsVar.set(zoznam)

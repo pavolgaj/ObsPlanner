@@ -838,6 +838,7 @@ def AddObs(obs=None):
         fake=fakeEvt(zoznam.index(obsDateVar.get()),zoznam)
         obsselect(fake)
 
+        import_export.entryconfig('Export All Observations',state='normal')
         changed=True
         top.destroy()
         root.lift()
@@ -1050,6 +1051,19 @@ def DelObs():
     Button5.configure(state=tk.DISABLED)
     Button6.configure(state=tk.DISABLED)
 
+    if len(obsZ)>0:
+        import_export.entryconfig('Export Observations of Object',state='normal')
+        import_export.entryconfig('Export All Observations',state='normal')
+    else:
+        import_export.entryconfig('Export Observations of Object',state='disabled')
+        obsFound=False
+        for o in objects.objects:
+            if len(objects.objects[o]['obs'])>0:
+                obsFound=True
+                break
+        if obsFound: import_export.entryconfig('Export All Observations',state='normal')
+        else: import_export.entryconfig('Export All Observations',state='disabled')
+
 def EditObj():
     AddObj(objZ)
 
@@ -1141,6 +1155,9 @@ def NewFile(event=None):
     Button5.configure(state=tk.DISABLED)
     Button6.configure(state=tk.DISABLED)
     changed=False
+    import_export.entryconfig('Export Selected Objects',state='disabled')
+    import_export.entryconfig('Export Observations of Object',state='disabled')
+    import_export.entryconfig('Export All Observations',state='disabled')
 
 def NowTime():
     dt=datetime.datetime.now(datetime.timezone.utc)
@@ -1188,6 +1205,13 @@ def OpenFile(event=None):
         Button5.configure(state=tk.DISABLED)
         Button6.configure(state=tk.DISABLED)
 
+        obsFound=False
+        for o in objects.objects:
+            if len(objects.objects[o]['obs'])>0:
+                obsFound=True
+                break
+        if obsFound: import_export.entryconfig('Export All Observations',state='normal')
+        else: import_export.entryconfig('Export All Observations',state='disabled')
 
 def SaveFile(event=None):
     global changed
@@ -1958,11 +1982,14 @@ def objfilter(event=None):
         for ob in objects.objects.values():
             if len(ob['obs'])==0:
                 a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1])\
-                    and (h>settings['default_site'].limits[0]):
+                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
     objsVar.set(zoznam)
+
+    if len(zoznam)>0: import_export.entryconfig('Export Selected Objects',state='normal')
+    else: import_export.entryconfig('Export Selected Objects',state='disabled')
+
     return zoznam
 
 def objselect(evt):
@@ -2015,6 +2042,9 @@ def objselect(evt):
     Button5.configure(state=tk.DISABLED)
     Button6.configure(state=tk.DISABLED)
     Button7.configure(state=tk.DISABLED)
+
+    if len(obsZ)>0: import_export.entryconfig('Export Observations of Object',state='normal')
+    else: import_export.entryconfig('Export Observations of Object',state='disabled')
 
 def obsselect(evt):
     global obsZ1  #zobrazene pozorovanie
@@ -2222,7 +2252,6 @@ fileM.add_separator()
 fileM.add_command(command=Exit,label='Exit',accelerator='Ctrl+Q')
 root.bind('<Control-q>',Exit)
 
-#TODO blokovanie...
 import_export=tk.Menu(Popupmenu1,tearoff=0)
 Popupmenu1.add_cascade(menu=import_export,label='Import/Export')
 importMenu=tk.Menu(import_export,tearoff=0)
@@ -2237,7 +2266,7 @@ import_export.add_command(command=join,label='Join Files')
 
 import_export.add_separator()
 exportObj=tk.Menu(import_export,tearoff=0)
-import_export.add_cascade(menu=exportObj,label='Export Selected Objects')
+import_export.add_cascade(menu=exportObj,label='Export Selected Objects',state=tk.DISABLED)
 exportObj.add_command(label='to APT',command=aptE)
 exportObj.add_command(label='to Excel',command=excelE)
 exportObj.add_command(label='to MaximDL',command=maximE)
@@ -2246,18 +2275,26 @@ exportObj.add_command(label='to Text File',command=textE)
 
 
 exportObs=tk.Menu(import_export,tearoff=0)
-import_export.add_cascade(menu=exportObs,label='Export Observations of Object')
+import_export.add_cascade(menu=exportObs,label='Export Observations of Object',state=tk.DISABLED)
 exportObs.add_command(label='to Excel',command=excelObsE)
 exportObs.add_command(label='to Text File',command=textObsE)
 
 exportObsAll=tk.Menu(import_export,tearoff=0)
-import_export.add_cascade(menu=exportObsAll,label='Export All Observations')
+import_export.add_cascade(menu=exportObsAll,label='Export All Observations',state=tk.DISABLED)
 exportObsAll.add_command(label='to Excel',command=excelObsAllE)
 exportObsAll.add_command(label='to Text File',command=textObsAllE)
 
 Popupmenu1.add_command(command=Settings,label='Settings')
 Popupmenu1.add_command(command=About,label='About')
 root.config(menu=Popupmenu1)
+
+obsFound=False
+for o in objects.objects:
+    if len(objects.objects[o]['obs'])>0:
+        obsFound=True
+        break
+if obsFound: import_export.entryconfig('Export All Observations',state='normal')
+else: import_export.entryconfig('Export All Observations',state='disabled')
 
 NowTime()
 objfilter()

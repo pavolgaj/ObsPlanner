@@ -3,6 +3,8 @@ import objects as objClass
 import numpy as np
 import copy
 
+from tkinter import messagebox
+
 try: import xlwt
 except:
     import warnings
@@ -68,7 +70,8 @@ def maximI(name):
         ra=float(tmp[0])+float(tmp[1])/60.+float(tmp[2])/3600.
         tmp=dat[2].strip()[1:-1].split()
         while len(tmp)<3: tmp.append('0')
-        sgn=np.sign(float(tmp[0]))
+        if '-' in tmp[0]: sgn=-1
+        else: sgn=1
         dec=float(tmp[0])+sgn*float(tmp[1])/60.+sgn*float(tmp[2])/3600.
         mag=float(dat[3].strip()[1:-1])
         typ=''
@@ -81,11 +84,15 @@ def maximI(name):
                 consts.append(const)
                 found=True
         if not found:
-            print(name)
+            messagebox.showwarning('Constellation','Constellation of '+name+'  not detected! Please, add it manually.')
             objects.objects[name]['object'].const='Ari'
+            print(name)
         else:
             objects.objects[name]['object'].const=consts[0]
-            if len(consts)>1: print(name,consts)
+            if len(consts)>1:
+                messagebox.showwarning('Constellation','Multiple possible constellations for '+name+' detected ('\
+                +', '.join(consts)+')! Please, add it manually.')
+                print(name,consts)
     f.close()
     return objects
 
@@ -105,7 +112,8 @@ def sipsI(name):
         dat=line.split()
         name=group+dat[0].strip()
         ra=float(dat[1])+float(dat[2])/60.+float(dat[3])/3600.
-        sgn=np.sign(float(dat[4]))
+        if '-' in dat[4]: sgn=-1
+        else: sgn=1
         dec=float(dat[4])+sgn*float(dat[5])/60.+sgn*float(dat[6])/3600.
         const0=''
         mag=''
@@ -131,13 +139,19 @@ def sipsI(name):
                 consts.append(const)
                 found=True
         if not found:
-            print(name)
+            messagebox.showwarning('Constellation','Constellation for '+name+' not detected! Please, add it manually.')
             objects.objects[name]['object'].const='Ari'
+            print(name)
         else:
             objects.objects[name]['object'].const=consts[0]
-            if len(consts)>1: print(name,consts)
+            if len(consts)>1:
+                messagebox.showwarning('Constellation','Multiple possible constellations for '+name+' detected ('\
+                +', '.join(consts)+')! Please, add it manually.')
+                print(name,consts)
         if (not objects.objects[name]['object'].const.lower()==const0.lower()) and len(const0)>0:
-            print(name,const0,objects.objects[name]['object'].const)
+            messagebox.showwarning('Constellation','Detected constellation ('+objects.objects[name]['object'].const+') for '+name+\
+            " is different to catalog's one ("+const0+')! Please, add it manually.')
+            print(name,objects.objects[name]['object'].const,const0)
     f.close()
     return objects
 

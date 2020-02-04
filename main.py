@@ -1664,7 +1664,6 @@ def join():
     if len(name1)*len(name2)>0:
         objects=objects_import.join(name1,name2)
         clear()
-        cwd=os.getcwd().replace('\\','/')+'/'
         settings['file']=''
 
 def maximI():

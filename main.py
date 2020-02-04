@@ -1441,7 +1441,7 @@ def Settings():
         else: TCombobox3.current(0)
 
     def saveSet():
-        global settings,noSett
+        global settings,noSett,changed
         if len(observerVar.get())==0:
             messagebox.showerror('Observer Error','No default observer! Please, add one!')
             top.lift()
@@ -1630,7 +1630,7 @@ def clear():
     Button5.configure(state=tk.DISABLED)
     Button6.configure(state=tk.DISABLED)
     changed=True
-    
+
 def saveQuestion():
     '''ask if save objects on changing'''
     global changed
@@ -1644,7 +1644,7 @@ def saveQuestion():
                 name=name.replace('\\','/')
                 if len(name)>0:
                     cwd=os.getcwd().replace('\\','/')+'/'
-                    if cwd in name0: name=name.replace(cwd,'')    #uloz relativnu cestu
+                    if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
                     settings['file']=name
                 else: return 0
             objects.save(settings['file'])
@@ -1676,10 +1676,9 @@ def maximI():
 
     if len(name)>0:
         objects=objects_import.maximI(name)
-        clear()         
-        cwd=os.getcwd().replace('\\','/')+'/'
-        settings['file']=''    
-        
+        clear()
+        settings['file']=''
+
 def sipsI():
     global objects
     if saveQuestion()==0: return  #zrusene
@@ -1690,7 +1689,6 @@ def sipsI():
     if len(name)>0:
         objects=objects_import.sipsI(name)
         clear()
-        cwd=os.getcwd().replace('\\','/')+'/'
         settings['file']=''
 
 def maximE():
@@ -1885,7 +1883,8 @@ def objfilter(event=None):
         for ob in objects.objects.values():
             if len(ob['obs'])==0:
                 a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
+                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and \
+                (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
     objsVar.set(zoznam)

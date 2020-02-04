@@ -88,7 +88,7 @@ def maximI(name):
             if len(consts)>1: print(name,consts)
     f.close()
     return objects
-    
+
 def sipsI(name):
     '''import objects from SIPS file'''
     constellations=stars.load()
@@ -98,11 +98,11 @@ def sipsI(name):
     group=''    #type of object in catalog (M,NGC etc.)
     for line in f:
         if len(line.strip())==0: continue #prazdny riadok
-        if '[' in line:  
+        if '[' in line:
             #rozdelenie skupin objektov v SIPS
             group=line[line.find('[')+1:line.find(']')]+' '
             continue
-        dat=line.split()  
+        dat=line.split()
         name=group+dat[0].strip()
         ra=float(dat[1])+float(dat[2])/60.+float(dat[3])/3600.
         sgn=np.sign(float(dat[4]))
@@ -112,15 +112,15 @@ def sipsI(name):
         typ=''
         for d in dat[7:]:
             #osetrenie nahodneho usporiadania stlpcov v SIPS!!!!
-            try: 
+            try:
                 mag=float(d[:d.find('m')])
                 continue
-            except: pass 
+            except: pass
             if d.strip().lower() in skratky:
                 const0=d.strip()
                 continue
             typ=d
-        size=''         
+        size=''
         if '(' in line: note=line[line.find('(')+1:line.find(')')]
         else: note=''
         objects.add(name,ra,dec,mag,size,typ,note)
@@ -136,7 +136,7 @@ def sipsI(name):
         else:
             objects.objects[name]['object'].const=consts[0]
             if len(consts)>1: print(name,consts)
-        if (not objects.objects[name]['object'].const.lower()==const0.lower()) and len(const0)>0: 
+        if (not objects.objects[name]['object'].const.lower()==const0.lower()) and len(const0)>0:
             print(name,const0,objects.objects[name]['object'].const)
     f.close()
     return objects

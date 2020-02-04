@@ -90,7 +90,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1.4')
+    Label3.configure(text='version 0.1.5')
 
     Label4=tk.Label(top)
     Label4.place(relx=0.0,rely=0.64,height=21,width=310)
@@ -1019,24 +1019,10 @@ def AddObs(obs=None):
 
 
 def DelObj():
-    global changed
     ans=messagebox.askquestion('Delete Object','Selected object (with all observations) will be deleted! Do you want to continue?',type='yesno')
     if ans=='no': return
-    changed=True
     del objects.objects[objZ.name]
-    objfilter()
-    obssVar.set('')
-    Text1.delete(1.0,tk.END)
-    Text2.delete(1.0,tk.END)
-    figAlt.clf()
-    figObj.clf()
-    canvas1.draw()
-    canvas2.draw()
-    Button2.configure(state=tk.DISABLED)
-    Button3.configure(state=tk.DISABLED)
-    Button4.configure(state=tk.DISABLED)
-    Button5.configure(state=tk.DISABLED)
-    Button6.configure(state=tk.DISABLED)
+    clear()
 
 def DelObs():
     global changed
@@ -1072,20 +1058,7 @@ def EditObs():
 
 def Exit(event=None):
     global root
-    if changed:
-        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
-        if ans=='yes':
-            if len(settings['file'])==0:
-                name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
-                title='Save file',defaultextension='.opd')
-                name=name.replace('\\','/')
-                if len(name)>0:
-                    cwd=os.getcwd().replace('\\','/')+'/'
-                    if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
-                    settings['file']=name
-                else: return
-            objects.save(settings['file'])
-        elif ans=='cancel': return
+    if saveQuestion()==0: return  #zrusene
     if not noSett:
         #testovanie zmeny nastaveni
         changedSet=False
@@ -1125,35 +1098,10 @@ def Exit(event=None):
 def NewFile(event=None):
     global changed
     global objects
-    if changed:
-        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
-        if ans=='yes':
-            if len(settings['file'])==0:
-                name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
-                title='Save file',defaultextension='.opd')
-                name=name.replace('\\','/')
-                if len(name)>0:
-                    cwd=os.getcwd().replace('\\','/')+'/'
-                    if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
-                    settings['file']=name
-                else: return
-            objects.save(settings['file'])
-        elif ans=='cancel': return
+    if saveQuestion()==0: return  #zrusene
     objects=objClass.objects(constellations)
-    objfilter()
-    obssVar.set('')
-    Text1.delete(1.0,tk.END)
-    Text2.delete(1.0,tk.END)
-    figAlt.clf()
-    figObj.clf()
-    canvas1.draw()
-    canvas2.draw()
+    clear()
     settings['file']=''
-    Button2.configure(state=tk.DISABLED)
-    Button3.configure(state=tk.DISABLED)
-    Button4.configure(state=tk.DISABLED)
-    Button5.configure(state=tk.DISABLED)
-    Button6.configure(state=tk.DISABLED)
     changed=False
     import_export.entryconfig('Export Selected Objects',state='disabled')
     import_export.entryconfig('Export Observations of Object',state='disabled')
@@ -1166,21 +1114,7 @@ def NowTime():
 def OpenFile(event=None):
     global changed
     global objects
-    if changed:
-        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
-        if ans=='yes':
-            if len(settings['file'])==0:
-                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
-                title='Save file',defaultextension='.opd')
-                name0=name0.replace('\\','/')
-                if len(name0)>0:
-                    cwd=os.getcwd().replace('\\','/')+'/'
-                    if cwd in name0: name0=name0.replace(cwd,'')    #uloz relativnu cestu
-                    settings['file']=name0
-                else: return
-            objects.save(settings['file'])
-        elif ans=='cancel': return
-        changed=False
+    if saveQuestion()==0: return  #zrusene
 
     name=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file')
     name=name.replace('\\','/')
@@ -1188,22 +1122,11 @@ def OpenFile(event=None):
     if len(name)>0:
         objects=objClass.objects(constellations)
         objects.load(name)
-        objfilter()
-        obssVar.set('')
-        Text1.delete(1.0,tk.END)
-        Text2.delete(1.0,tk.END)
-        figAlt.clf()
-        figObj.clf()
-        canvas1.draw()
-        canvas2.draw()
+        clear()
         cwd=os.getcwd().replace('\\','/')+'/'
         if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
         settings['file']=name
-        Button2.configure(state=tk.DISABLED)
-        Button3.configure(state=tk.DISABLED)
-        Button4.configure(state=tk.DISABLED)
-        Button5.configure(state=tk.DISABLED)
-        Button6.configure(state=tk.DISABLED)
+        changed=False
 
         obsFound=False
         for o in objects.objects:
@@ -1232,7 +1155,7 @@ def SaveAsFile():
         changed=False
 
 def Settings():
-    global settings,noSett
+    global settings,noSett,changed
     def addObserver(obs=None):
         def saveObs():
             if obs is not None: settings1['observers'].remove(obs)
@@ -1547,18 +1470,9 @@ def Settings():
                     fake=fakeEvt(zoznam.index(objZ.name),zoznam)
                     objselect(fake)
                 else:
-                    obssVar.set('')
-                    Text1.delete(1.0,tk.END)
-                    Text2.delete(1.0,tk.END)
-                    figAlt.clf()
-                    figObj.clf()
-                    canvas1.draw()
-                    canvas2.draw()
-                    Button2.configure(state=tk.DISABLED)
-                    Button3.configure(state=tk.DISABLED)
-                    Button4.configure(state=tk.DISABLED)
-                    Button5.configure(state=tk.DISABLED)
-                    Button6.configure(state=tk.DISABLED)
+                    changed0=changed
+                    clear()
+                    changed=changed0
             except: pass #nebol zvoleny objekt
 
         top.destroy()
@@ -1699,24 +1613,47 @@ def Settings():
     Button4.configure(text='Save')
     Button4.configure(command=saveSet)
 
-def join():
+def clear():
+    '''reset state of buttons, lists, figures...'''
+    global changed
+    objfilter()
+    obssVar.set('')
+    Text1.delete(1.0,tk.END)
+    Text2.delete(1.0,tk.END)
+    figAlt.clf()
+    figObj.clf()
+    canvas1.draw()
+    canvas2.draw()
+    Button2.configure(state=tk.DISABLED)
+    Button3.configure(state=tk.DISABLED)
+    Button4.configure(state=tk.DISABLED)
+    Button5.configure(state=tk.DISABLED)
+    Button6.configure(state=tk.DISABLED)
+    changed=True
+    
+def saveQuestion():
+    '''ask if save objects on changing'''
     global changed
     global objects
     if changed:
         ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
         if ans=='yes':
             if len(settings['file'])==0:
-                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
+                name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
                 title='Save file',defaultextension='.opd')
-                name0=name0.replace('\\','/')
-                if len(name0)>0:
+                name=name.replace('\\','/')
+                if len(name)>0:
                     cwd=os.getcwd().replace('\\','/')+'/'
-                    if cwd in name0: name0=name0.replace(cwd,'')    #uloz relativnu cestu
-                    settings['file']=name0
-                else: return
+                    if cwd in name0: name=name.replace(cwd,'')    #uloz relativnu cestu
+                    settings['file']=name
+                else: return 0
             objects.save(settings['file'])
-        elif ans=='cancel': return
+        elif ans=='cancel': return 0
         changed=False
+
+def join():
+    global objects
+    if saveQuestion()==0: return  #zrusene
 
     name1=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file - 1st file')
     name1=name1.replace('\\','/')
@@ -1726,69 +1663,35 @@ def join():
 
     if len(name1)*len(name2)>0:
         objects=objects_import.join(name1,name2)
-        #objects=objClass.objects(constellations)
-        #objects.load(name)
-        objfilter()
-        obssVar.set('')
-        Text1.delete(1.0,tk.END)
-        Text2.delete(1.0,tk.END)
-        figAlt.clf()
-        figObj.clf()
-        canvas1.draw()
-        canvas2.draw()
+        clear()
         cwd=os.getcwd().replace('\\','/')+'/'
-        #if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
         settings['file']=''
-        Button2.configure(state=tk.DISABLED)
-        Button3.configure(state=tk.DISABLED)
-        Button4.configure(state=tk.DISABLED)
-        Button5.configure(state=tk.DISABLED)
-        Button6.configure(state=tk.DISABLED)
-        changed=True
 
 def maximI():
-    global changed
     global objects
-    if changed:
-        ans=messagebox.askquestion('ObsPlanner','Save objects to file?',type='yesnocancel')
-        if ans=='yes':
-            if len(settings['file'])==0:
-                name0=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
-                title='Save file',defaultextension='.opd')
-                name0=name0.replace('\\','/')
-                if len(name0)>0:
-                    cwd=os.getcwd().replace('\\','/')+'/'
-                    if cwd in name0: name0=name0.replace(cwd,'')    #uloz relativnu cestu
-                    settings['file']=name0
-                else: return
-            objects.save(settings['file'])
-        elif ans=='cancel': return
-        changed=False
+    if saveQuestion()==0: return  #zrusene
 
     name=filedialog.askopenfilename(parent=root,filetypes=[('MaximDL catalog','stars.csv'),('All files','*.*')],title='Import from MaximDL')
     name=name.replace('\\','/')
 
     if len(name)>0:
         objects=objects_import.maximI(name)
-        #objects=objClass.objects(constellations)
-        #objects.load(name)
-        objfilter()
-        obssVar.set('')
-        Text1.delete(1.0,tk.END)
-        Text2.delete(1.0,tk.END)
-        figAlt.clf()
-        figObj.clf()
-        canvas1.draw()
-        canvas2.draw()
+        clear()         
         cwd=os.getcwd().replace('\\','/')+'/'
-        #if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
+        settings['file']=''    
+        
+def sipsI():
+    global objects
+    if saveQuestion()==0: return  #zrusene
+
+    name=filedialog.askopenfilename(parent=root,filetypes=[('SIPS catalog','catalog.ini'),('All files','*.*')],title='Import from SIPS')
+    name=name.replace('\\','/')
+
+    if len(name)>0:
+        objects=objects_import.sipsI(name)
+        clear()
+        cwd=os.getcwd().replace('\\','/')+'/'
         settings['file']=''
-        Button2.configure(state=tk.DISABLED)
-        Button3.configure(state=tk.DISABLED)
-        Button4.configure(state=tk.DISABLED)
-        Button5.configure(state=tk.DISABLED)
-        Button6.configure(state=tk.DISABLED)
-        changed=True
 
 def maximE():
     zoznam=list(objsVar.get())
@@ -1982,8 +1885,7 @@ def objfilter(event=None):
         for ob in objects.objects.values():
             if len(ob['obs'])==0:
                 a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1])\
-                 and (h>settings['default_site'].limits[0]):
+                if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
     objsVar.set(zoznam)
@@ -2260,7 +2162,7 @@ import_export.add_cascade(menu=importMenu,label='Import Objects')
 importMenu.add_command(label='from APT',state=tk.DISABLED)
 importMenu.add_command(label='from AstroPlanner',state=tk.DISABLED)
 importMenu.add_command(label='from MaximDL',command=maximI)
-importMenu.add_command(label='from SIPS',state=tk.DISABLED)
+importMenu.add_command(label='from SIPS',command=sipsI)
 
 import_export.add_separator()
 import_export.add_command(command=join,label='Join Files')

@@ -50,6 +50,8 @@ def join(name1,name2,save=False):
     if save: objects1.save(name1)
     return objects1
 
+#todo: const not found -> warning/error?
+
 def maximI(name):
     '''import objects from MaximDL file'''
     constellations=stars.load()
@@ -57,6 +59,7 @@ def maximI(name):
     f=open(name,'r')
     for line in f:
         if 'NAME' in line: continue
+        if len(line.strip())==0: continue #prazdny riadok
         dat=line.split(',')
         name=dat[0][1:-1].split('/')[0]
         note=dat[0][1:-1].split('/')[1]
@@ -67,7 +70,6 @@ def maximI(name):
         while len(tmp)<3: tmp.append('0')
         sgn=np.sign(float(tmp[0]))
         dec=float(tmp[0])+sgn*float(tmp[1])/60.+sgn*float(tmp[2])/3600.
-        #const0=dat[7]
         mag=float(dat[3].strip()[1:-1])
         typ=''
         size=''
@@ -84,6 +86,58 @@ def maximI(name):
         else:
             objects.objects[name]['object'].const=consts[0]
             if len(consts)>1: print(name,consts)
+    f.close()
+    return objects
+    
+def sipsI(name):
+    '''import objects from SIPS file'''
+    constellations=stars.load()
+    skratky=[x.lower() for x in constellations.keys()]        #malym -> osetrenie problem s velkostou pismen
+    objects=objClass.objects(constellations)
+    f=open(name,'r')
+    group=''    #type of object in catalog (M,NGC etc.)
+    for line in f:
+        if len(line.strip())==0: continue #prazdny riadok
+        if '[' in line:  
+            #rozdelenie skupin objektov v SIPS
+            group=line[line.find('[')+1:line.find(']')]+' '
+            continue
+        dat=line.split()  
+        name=group+dat[0].strip()
+        ra=float(dat[1])+float(dat[2])/60.+float(dat[3])/3600.
+        sgn=np.sign(float(dat[4]))
+        dec=float(dat[4])+sgn*float(dat[5])/60.+sgn*float(dat[6])/3600.
+        const0=''
+        mag=''
+        typ=''
+        for d in dat[7:]:
+            #osetrenie nahodneho usporiadania stlpcov v SIPS!!!!
+            try: 
+                mag=float(d[:d.find('m')])
+                continue
+            except: pass 
+            if d.strip().lower() in skratky:
+                const0=d.strip()
+                continue
+            typ=d
+        size=''         
+        if '(' in line: note=line[line.find('(')+1:line.find(')')]
+        else: note=''
+        objects.add(name,ra,dec,mag,size,typ,note)
+        found=False
+        consts=[]
+        for const in constellations:
+            if constellations[const].testPoint(ra,dec):
+                consts.append(const)
+                found=True
+        if not found:
+            print(name)
+            objects.objects[name]['object'].const='Ari'
+        else:
+            objects.objects[name]['object'].const=consts[0]
+            if len(consts)>1: print(name,consts)
+        if (not objects.objects[name]['object'].const.lower()==const0.lower()) and len(const0)>0: 
+            print(name,const0,objects.objects[name]['object'].const)
     f.close()
     return objects
 

@@ -103,11 +103,12 @@ def sipsI(name):
     objects=objClass.objects(constellations)
     f=open(name,'r')
     group=''    #type of object in catalog (M,NGC etc.)
+    delim=' '   #rozdelovac medzi typom (skupinou) a nazvom objektu
     for line in f:
         if len(line.strip())==0: continue #prazdny riadok
         if '[' in line:
             #rozdelenie skupin objektov v SIPS
-            group=line[line.find('[')+1:line.find(']')]+' '
+            group=line[line.find('[')+1:line.find(']')]+delim
             continue
         dat=line.split()
         name=group+dat[0].strip()

@@ -13,9 +13,13 @@ Program is still in development...
 * python3
 * numpy
 * matplotlib
-* PIL/Pillow
+* PIL/Pillow (recommended)
 * xlwt (recommended)
 
-Run program using ``python main.py`` or ``python3 main.py``. Or, try complited files for Windows or Linux.
+You can install them using ``pip``:
+
+``pip install -r requirements.txt`` and ``pip install -r recommends.txt``
+
+Run program using ``python main.py`` or ``python3 main.py``. Or, try complited files (not python required!) for Windows or Linux.
 
 ![alt text](http://pavolg.6f.sk/files/main.jpg)

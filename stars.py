@@ -236,7 +236,7 @@ class constellation:
             ra=r*np.cos(f)
             dec=r*np.sin(f)
         if self.prechod and ra>12: ra-=24
-        self.ax.plot(ra,dec,'ro')
+        self.ax.plot(ra,dec,'r*',markersize=12,markeredgecolor=colors['fig_bg'])
 
 def load():
     constellations={}

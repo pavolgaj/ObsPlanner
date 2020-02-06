@@ -11,6 +11,7 @@ Program is still in development...
 
 ### Requirements
 * python3
+* tkinter
 * numpy
 * matplotlib
 * PIL/Pillow (recommended)

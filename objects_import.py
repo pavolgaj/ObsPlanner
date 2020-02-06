@@ -4,10 +4,10 @@ import numpy as np
 import copy
 
 from tkinter import messagebox
+import warnings
 
 try: import xlwt
-except:
-    import warnings
+except: 
     warnings.simplefilter('module')
     warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)
 
@@ -219,7 +219,12 @@ def textE(objects,name):
 
 def excelE(objects,name,jd,jd0,lon,lat):
     '''export objects to Excel file'''
-    wb=xlwt.Workbook()
+    try: wb=xlwt.Workbook()
+    except: 
+        messagebox.showerror('Export to Excel','Export to Excel is not possible! Please, install package "xlwt".')
+        warnings.simplefilter('module')
+        warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)
+        return
     ws=wb.add_sheet('Objects')
 
     ws.write(0,0,'Name')
@@ -299,7 +304,12 @@ def textObsE(objects,name):
 
 def excelObsE(objects,name):
     '''export observations to Excel file'''
-    wb=xlwt.Workbook()
+    try: wb=xlwt.Workbook()
+    except: 
+        messagebox.showerror('Export to Excel','Export to Excel is not possible! Please, install package "xlwt".')
+        warnings.simplefilter('module')
+        warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)
+        return
     ws=wb.add_sheet('Observations')
 
     ws.write(0,0,'Date')

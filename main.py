@@ -74,7 +74,7 @@ def About():
     except: pass
     top.resizable(False,False)
     top.configure(background=colors['window'])
-    
+
     try:
         img=Image.open('ObsPlanner.png')
         img=img.resize((80,80),Image.ANTIALIAS)

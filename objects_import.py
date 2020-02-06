@@ -7,7 +7,7 @@ from tkinter import messagebox
 import warnings
 
 try: import xlwt
-except: 
+except:
     warnings.simplefilter('module')
     warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)
 
@@ -220,7 +220,7 @@ def textE(objects,name):
 def excelE(objects,name,jd,jd0,lon,lat):
     '''export objects to Excel file'''
     try: wb=xlwt.Workbook()
-    except: 
+    except:
         messagebox.showerror('Export to Excel','Export to Excel is not possible! Please, install package "xlwt".')
         warnings.simplefilter('module')
         warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)
@@ -305,7 +305,7 @@ def textObsE(objects,name):
 def excelObsE(objects,name):
     '''export observations to Excel file'''
     try: wb=xlwt.Workbook()
-    except: 
+    except:
         messagebox.showerror('Export to Excel','Export to Excel is not possible! Please, install package "xlwt".')
         warnings.simplefilter('module')
         warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)

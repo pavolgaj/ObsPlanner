@@ -11,7 +11,11 @@ from tkinter import messagebox
 from tkinter import filedialog
 import tkinter.ttk as ttk
 
-from PIL import ImageTk,Image
+try: from PIL import ImageTk,Image
+except:
+    import warnings
+    warnings.simplefilter('module')
+    warnings.warn('Module "PIL/Pillow" not installed!',ImportWarning,stacklevel=2)
 
 import numpy as np
 import matplotlib
@@ -70,14 +74,16 @@ def About():
     except: pass
     top.resizable(False,False)
     top.configure(background=colors['window'])
-
-    img=Image.open('ObsPlanner.png')
-    img=img.resize((80,80),Image.ANTIALIAS)
-    img=ImageTk.PhotoImage(img)
-    LabelImg=tk.Label(top)
-    LabelImg.place(relx=0.37,rely=0.04,height=80,width=80)
-    LabelImg.configure(image=img)
-    LabelImg.configure(background=colors['window'])
+    
+    try:
+        img=Image.open('ObsPlanner.png')
+        img=img.resize((80,80),Image.ANTIALIAS)
+        img=ImageTk.PhotoImage(img)
+        LabelImg=tk.Label(top)
+        LabelImg.place(relx=0.37,rely=0.04,height=80,width=80)
+        LabelImg.configure(image=img)
+        LabelImg.configure(background=colors['window'])
+    except: pass #not PIL/Pillow
 
     Label1=tk.Label(top)
     Label1.place(relx=0.0,rely=0.4,height=27,width=310)

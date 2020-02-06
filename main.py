@@ -37,12 +37,6 @@ class siteClass():
         if limits is None: self.limits=[0,90,0,360]     #min_alt,max_alt,min_az,max_az
         else: self.limits=limits
 
-#graphs
-figObj=Figure()
-figAlt=Figure()
-
-changed=False
-
 def sort(zoznam):
     #sorting objects -> adding "0" between letters and digits
     objSort=[]
@@ -75,6 +69,7 @@ def About():
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
     top.resizable(False,False)
+    top.configure(background=colors['window'])
 
     img=Image.open('ObsPlanner.png')
     img=img.resize((80,80),Image.ANTIALIAS)
@@ -82,20 +77,26 @@ def About():
     LabelImg=tk.Label(top)
     LabelImg.place(relx=0.37,rely=0.04,height=80,width=80)
     LabelImg.configure(image=img)
+    LabelImg.configure(background=colors['window'])
 
     Label1=tk.Label(top)
     Label1.place(relx=0.0,rely=0.4,height=27,width=310)
     Label1.configure(font='-family {DejaVu Sans} -size 14 -weight bold -slant roman -underline 0 -overstrike 0')
     Label1.configure(text='ObsPlanner')
+    Label1.configure(background=colors['window'])
+    Label1.configure(fg=colors['text'])
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
     Label3.configure(text='version 0.1.5')
+    Label3.configure(background=colors['window'])
+    Label3.configure(fg=colors['text'])
 
     Label4=tk.Label(top)
     Label4.place(relx=0.0,rely=0.64,height=21,width=310)
     Label4.configure(font='-family {DejaVu Sans} -size 10 -weight normal -slant roman -underline 1 -overstrike 0')
-    Label4.configure(foreground='blue')
+    Label4.configure(foreground=colors['url'])
+    Label4.configure(background=colors['window'])
     Label4.configure(cursor='hand2')
     Label4.configure(text='http://pavolg.6f.sk')
     Label4.bind('<Button-1>',href)
@@ -103,7 +104,8 @@ def About():
     Label4_1=tk.Label(top)
     Label4_1.place(relx=0.0,rely=0.76,height=21,width=310)
     Label4_1.configure(font='-family {DejaVu Sans} -size 10 -weight normal -slant roman -underline 1 -overstrike 0')
-    Label4_1.configure(foreground='blue')
+    Label4_1.configure(foreground=colors['url'])
+    Label4_1.configure(background=colors['window'])
     Label4_1.configure(cursor='hand2')
     Label4_1.configure(text='https://github.com/pavolgaj/ObsPlanner')
     Label4_1.bind('<Button-1>',href)
@@ -111,6 +113,8 @@ def About():
     Label2=tk.Label(top)
     Label2.place(relx=0.0,rely=0.88,height=21,width=310)
     Label2.configure(text='(c) Pavol Gajdoš, 2019 - 2020')
+    Label2.configure(background=colors['window'])
+    Label2.configure(fg=colors['text'])
 
 def AddObj(obj=None):
     global changed
@@ -205,6 +209,7 @@ def AddObj(obj=None):
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
     top.resizable(False,False)
+    top.configure(background=colors['window'])
 
     nameVar=tk.StringVar(top)
     raVar=tk.StringVar(top)
@@ -228,85 +233,137 @@ def AddObj(obj=None):
     Label1.place(relx=0.01,rely=0.02,height=21,width=43)
     Label1.configure(text='Name')
     Label1.configure(anchor='w')
+    Label1.configure(fg=colors['text'])
+    Label1.configure(background=colors['window'])
 
     Entry1=tk.Entry(top)
     Entry1.place(relx=0.2,rely=0.02,height=25,relwidth=0.75)
-    Entry1.configure(background='white')
+    Entry1.configure(background=colors['bg'])
+    Entry1.configure(fg=colors['text'])
     Entry1.configure(textvariable=nameVar)
+    if colors['text']=='red':
+        Entry1.configure(selectbackground=colors['select_bg'])
+        Entry1.configure(selectforeground=colors['select_text'])
+
 
     Label2=tk.Label(top)
     Label2.place(relx=0.01,rely=0.10,height=21,width=43)
     Label2.configure(text='RA')
     Label2.configure(anchor='w')
+    Label2.configure(fg=colors['text'])
+    Label2.configure(background=colors['window'])
 
     Entry2=tk.Entry(top)
     Entry2.place(relx=0.2,rely=0.10,height=25,relwidth=0.75)
-    Entry2.configure(background='white')
+    Entry2.configure(background=colors['bg'])
     Entry2.configure(textvariable=raVar)
+    Entry2.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Entry2.configure(selectbackground=colors['select_bg'])
+        Entry2.configure(selectforeground=colors['select_text'])
 
     Label3=tk.Label(top)
     Label3.place(relx=0.01,rely=0.18,height=21,width=43)
     Label3.configure(text='DEC')
     Label3.configure(anchor='w')
+    Label3.configure(fg=colors['text'])
+    Label3.configure(background=colors['window'])
 
     Entry3=tk.Entry(top)
     Entry3.place(relx=0.2,rely=0.18,height=25,relwidth=0.75)
-    Entry3.configure(background='white')
+    Entry3.configure(background=colors['bg'])
     Entry3.configure(textvariable=decVar)
+    Entry3.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Entry3.configure(selectbackground=colors['select_bg'])
+        Entry3.configure(selectforeground=colors['select_text'])
 
     Label8=tk.Label(top)
     Label8.place(relx=0.01,rely=0.26,height=21,width=90)
     Label8.configure(text='Constellation')
     Label8.configure(anchor='w')
+    Label8.configure(fg=colors['text'])
+    Label8.configure(background=colors['window'])
 
     Entry7=tk.Entry(top)
     Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
-    Entry7.configure(background='white')
+    Entry7.configure(background=colors['bg'])
     Entry7.configure(textvariable=constVar)
+    if colors['text']=='red':
+        Entry7.configure(selectbackground=colors['select_bg'])
+        Entry7.configure(selectforeground=colors['select_text'])
+    Entry7.configure(fg=colors['text'])
 
     Button2=tk.Button(top)
     Button2.place(relx=0.76,rely=0.26,height=24,width=47)
     Button2.configure(text='Detect')
     Button2.configure(command=detect)
+    Button2.configure(fg=colors['text'])
+    Button2.configure(background=colors['window'])
 
     Label4=tk.Label(top)
     Label4.place(relx=0.01,rely=0.34,height=21,width=43)
     Label4.configure(text='Mag')
     Label4.configure(anchor='w')
+    Label4.configure(fg=colors['text'])
+    Label4.configure(background=colors['window'])
 
     Entry4=tk.Entry(top)
     Entry4.place(relx=0.2,rely=0.34,height=25,relwidth=0.75)
-    Entry4.configure(background='white')
+    Entry4.configure(background=colors['bg'])
+    Entry4.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Entry4.configure(selectbackground=colors['select_bg'])
+        Entry4.configure(selectforeground=colors['select_text'])
     Entry4.configure(textvariable=magVar)
 
     Label5=tk.Label(top)
     Label5.place(relx=0.01,rely=0.42,height=21,width=43)
     Label5.configure(text='Size')
     Label5.configure(anchor='w')
+    Label5.configure(fg=colors['text'])
+    Label5.configure(background=colors['window'])
 
     Entry5=tk.Entry(top)
     Entry5.place(relx=0.2,rely=0.42,height=25,relwidth=0.75)
-    Entry5.configure(background='white')
+    Entry5.configure(background=colors['bg'])
+    Entry5.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Entry5.configure(selectbackground=colors['select_bg'])
+        Entry5.configure(selectforeground=colors['select_text'])
     Entry5.configure(textvariable=sizeVar)
 
     Label6=tk.Label(top)
     Label6.place(relx=0.01,rely=0.50,height=21,width=43)
     Label6.configure(text='Type')
     Label6.configure(anchor='w')
+    Label6.configure(fg=colors['text'])
+    Label6.configure(background=colors['window'])
 
     Entry6=tk.Entry(top)
     Entry6.place(relx=0.2,rely=0.50,height=25,relwidth=0.75)
-    Entry6.configure(background='white')
+    Entry6.configure(background=colors['bg'])
+    Entry6.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Entry6.configure(selectbackground=colors['select_bg'])
+        Entry6.configure(selectforeground=colors['select_text'])
     Entry6.configure(textvariable=typeVar)
 
     Label7=tk.Label(top)
     Label7.place(relx=0.01,rely=0.58,height=21,width=43)
     Label7.configure(text='Notes')
     Label7.configure(anchor='w')
+    Label7.configure(fg=colors['text'])
+    Label7.configure(background=colors['window'])
 
     TextO=ScrolledText(top)
     TextO.place(relx=0.2,rely=0.58,relheight=0.33,relwidth=0.75)
-    TextO.configure(background='white')
+    TextO.configure(background=colors['bg'])
+    TextO.configure(fg=colors['text'])
+    if colors['text']=='red':
+        TextO.configure(selectbackground=colors['select_bg'])
+        TextO.configure(selectforeground=colors['select_text'])
+        TextO.configure(inactiveselectbackground=colors['select_bg'])
     TextO.configure(width=10)
     TextO.configure(wrap=tk.WORD)
 
@@ -322,6 +379,8 @@ def AddObj(obj=None):
     Button1.place(relx=0.45,rely=0.93,height=24,width=47)
     Button1.configure(text='Save')
     Button1.configure(command=save)
+    Button1.configure(background=colors['window'])
+    Button1.configure(fg=colors['text'])
 
 
 def AddObs(obs=None):
@@ -353,7 +412,11 @@ def AddObs(obs=None):
 
         Entry1=tk.Entry(topObs)
         Entry1.place(relx=0.2,rely=0.1,height=25,relwidth=0.75)
-        Entry1.configure(background='white')
+        Entry1.configure(background=colors['bg'])
+        Entry1.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry1.configure(selectbackground=colors['select_bg'])
+            Entry1.configure(selectforeground=colors['select_text'])
         Entry1.configure(textvariable=obsNameVar)
 
         Button1=tk.Button(topObs)
@@ -415,12 +478,20 @@ def AddObs(obs=None):
 
             Entry1=tk.Entry(topLims)
             Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
-            Entry1.configure(background='white')
+            Entry1.configure(background=colors['bg'])
+            Entry1.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry1.configure(selectbackground=colors['select_bg'])
+                Entry1.configure(selectforeground=colors['select_text'])
             Entry1.configure(textvariable=minAltVar)
 
             Entry2=tk.Entry(topLims)
             Entry2.place(relx=0.62,rely=0.25,height=25,relwidth=0.35)
-            Entry2.configure(background='white')
+            Entry2.configure(background=colors['bg'])
+            Entry2.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry2.configure(selectbackground=colors['select_bg'])
+                Entry2.configure(selectforeground=colors['select_text'])
             Entry2.configure(textvariable=maxAltVar)
 
             Label4=tk.Label(topLims)
@@ -430,12 +501,20 @@ def AddObs(obs=None):
 
             Entry3=tk.Entry(topLims)
             Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
-            Entry3.configure(background='white')
+            Entry3.configure(background=colors['bg'])
+            Entry3.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry3.configure(selectbackground=colors['select_bg'])
+                Entry3.configure(selectforeground=colors['select_text'])
             Entry3.configure(textvariable=minAzmVar)
 
             Entry4=tk.Entry(topLims)
             Entry4.place(relx=0.62,rely=0.45,height=25,relwidth=0.35)
-            Entry4.configure(background='white')
+            Entry4.configure(background=colors['bg'])
+            Entry4.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry4.configure(selectbackground=colors['select_bg'])
+                Entry4.configure(selectforeground=colors['select_text'])
             Entry4.configure(textvariable=maxAzmVar)
 
             Button2=tk.Button(topLims)
@@ -494,7 +573,11 @@ def AddObs(obs=None):
 
         Entry1=tk.Entry(topSite)
         Entry1.place(relx=0.35,rely=0.05,height=25,relwidth=0.6)
-        Entry1.configure(background='white')
+        Entry1.configure(background=colors['bg'])
+        Entry1.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry1.configure(selectbackground=colors['select_bg'])
+            Entry1.configure(selectforeground=colors['select_text'])
         Entry1.configure(textvariable=siteNameVar)
 
         Label2=tk.Label(topSite)
@@ -504,7 +587,11 @@ def AddObs(obs=None):
 
         Entry2=tk.Entry(topSite)
         Entry2.place(relx=0.35,rely=0.25,height=25,relwidth=0.6)
-        Entry2.configure(background='white')
+        Entry2.configure(background=colors['bg'])
+        Entry2.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry2.configure(selectbackground=colors['select_bg'])
+            Entry2.configure(selectforeground=colors['select_text'])
         Entry2.configure(textvariable=siteLatVar)
 
         Label3=tk.Label(topSite)
@@ -514,7 +601,11 @@ def AddObs(obs=None):
 
         Entry3=tk.Entry(topSite)
         Entry3.place(relx=0.35,rely=0.45,height=25,relwidth=0.6)
-        Entry3.configure(background='white')
+        Entry3.configure(background=colors['bg'])
+        Entry3.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry3.configure(selectbackground=colors['select_bg'])
+            Entry3.configure(selectforeground=colors['select_text'])
         Entry3.configure(textvariable=siteLonVar)
 
         Label4=tk.Label(topSite)
@@ -524,7 +615,11 @@ def AddObs(obs=None):
 
         Entry4=tk.Entry(topSite)
         Entry4.place(relx=0.35,rely=0.65,height=25,relwidth=0.6)
-        Entry4.configure(background='white')
+        Entry4.configure(background=colors['bg'])
+        Entry4.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry4.configure(selectbackground=colors['select_bg'])
+            Entry4.configure(selectforeground=colors['select_text'])
         Entry4.configure(textvariable=siteEleVar)
 
         Button1=tk.Button(topSite)
@@ -567,7 +662,11 @@ def AddObs(obs=None):
 
         Entry1=tk.Entry(topTel)
         Entry1.place(relx=0.15,rely=0.1,height=25,relwidth=0.82)
-        Entry1.configure(background='white')
+        Entry1.configure(background=colors['bg'])
+        Entry1.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry1.configure(selectbackground=colors['select_bg'])
+            Entry1.configure(selectforeground=colors['select_text'])
         Entry1.configure(textvariable=telNameVar)
 
         Button1=tk.Button(topTel)
@@ -688,7 +787,11 @@ def AddObs(obs=None):
 
         Entry1=tk.Entry(topObj)
         Entry1.place(relx=0.2,rely=0.02,height=25,relwidth=0.75)
-        Entry1.configure(background='white')
+        Entry1.configure(background=colors['bg'])
+        Entry1.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry1.configure(selectbackground=colors['select_bg'])
+            Entry1.configure(selectforeground=colors['select_text'])
         Entry1.configure(textvariable=nameVar)
 
         Label2=tk.Label(topObj)
@@ -698,7 +801,11 @@ def AddObs(obs=None):
 
         Entry2=tk.Entry(topObj)
         Entry2.place(relx=0.2,rely=0.10,height=25,relwidth=0.75)
-        Entry2.configure(background='white')
+        Entry2.configure(background=colors['bg'])
+        Entry2.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry2.configure(selectbackground=colors['select_bg'])
+            Entry2.configure(selectforeground=colors['select_text'])
         Entry2.configure(textvariable=raVar)
 
         Label3=tk.Label(topObj)
@@ -708,7 +815,11 @@ def AddObs(obs=None):
 
         Entry3=tk.Entry(topObj)
         Entry3.place(relx=0.2,rely=0.18,height=25,relwidth=0.75)
-        Entry3.configure(background='white')
+        Entry3.configure(background=colors['bg'])
+        Entry3.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry3.configure(selectbackground=colors['select_bg'])
+            Entry3.configure(selectforeground=colors['select_text'])
         Entry3.configure(textvariable=decVar)
 
         Label8=tk.Label(topObj)
@@ -718,7 +829,11 @@ def AddObs(obs=None):
 
         Entry7=tk.Entry(topObj)
         Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
-        Entry7.configure(background='white')
+        Entry7.configure(background=colors['bg'])
+        Entry7.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry7.configure(selectbackground=colors['select_bg'])
+            Entry7.configure(selectforeground=colors['select_text'])
         Entry7.configure(textvariable=constVar)
 
         Button2=tk.Button(topObj)
@@ -733,7 +848,11 @@ def AddObs(obs=None):
 
         Entry4=tk.Entry(topObj)
         Entry4.place(relx=0.2,rely=0.34,height=25,relwidth=0.75)
-        Entry4.configure(background='white')
+        Entry4.configure(background=colors['bg'])
+        Entry4.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry4.configure(selectbackground=colors['select_bg'])
+            Entry4.configure(selectforeground=colors['select_text'])
         Entry4.configure(textvariable=magVar)
 
         Label5=tk.Label(topObj)
@@ -743,7 +862,11 @@ def AddObs(obs=None):
 
         Entry5=tk.Entry(topObj)
         Entry5.place(relx=0.2,rely=0.42,height=25,relwidth=0.75)
-        Entry5.configure(background='white')
+        Entry5.configure(background=colors['bg'])
+        Entry5.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry5.configure(selectbackground=colors['select_bg'])
+            Entry5.configure(selectforeground=colors['select_text'])
         Entry5.configure(textvariable=sizeVar)
 
         Label6=tk.Label(topObj)
@@ -753,7 +876,11 @@ def AddObs(obs=None):
 
         Entry6=tk.Entry(topObj)
         Entry6.place(relx=0.2,rely=0.50,height=25,relwidth=0.75)
-        Entry6.configure(background='white')
+        Entry6.configure(background=colors['bg'])
+        Entry6.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry6.configure(selectbackground=colors['select_bg'])
+            Entry6.configure(selectforeground=colors['select_text'])
         Entry6.configure(textvariable=typeVar)
 
         Label7=tk.Label(topObj)
@@ -763,7 +890,11 @@ def AddObs(obs=None):
 
         TextO=ScrolledText(topObj)
         TextO.place(relx=0.2,rely=0.58,relheight=0.33,relwidth=0.75)
-        TextO.configure(background='white')
+        TextO.configure(background=colors['bg'])
+        TextO.configure(fg=colors['text'])
+        if colors['text']=='red':
+            TextO.configure(selectbackground=colors['select_bg'])
+            TextO.configure(selectforeground=colors['select_text'])
         TextO.configure(width=10)
         TextO.configure(wrap=tk.WORD)
 
@@ -865,6 +996,15 @@ def AddObs(obs=None):
     Label1.configure(text='Observer')
     Label1.configure(anchor='w')
 
+    if colors['text']=='red':
+        top.option_add('*TCombobox*Listbox*Background',colors['bg'])
+        top.option_add('*TCombobox*Listbox*Foreground',colors['text'])
+    style=ttk.Style(top)
+    style.map('TCombobox',selectbackground=[('readonly',colors['bg'])])
+    style.map('TCombobox',fieldbackground=[('readonly',colors['bg'])])
+    style.map('TCombobox',foreground=[('readonly',colors['text'])])
+    style.map('TCombobox',selectforeground=[('readonly',colors['text'])])
+
     TCombobox1=ttk.Combobox(top)
     TCombobox1.place(relx=0.27,rely=0.02,height=25,relwidth=0.45)
     TCombobox1.configure(textvariable=observerVar)
@@ -891,7 +1031,11 @@ def AddObs(obs=None):
 
     Entry1=tk.Entry(top)
     Entry1.place(relx=0.27,rely=0.10,height=25,relwidth=0.45)
-    Entry1.configure(background='white')
+    Entry1.configure(background=colors['bg'])
+    Entry1.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Entry1.configure(selectbackground=colors['select_bg'])
+        Entry1.configure(selectforeground=colors['select_text'])
     Entry1.configure(textvariable=obsDateVar)
 
     Label3=tk.Label(top)
@@ -973,7 +1117,11 @@ def AddObs(obs=None):
 
     Entry2=tk.Entry(top)
     Entry2.place(relx=0.27,rely=0.42,height=25,relwidth=0.45)
-    Entry2.configure(background='white')
+    Entry2.configure(background=colors['bg'])
+    Entry2.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Entry2.configure(selectbackground=colors['select_bg'])
+        Entry2.configure(selectforeground=colors['select_text'])
     Entry2.configure(textvariable=imgVar)
 
     Button1=tk.Button(top)
@@ -993,7 +1141,11 @@ def AddObs(obs=None):
 
     TextO=ScrolledText(top)
     TextO.place(relx=0.27,rely=0.5,relheight=0.35,relwidth=0.45)
-    TextO.configure(background='white')
+    TextO.configure(background=colors['bg'])
+    TextO.configure(fg=colors['text'])
+    if colors['text']=='red':
+        TextO.configure(selectbackground=colors['select_bg'])
+        TextO.configure(selectforeground=colors['select_text'])
     TextO.configure(width=10)
     TextO.configure(wrap=tk.WORD)
 
@@ -1156,6 +1308,7 @@ def SaveAsFile():
 
 def Settings():
     global settings,noSett,changed
+
     def addObserver(obs=None):
         def saveObs():
             if obs is not None: settings1['observers'].remove(obs)
@@ -1185,7 +1338,11 @@ def Settings():
 
         Entry1=tk.Entry(topObs)
         Entry1.place(relx=0.2,rely=0.1,height=25,relwidth=0.75)
-        Entry1.configure(background='white')
+        Entry1.configure(background=colors['bg'])
+        Entry1.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry1.configure(selectbackground=colors['select_bg'])
+            Entry1.configure(selectforeground=colors['select_text'])
         Entry1.configure(textvariable=obsNameVar)
 
         Button1=tk.Button(topObs)
@@ -1255,12 +1412,20 @@ def Settings():
 
             Entry1=tk.Entry(topLims)
             Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
-            Entry1.configure(background='white')
+            Entry1.configure(background=colors['bg'])
+            Entry1.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry1.configure(selectbackground=colors['select_bg'])
+                Entry1.configure(selectforeground=colors['select_text'])
             Entry1.configure(textvariable=minAltVar)
 
             Entry2=tk.Entry(topLims)
             Entry2.place(relx=0.62,rely=0.25,height=25,relwidth=0.35)
-            Entry2.configure(background='white')
+            Entry2.configure(background=colors['bg'])
+            Entry2.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry2.configure(selectbackground=colors['select_bg'])
+                Entry2.configure(selectforeground=colors['select_text'])
             Entry2.configure(textvariable=maxAltVar)
 
             Label4=tk.Label(topLims)
@@ -1270,12 +1435,20 @@ def Settings():
 
             Entry3=tk.Entry(topLims)
             Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
-            Entry3.configure(background='white')
+            Entry3.configure(background=colors['bg'])
+            Entry3.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry3.configure(selectbackground=colors['select_bg'])
+                Entry3.configure(selectforeground=colors['select_text'])
             Entry3.configure(textvariable=minAzmVar)
 
             Entry4=tk.Entry(topLims)
             Entry4.place(relx=0.62,rely=0.45,height=25,relwidth=0.35)
-            Entry4.configure(background='white')
+            Entry4.configure(background=colors['bg'])
+            Entry4.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry4.configure(selectbackground=colors['select_bg'])
+                Entry4.configure(selectforeground=colors['select_text'])
             Entry4.configure(textvariable=maxAzmVar)
 
             Button2=tk.Button(topLims)
@@ -1336,7 +1509,11 @@ def Settings():
 
         Entry1=tk.Entry(topSite)
         Entry1.place(relx=0.35,rely=0.05,height=25,relwidth=0.6)
-        Entry1.configure(background='white')
+        Entry1.configure(background=colors['bg'])
+        Entry1.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry1.configure(selectbackground=colors['select_bg'])
+            Entry1.configure(selectforeground=colors['select_text'])
         Entry1.configure(textvariable=siteNameVar)
 
         Label2=tk.Label(topSite)
@@ -1346,7 +1523,11 @@ def Settings():
 
         Entry2=tk.Entry(topSite)
         Entry2.place(relx=0.35,rely=0.25,height=25,relwidth=0.6)
-        Entry2.configure(background='white')
+        Entry2.configure(background=colors['bg'])
+        Entry2.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry2.configure(selectbackground=colors['select_bg'])
+            Entry2.configure(selectforeground=colors['select_text'])
         Entry2.configure(textvariable=siteLatVar)
 
         Label3=tk.Label(topSite)
@@ -1356,7 +1537,11 @@ def Settings():
 
         Entry3=tk.Entry(topSite)
         Entry3.place(relx=0.35,rely=0.45,height=25,relwidth=0.6)
-        Entry3.configure(background='white')
+        Entry3.configure(background=colors['bg'])
+        Entry3.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry3.configure(selectbackground=colors['select_bg'])
+            Entry3.configure(selectforeground=colors['select_text'])
         Entry3.configure(textvariable=siteLonVar)
 
         Label4=tk.Label(topSite)
@@ -1366,7 +1551,11 @@ def Settings():
 
         Entry4=tk.Entry(topSite)
         Entry4.place(relx=0.35,rely=0.65,height=25,relwidth=0.6)
-        Entry4.configure(background='white')
+        Entry4.configure(background=colors['bg'])
+        Entry4.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry4.configure(selectbackground=colors['select_bg'])
+            Entry4.configure(selectforeground=colors['select_text'])
         Entry4.configure(textvariable=siteEleVar)
 
         Button1=tk.Button(topSite)
@@ -1420,7 +1609,11 @@ def Settings():
 
         Entry1=tk.Entry(topTel)
         Entry1.place(relx=0.15,rely=0.1,height=25,relwidth=0.82)
-        Entry1.configure(background='white')
+        Entry1.configure(background=colors['bg'])
+        Entry1.configure(fg=colors['text'])
+        if colors['text']=='red':
+            Entry1.configure(selectbackground=colors['select_bg'])
+            Entry1.configure(selectforeground=colors['select_text'])
         Entry1.configure(textvariable=telNameVar)
 
         Button1=tk.Button(topTel)
@@ -1460,6 +1653,9 @@ def Settings():
         if not (settings1['file_copy']==bool(copyVar.get())):
             messagebox.showinfo('Images','New image location will be applied only on new images. Old images are displayed from old location.')
         settings1['file_copy']=bool(copyVar.get())
+        if not (settings1['night_mode']==bool(nightVar.get())):
+            messagebox.showinfo('Colors','Changes of color mode will be applied after restart of ObsPlanner.')
+        settings1['night_mode']=bool(nightVar.get())
         settings=copy.deepcopy(settings1)
         noSett=False
 
@@ -1480,7 +1676,7 @@ def Settings():
 
     top=tk.Tk()
     top.lift()
-    top.geometry('500x150')
+    top.geometry('530x200')
     top.title('Settings')
     try: top.iconbitmap('ObsPlanner.ico')   #win
     except: pass
@@ -1492,14 +1688,24 @@ def Settings():
     siteVar=tk.StringVar(top)
     telVar=tk.StringVar(top)
     copyVar=tk.IntVar(top)
+    nightVar=tk.IntVar(top)
 
     Label1=tk.Label(top)
-    Label1.place(relx=0.02,rely=0.02,height=21,width=111)
+    Label1.place(relx=0.02,rely=0.01,height=21,width=120)
     Label1.configure(text='Default Observer')
     Label1.configure(anchor='w')
 
+    if colors['text']=='red':
+        top.option_add('*TCombobox*Listbox*Background',colors['bg'])
+        top.option_add('*TCombobox*Listbox*Foreground',colors['text'])
+    style=ttk.Style(top)
+    style.map('TCombobox',selectbackground=[('readonly',colors['bg'])])
+    style.map('TCombobox',fieldbackground=[('readonly',colors['bg'])])
+    style.map('TCombobox',foreground=[('readonly',colors['text'])])
+    style.map('TCombobox',selectforeground=[('readonly',colors['text'])])
+
     TCombobox1=ttk.Combobox(top)
-    TCombobox1.place(relx=0.26,rely=0.02,height=25,relwidth=0.4)
+    TCombobox1.place(relx=0.26,rely=0.01,height=25,relwidth=0.4)
     TCombobox1.configure(textvariable=observerVar)
     TCombobox1.configure(takefocus='')
     TCombobox1.configure(state='readonly')
@@ -1508,29 +1714,29 @@ def Settings():
         TCombobox1.current(sorted(settings1['observers']).index(settings1['default_obs']))
 
     Button1=tk.Button(top)
-    Button1.place(relx=0.69,rely=0.02,height=24,width=43)
+    Button1.place(relx=0.69,rely=0.01,height=24,width=50)
     Button1.configure(text='Add')
     Button1.configure(command=addObserver)
 
     Button1_1=tk.Button(top)
-    Button1_1.place(relx=0.79,rely=0.02,height=24,width=43)
+    Button1_1.place(relx=0.79,rely=0.01,height=24,width=50)
     Button1_1.configure(text='Edit')
     Button1_1.configure(command=editObserver)
     if len(TCombobox1['values'])==0: Button1_1.configure(state=tk.DISABLED)
 
     Button1_2=tk.Button(top)
-    Button1_2.place(relx=0.89,rely=0.02,height=24,width=43)
+    Button1_2.place(relx=0.89,rely=0.01,height=24,width=50)
     Button1_2.configure(text='Delete')
     Button1_2.configure(command=delObserver)
     if len(TCombobox1['values'])==0: Button1_2.configure(state=tk.DISABLED)
 
     Label2=tk.Label(top)
-    Label2.place(relx=0.02,rely=0.22,height=21,width=78)
+    Label2.place(relx=0.02,rely=0.18,height=21,width=90)
     Label2.configure(text='Default Site')
     Label2.configure(anchor='w')
 
     TCombobox2=ttk.Combobox(top)
-    TCombobox2.place(relx=0.26,rely=0.22,height=25,relwidth=0.4)
+    TCombobox2.place(relx=0.26,rely=0.18,height=25,relwidth=0.4)
     TCombobox2.configure(textvariable=siteVar)
     TCombobox2.configure(takefocus='')
     TCombobox2.configure(state='readonly')
@@ -1539,29 +1745,29 @@ def Settings():
         TCombobox2.current(sorted(settings1['sites'].keys()).index(settings1['default_site'].name))
 
     Button2=tk.Button(top)
-    Button2.place(relx=0.69,rely=0.22,height=24,width=43)
+    Button2.place(relx=0.69,rely=0.18,height=24,width=50)
     Button2.configure(text='Add')
     Button2.configure(command=addSite)
 
     Button2_1=tk.Button(top)
-    Button2_1.place(relx=0.79,rely=0.22,height=24,width=43)
+    Button2_1.place(relx=0.79,rely=0.18,height=24,width=50)
     Button2_1.configure(text='Edit')
     Button2_1.configure(command=editSite)
     if len(TCombobox2['values'])==0: Button2_1.configure(state=tk.DISABLED)
 
     Button2_2=tk.Button(top)
-    Button2_2.place(relx=0.89,rely=0.22,height=24,width=43)
+    Button2_2.place(relx=0.89,rely=0.18,height=24,width=50)
     Button2_2.configure(text='Delete')
     Button2_2.configure(command=delSite)
     if len(TCombobox2['values'])==0: Button2_2.configure(state=tk.DISABLED)
 
     Label3=tk.Label(top)
-    Label3.place(relx=0.02,rely=0.42,height=21,width=118)
+    Label3.place(relx=0.02,rely=0.35,height=21,width=125)
     Label3.configure(text='Default Telescope')
     Label3.configure(anchor='w')
 
     TCombobox3=ttk.Combobox(top)
-    TCombobox3.place(relx=0.26,rely=0.42,height=25,relwidth=0.4)
+    TCombobox3.place(relx=0.26,rely=0.35,height=25,relwidth=0.4)
     TCombobox3.configure(textvariable=telVar)
     TCombobox3.configure(takefocus='')
     TCombobox3.configure(state='readonly')
@@ -1570,36 +1776,36 @@ def Settings():
         TCombobox3.current(sorted(settings1['telescopes']).index(settings1['default_tel']))
 
     Button3=tk.Button(top)
-    Button3.place(relx=0.69,rely=0.42,height=24,width=43)
+    Button3.place(relx=0.69,rely=0.35,height=24,width=50)
     Button3.configure(text='Add')
     Button3.configure(command=addTel)
 
     Button3_1=tk.Button(top)
-    Button3_1.place(relx=0.79,rely=0.42,height=24,width=43)
+    Button3_1.place(relx=0.79,rely=0.35,height=24,width=50)
     Button3_1.configure(text='Edit')
     Button3_1.configure(command=editTel)
     if len(TCombobox3['values'])==0: Button3_1.configure(state=tk.DISABLED)
 
     Button3_2=tk.Button(top)
-    Button3_2.place(relx=0.89,rely=0.42,height=24,width=43)
+    Button3_2.place(relx=0.89,rely=0.35,height=24,width=50)
     Button3_2.configure(text='Delete')
     Button3_2.configure(command=delTel)
     if len(TCombobox3['values'])==0: Button3_2.configure(state=tk.DISABLED)
 
     Label4=tk.Label(top)
-    Label4.place(relx=0.02,rely=0.62,height=21,width=78)
+    Label4.place(relx=0.02,rely=0.52,height=21,width=78)
     Label4.configure(text='Image Path')
     Label4.configure(anchor='w')
 
     Radiobutton1=tk.Radiobutton(top)
-    Radiobutton1.place(relx=0.26,rely=0.65,height=21,relwidth=0.2)
+    Radiobutton1.place(relx=0.26,rely=0.52,height=21,relwidth=0.2)
     Radiobutton1.configure(justify=tk.LEFT)
     Radiobutton1.configure(text='Original')
     Radiobutton1.configure(variable=copyVar)
     Radiobutton1.configure(value=0)
 
     Radiobutton2=tk.Radiobutton(top)
-    Radiobutton2.place(relx=0.46,rely=0.65,height=21,relwidth=0.25)
+    Radiobutton2.place(relx=0.46,rely=0.52,height=21,relwidth=0.25)
     Radiobutton2.configure(justify=tk.LEFT)
     Radiobutton2.configure(text='Copy locally')
     Radiobutton2.configure(variable=copyVar)
@@ -1608,8 +1814,30 @@ def Settings():
     if settings1['file_copy']: copyVar.set(1)
     else: copyVar.set(0)
 
+    Label5=tk.Label(top)
+    Label5.place(relx=0.02,rely=0.69,height=21,width=78)
+    Label5.configure(text='Colors')
+    Label5.configure(anchor='w')
+
+    Radiobutton3=tk.Radiobutton(top)
+    Radiobutton3.place(relx=0.26,rely=0.69,height=21,relwidth=0.22)
+    Radiobutton3.configure(justify=tk.LEFT)
+    Radiobutton3.configure(text='Day Mode')
+    Radiobutton3.configure(variable=nightVar)
+    Radiobutton3.configure(value=0)
+
+    Radiobutton4=tk.Radiobutton(top)
+    Radiobutton4.place(relx=0.48,rely=0.69,height=21,relwidth=0.22)
+    Radiobutton4.configure(justify=tk.LEFT)
+    Radiobutton4.configure(text='Night Mode')
+    Radiobutton4.configure(variable=nightVar)
+    Radiobutton4.configure(value=1)
+
+    if settings1['night_mode']: nightVar.set(1)
+    else: nightVar.set(0)
+
     Button4=tk.Button(top)
-    Button4.place(relx=0.40,rely=0.8,height=24,width=60)
+    Button4.place(relx=0.40,rely=0.86,height=24,width=60)
     Button4.configure(text='Save')
     Button4.configure(command=saveSet)
 
@@ -1792,12 +2020,13 @@ def plotAlt(ra,dec):
     #vykreslenie krivky pozorovatelnosti
     figAlt.clf()
     ax=figAlt.add_subplot(111)
+    set_foregroundcolor(ax,colors['fig_text'])
     #vyznacenie limitov
-    rect=patches.Rectangle((-10,0),380,100,edgecolor='none',facecolor='lightgray')
+    rect=patches.Rectangle((-10,0),380,100,edgecolor='none',facecolor=colors['fig_shade'])
     ax.add_patch(rect)
     rect=patches.Rectangle((settings['default_site'].limits[2],settings['default_site'].limits[0]),\
         settings['default_site'].limits[3]-settings['default_site'].limits[2],\
-        settings['default_site'].limits[1]-settings['default_site'].limits[0],linewidth=1,edgecolor='gray',facecolor='white')
+        settings['default_site'].limits[1]-settings['default_site'].limits[0],linewidth=1,edgecolor=colors['fig_edge'],facecolor=colors['fig_bg'])
     ax.add_patch(rect)
 
     year,mon,day,hour,minute,sec=getDate()
@@ -1809,7 +2038,7 @@ def plotAlt(ra,dec):
     if max(h)<0:
         figAlt.clf()
         ax=figAlt.add_subplot(111)
-        ax.text(0,0,'Below horizont!',horizontalalignment='center',verticalalignment='center',fontsize=30)
+        ax.text(0,0,'Below horizont!',horizontalalignment='center',verticalalignment='center',fontsize=30,color=colors['fig_text'])
         ax.set_xlim(-0.5,0.5)
         ax.set_ylim(-0.5,0.5)
         ax.set_yticklabels([])
@@ -1823,7 +2052,7 @@ def plotAlt(ra,dec):
     i=np.where((np.abs(np.diff(a0))>10)*(np.abs(np.diff(np.sign(a0-300)))>0))[0]   #prechod cez N=360
     a0[i]=np.ma.masked
     h0[i]=np.ma.masked
-    ax.plot(a0,h0,'k-')
+    ax.plot(a0,h0,colors['fig_text']+'-')
 
     ax.set_xlim(min(a0)-5,max(a0)+5)
     ax.set_ylim(max(0,min(h0)-5),max(h)+5)
@@ -1833,18 +2062,18 @@ def plotAlt(ra,dec):
     for i in range(len(jdH)):
         a,h=objZ.altAz(jdH[i],settings['default_site'].lon,settings['default_site'].lat)
         if h>0:
-            ax.plot(a,h,'ko')
+            ax.plot(a,h,colors['fig_text']+'o')
             if hour-1+i>=24:
-                t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i-24)
-                t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground='w')])
+                t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i-24,color=colors['fig_text'])
+                t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground=colors['fig_bg'])])
             else:
-                t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i)
-                t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground='w')])
+                t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i,color=colors['fig_text'])
+                t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground=colors['fig_bg'])])
 
     #aktualna poloha
     jd=stars.juldat(year,mon,day,hour,minute,sec)
     a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
-    ax.plot(a,h,'kx',markersize=12)
+    ax.plot(a,h,colors['fig_text']+'x',markersize=12)
 
     ax.set_ylabel('Alt. (deg)')
     ax.set_xlabel('Azm. (deg)')
@@ -1903,7 +2132,7 @@ def objselect(evt):
     objZ=objects.objects[value]['object']
     obsZ=objects.objects[value]['obs']
     #vykreslenie polohy v suhv.
-    constellations[objZ.const].plotObject(objZ.ra,objZ.dec,figObj)
+    constellations[objZ.const].plotObject(objZ.ra,objZ.dec,colors,figObj)
     canvas1.draw()
 
     plotAlt(objZ.ra,objZ.dec)
@@ -1975,6 +2204,8 @@ def obsselect(evt):
     if len(obsZ1.image)>0: Button7.configure(state=tk.NORMAL)
     else: Button7.configure(state=tk.DISABLED)
 
+changed=False
+
 constellations=stars.load()
 objects=objClass.objects(constellations)
 
@@ -2000,6 +2231,18 @@ else:
     noSett=True
 settings0=copy.deepcopy(settings)
 
+#load colors
+if settings['night_mode']: color_name='data/night.opc'
+else: color_name='data/day.opc'
+f=open(color_name,'rb')
+colors=pickle.load(f)
+f.close()
+
+#graphs
+figObj=Figure(facecolor=colors['fig_bg'])
+figAlt=Figure(facecolor=colors['fig_bg'])
+
+
 if not os.path.isdir('images'): os.mkdir('images')
 
 root=tk.Tk()
@@ -2013,6 +2256,7 @@ root.geometry('800x500')
 root.title('ObsPlanner')
 try: root.iconbitmap('ObsPlanner.ico')   #win
 except: pass
+root.configure(background=colors['window'])
 
 #premenne pre gui
 objsVar=tk.Variable(root)
@@ -2026,47 +2270,79 @@ Labelframe0=tk.LabelFrame(root)
 Labelframe0.place(relx=0.01,rely=0.02,relheight=0.96,relwidth=0.34)
 Labelframe0.configure(text='Objects')
 Labelframe0.configure(width=280)
+Labelframe0.configure(background=colors['window'])
+Labelframe0.configure(fg=colors['text'])
 
 Label1=tk.Label(Labelframe0)
 Label1.place(relx=0.04,rely=0.01,height=21,width=39)
 Label1.configure(text='Show')
+Label1.configure(background=colors['window'])
+Label1.configure(fg=colors['text'])
+
+if colors['text']=='red':
+    root.option_add('*TCombobox*Listbox*Foreground',colors['text'])
+    root.option_add('*TCombobox*Listbox*Background',colors['bg'])
+style=ttk.Style()
+style.map('TCombobox',selectbackground=[('readonly',colors['bg'])])
+style.map('TCombobox',fieldbackground=[('readonly',colors['bg'])])
+style.map('TCombobox',foreground=[('readonly',colors['text'])])
+style.map('TCombobox',selectforeground=[('readonly',colors['text'])])
 
 TCombobox1=ttk.Combobox(Labelframe0)
 TCombobox1.place(relx=0.2,rely=0.01,height=25,relwidth=0.7)
 TCombobox1.configure(textvariable=filtVar)
 TCombobox1.configure(state='readonly')
+#TCombobox1.configure(background=colors['bg'])
+#TCombobox1.configure(fg=colors['text'])
 TCombobox1['values']=('All','Visible','Above horizont','Observed','Not Observed','Visible + Not Observed')
 TCombobox1.current(0)
 TCombobox1.bind('<<ComboboxSelected>>',objfilter)
 
 Scrolledlistbox1=ScrolledListBox(Labelframe0)
 Scrolledlistbox1.place(relx=0.04,rely=0.08,relheight=0.44,relwidth=0.92)
-Scrolledlistbox1.configure(background='white')
+Scrolledlistbox1.configure(background=colors['bg'])
+Scrolledlistbox1.configure(fg=colors['text'])
+if colors['text']=='red':
+    Scrolledlistbox1.configure(selectbackground=colors['select_bg'])
+    Scrolledlistbox1.configure(selectforeground=colors['select_text'])
+#Scrolledlistbox1.configure(inactiveselectbackground=colors['select_bg'])
 Scrolledlistbox1.configure(width=10)
 Scrolledlistbox1.configure(listvariable=objsVar)
 Scrolledlistbox1.bind('<<ListboxSelect>>',objselect)
 
 Text1=ScrolledText(Labelframe0)
 Text1.place(relx=0.04,rely=0.54,relheight=0.4,relwidth=0.92)
-Text1.configure(background='white')
+Text1.configure(background=colors['bg'])
+Text1.configure(fg=colors['text'])
+if colors['text']=='red':
+    Text1.configure(selectbackground=colors['select_bg'])
+    Text1.configure(selectforeground=colors['select_text'])
+    Text1.configure(inactiveselectbackground=colors['select_bg'])
 Text1.configure(width=256)
 Text1.configure(wrap=tk.WORD)
 
+#TODO focus color?, disabled color?
 Button3_2=tk.Button(Labelframe0)
 Button3_2.place(relx=0.05,rely=0.95,height=24,width=47)
 Button3_2.configure(command=AddObj)
 Button3_2.configure(text='Add')
+Button3_2.configure(background=colors['bg'])
+Button3_2.configure(fg=colors['text'])
 
 Button2=tk.Button(Labelframe0)
 Button2.place(relx=0.35,rely=0.95,height=24,width=47)
 Button2.configure(command=EditObj)
 Button2.configure(text='Edit')
+Button2.configure(background=colors['bg'])
+Button2.configure(fg=colors['text'])
 Button2.configure(state=tk.DISABLED)
 
 Button3=tk.Button(Labelframe0)
 Button3.place(relx=0.65,rely=0.95,height=24,width=47)
 Button3.configure(command=DelObj)
 Button3.configure(text='Delete')
+Button3.configure(background=colors['bg'])
+Button3.configure(fg=colors['text'])
 Button3.configure(state=tk.DISABLED)
 
 #pozorovania
@@ -2074,17 +2350,29 @@ Labelframe1=tk.LabelFrame(root)
 Labelframe1.place(relx=0.36,rely=0.02,relheight=0.96,relwidth=0.3)
 Labelframe1.configure(text='Observations')
 Labelframe1.configure(width=250)
+Labelframe1.configure(background=colors['window'])
+Labelframe1.configure(fg=colors['text'])
 
 Scrolledlistbox2=ScrolledListBox(Labelframe1)
 Scrolledlistbox2.place(relx=0.04,rely=0.01,relheight=0.51,relwidth=0.92)
-Scrolledlistbox2.configure(background='white')
+Scrolledlistbox2.configure(background=colors['bg'])
+Scrolledlistbox2.configure(fg=colors['text'])
+if colors['text']=='red':
+    Scrolledlistbox2.configure(selectbackground=colors['select_bg'])
+    Scrolledlistbox2.configure(selectforeground=colors['select_text'])
+#Scrolledlistbox2.configure(inactiveselectbackground=colors['select_bg'])
 Scrolledlistbox2.configure(width=10)
 Scrolledlistbox2.configure(listvariable=obssVar)
 Scrolledlistbox2.bind('<<ListboxSelect>>',obsselect)
 
 Text2=ScrolledText(Labelframe1)
 Text2.place(relx=0.04,rely=0.54,relheight=0.4,relwidth=0.92)
-Text2.configure(background='white')
+Text2.configure(background=colors['bg'])
+Text2.configure(fg=colors['text'])
+if colors['text']=='red':
+    Text2.configure(selectbackground=colors['select_bg'])
+    Text2.configure(selectforeground=colors['select_text'])
+    Text2.configure(inactiveselectbackground=colors['select_bg'])
 Text2.configure(width=234)
 Text2.configure(wrap=tk.WORD)
 
@@ -2092,39 +2380,55 @@ Button4=tk.Button(Labelframe1)
 Button4.place(relx=0.02,rely=0.95,height=24,width=47)
 Button4.configure(command=AddObs)
 Button4.configure(text='Add')
+Button4.configure(background=colors['bg'])
+Button4.configure(fg=colors['text'])
 Button4.configure(state=tk.DISABLED)
 
 Button5=tk.Button(Labelframe1)
 Button5.place(relx=0.28,rely=0.95,height=24,width=47)
 Button5.configure(command=EditObs)
 Button5.configure(text='Edit')
+Button5.configure(background=colors['bg'])
+Button5.configure(fg=colors['text'])
 Button5.configure(state=tk.DISABLED)
 
 Button6=tk.Button(Labelframe1)
 Button6.place(relx=0.53,rely=0.95,height=24,width=47)
 Button6.configure(command=DelObs)
 Button6.configure(text='Delete')
+Button6.configure(background=colors['bg'])
+Button6.configure(fg=colors['text'])
 Button6.configure(state=tk.DISABLED)
 
 Button7=tk.Button(Labelframe1)
 Button7.place(relx=0.78,rely=0.95,height=24,width=47)
 Button7.configure(command=ShowImg)
 Button7.configure(state=tk.DISABLED)
+Button7.configure(background=colors['bg'])
+Button7.configure(fg=colors['text'])
 Button7.configure(text='Image')
 
 #obrazky a datum
 Label0=tk.Label(root)
 Label0.place(relx=0.68,rely=0.02,height=21,width=130)
 Label0.configure(text='UTC Date&Time')
+Label0.configure(background=colors['window'])
+Label0.configure(fg=colors['text'])
 
 Entry1=tk.Entry(root)
 Entry1.place(relx=0.78,rely=0.02,height=25,relwidth=0.12)
-Entry1.configure(background='white')
+Entry1.configure(background=colors['bg'])
+Entry1.configure(fg=colors['text'])
+if colors['text']=='red':
+    Entry1.configure(selectbackground=colors['select_bg'])
+    Entry1.configure(selectforeground=colors['select_text'])
 Entry1.configure(textvariable=dateVar)
 
 Button1=tk.Button(root)
 Button1.place(relx=0.92,rely=0.02,height=24,width=55)
 Button1.configure(command=NowTime)
+Button1.configure(background=colors['bg'])
+Button1.configure(fg=colors['text'])
 Button1.configure(text='Now')
 
 frame2=tk.Frame(root)
@@ -2137,10 +2441,15 @@ frame1.place(relx=0.68,rely=0.54,relheight=0.44,relwidth=0.3)
 canvas1=FigureCanvasTkAgg(figObj,frame1)
 canvas1.get_tk_widget().pack(side='top',fill='both',expand=1)
 
+#TODO focus color?, disabled color?
 #menu
 Popupmenu1=tk.Menu(root,tearoff=0)
+Popupmenu1.configure(background=colors['window'])
+Popupmenu1.configure(fg=colors['text'])
 
 fileM=tk.Menu(Popupmenu1,tearoff=0)
+fileM.configure(background=colors['window'])
+fileM.configure(fg=colors['text'])
 Popupmenu1.add_cascade(menu=fileM,label='File')
 fileM.add_command(command=NewFile,label='New',accelerator='Ctrl+N')
 root.bind('<Control-n>',NewFile)
@@ -2154,8 +2463,13 @@ fileM.add_command(command=Exit,label='Exit',accelerator='Ctrl+Q')
 root.bind('<Control-q>',Exit)
 
 import_export=tk.Menu(Popupmenu1,tearoff=0)
+import_export.configure(background=colors['window'])
+import_export.configure(fg=colors['text'])
 Popupmenu1.add_cascade(menu=import_export,label='Import/Export')
+
 importMenu=tk.Menu(import_export,tearoff=0)
+importMenu.configure(background=colors['window'])
+importMenu.configure(fg=colors['text'])
 import_export.add_cascade(menu=importMenu,label='Import Objects')
 importMenu.add_command(label='from APT',state=tk.DISABLED)
 importMenu.add_command(label='from AstroPlanner',state=tk.DISABLED)
@@ -2167,6 +2481,8 @@ import_export.add_command(command=join,label='Join Files')
 
 import_export.add_separator()
 exportObj=tk.Menu(import_export,tearoff=0)
+exportObj.configure(background=colors['window'])
+exportObj.configure(fg=colors['text'])
 import_export.add_cascade(menu=exportObj,label='Export Selected Objects',state=tk.DISABLED)
 exportObj.add_command(label='to APT',command=aptE)
 exportObj.add_command(label='to Excel',command=excelE)
@@ -2176,11 +2492,15 @@ exportObj.add_command(label='to Text File',command=textE)
 
 
 exportObs=tk.Menu(import_export,tearoff=0)
+exportObs.configure(background=colors['window'])
+exportObs.configure(fg=colors['text'])
 import_export.add_cascade(menu=exportObs,label='Export Observations of Object',state=tk.DISABLED)
 exportObs.add_command(label='to Excel',command=excelObsE)
 exportObs.add_command(label='to Text File',command=textObsE)
 
 exportObsAll=tk.Menu(import_export,tearoff=0)
+exportObsAll.configure(background=colors['window'])
+exportObsAll.configure(fg=colors['text'])
 import_export.add_cascade(menu=exportObsAll,label='Export All Observations',state=tk.DISABLED)
 exportObsAll.add_command(label='to Excel',command=excelObsAllE)
 exportObsAll.add_command(label='to Text File',command=textObsAllE)

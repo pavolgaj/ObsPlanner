@@ -52,8 +52,6 @@ def join(name1,name2,save=False):
     if save: objects1.save(name1)
     return objects1
 
-#todo: const not found -> warning/error?
-
 def maximI(name):
     '''import objects from MaximDL file'''
     constellations=stars.load()

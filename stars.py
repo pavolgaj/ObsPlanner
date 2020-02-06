@@ -142,7 +142,7 @@ class constellation:
             elif ra>12: ra-=24
         return ra,dec
 
-    def plot(self,fig=None):
+    def plot(self,colors,fig=None):
         '''plot starmap of constellation'''
 
         #stars
@@ -169,30 +169,30 @@ class constellation:
 
         #stars
         ra,dec=self._transform(ra,dec,coef)
-        for i in np.where(mag<1): self.ax.plot(ra[i],dec[i],'k.',markersize=7)
-        for i in np.where(mag<2): self.ax.plot(ra[i],dec[i],'k.',markersize=6)
-        for i in np.where(mag<3): self.ax.plot(ra[i],dec[i],'k.',markersize=4)
-        for i in np.where(mag<4): self.ax.plot(ra[i],dec[i],'k.',markersize=3)
-        for i in np.where(mag<5): self.ax.plot(ra[i],dec[i],'k.',markersize=2)
-        self.ax.plot(ra,dec,'k.',markersize=1)
+        for i in np.where(mag<1): self.ax.plot(ra[i],dec[i],colors['fig_text']+'.',markersize=7)
+        for i in np.where(mag<2): self.ax.plot(ra[i],dec[i],colors['fig_text']+'.',markersize=6)
+        for i in np.where(mag<3): self.ax.plot(ra[i],dec[i],colors['fig_text']+'.',markersize=4)
+        for i in np.where(mag<4): self.ax.plot(ra[i],dec[i],colors['fig_text']+'.',markersize=3)
+        for i in np.where(mag<5): self.ax.plot(ra[i],dec[i],colors['fig_text']+'.',markersize=2)
+        self.ax.plot(ra,dec,colors['fig_text']+'.',markersize=1)
 
         #lines
         for l in self.lines:
             for i in range(len(l)-1):
                 ra0,dec0=self._transform(l[i][0],l[i][1],coef)
                 ra1,dec1=self._transform(l[i+1][0],l[i+1][1],coef)
-                self.ax.plot([ra0,ra1],[dec0,dec1],'k',linewidth=0.5)
+                self.ax.plot([ra0,ra1],[dec0,dec1],colors['fig_text'],linewidth=0.5)
 
         #borders
         for l in self.border: #cez casti suhvezdia (Ser)
             for i in range(len(l)-1):
                 ra0,dec0=self._transform(l[i][0],l[i][1],coef)
                 ra1,dec1=self._transform(l[i+1][0],l[i+1][1],coef)
-                self.ax.plot([ra0,ra1],[dec0,dec1],'k--',linewidth=0.5)
+                self.ax.plot([ra0,ra1],[dec0,dec1],colors['fig_text']+'--',linewidth=0.5)
             ra0,dec0=self._transform(l[-1][0],l[-1][1],coef)
             ra1,dec1=self._transform(l[0][0],l[0][1],coef)
             if not self.projection=='polar': self.ax.set_xlim(self.ax.get_xlim()[::-1])
-            self.ax.plot([ra0,ra1],[dec0,dec1],'k--',linewidth=0.5)
+            self.ax.plot([ra0,ra1],[dec0,dec1],colors['fig_text']+'--',linewidth=0.5)
 
     def testPoint(self,ra,dec):
         '''test if point is in constellation'''
@@ -225,9 +225,9 @@ class constellation:
             if bbPath.contains_point((ra,dec)): return True
         return False
 
-    def plotObject(self,ra,dec,fig=None):
+    def plotObject(self,ra,dec,colors,fig=None):
         '''plot object in map'''
-        self.plot(fig)
+        self.plot(colors,fig)
         if self.projection=='polar':
             coef=1
             if dec<0: coef=-1

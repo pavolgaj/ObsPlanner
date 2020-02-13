@@ -2263,7 +2263,11 @@ except:
 root.geometry('800x500')
 root.title('ObsPlanner')
 try: root.iconbitmap('ObsPlanner.ico')   #win
-except: pass
+except: 
+    try: #linux
+        img=tk.Image('photo',file='ObsPlanner.png')
+        root.tk.call('wm','iconphoto',root._w,img)
+    except: pass
 root.configure(background=colors['window'])
 
 #premenne pre gui

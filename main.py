@@ -1926,6 +1926,18 @@ def sipsI():
         clear()
         settings['file']=''
 
+def aptI():
+    global objects
+    if saveQuestion()==0: return  #zrusene
+
+    name=filedialog.askopenfilename(parent=root,filetypes=[('APT ObjectsList','APT_CustomObjectsList.xml'),('XML files','*.xml'),('All files','*.*')],title='Import from APT')
+    name=name.replace('\\','/')
+
+    if len(name)>0:
+        objects=objects_import.aptI(name)
+        clear()
+        settings['file']=''
+
 def maximE():
     zoznam=list(objsVar.get())
     objE={}
@@ -2263,7 +2275,7 @@ except:
 root.geometry('800x500')
 root.title('ObsPlanner')
 try: root.iconbitmap('ObsPlanner.ico')   #win
-except: 
+except:
     try: #linux
         img=tk.Image('photo',file='ObsPlanner.png')
         root.tk.call('wm','iconphoto',root._w,img)
@@ -2519,7 +2531,7 @@ if colors['text']=='red':
     importMenu.configure(activeforeground=colors['select_text'])
     #importMenu.configure(inactiveselectbackground=colors['select_bg'])
 import_export.add_cascade(menu=importMenu,label='Import Objects')
-importMenu.add_command(label='from APT',state=tk.DISABLED)
+importMenu.add_command(label='from APT',command=aptI)
 importMenu.add_command(label='from AstroPlanner',state=tk.DISABLED)
 importMenu.add_command(label='from MaximDL',command=maximI)
 importMenu.add_command(label='from SIPS',command=sipsI)

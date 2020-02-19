@@ -154,6 +154,59 @@ def sipsI(name):
     f.close()
     return objects
 
+def aptI(name):
+    '''import objects from APT ObjectsList.xml file'''
+    constellations=stars.load()
+    objects=objClass.objects(constellations)
+    f=open(name,'r')
+    for line in f:
+        if '<Obj>' in line:
+            #new object
+            params=dict().fromkeys(['name','ra','dec','mag','size','typ','note','const'],'')
+        elif '<Object>' in line: params['name']=line[line.find('>')+1:line.rfind('<')]
+        elif '<NameNotes>' in line: params['note']=line[line.find('>')+1:line.rfind('<')]
+        elif '<Type>' in line: params['typ']=line[line.find('>')+1:line.rfind('<')]
+        elif '<Const>' in line: params['const']=line[line.find('>')+1:line.rfind('<')]
+        elif '<Mag>' in line:
+            try: params['mag']=float(line[line.find('>')+1:line.rfind('<')].replace(',','.'))
+            except ValueError: params['mag']=line[line.find('>')+1:line.rfind('<')].replace(',','.')
+        elif '<Size>' in line: params['size']=line[line.find('>')+1:line.rfind('<')].replace(',','.')
+        elif '<RA>' in line:
+            try: params['ra']=stars.readDMS(line[line.find('>')+1:line.rfind('<')].replace(',','.'))
+            except:
+                    messagebox.showerror('RA Format','Wrong RA format or RA not given for '+params['name']+'! Object skipped.')
+                    print(params['name'],'- RA:',line[line.find('>')+1:line.rfind('<')].replace(',','.'))
+        elif '<DEC>' in line:
+            try: params['dec']=stars.readDMS(line[line.find('>')+1:line.rfind('<')].replace(',','.'))
+            except:
+                    messagebox.showerror('DEC Format','Wrong DEC format or DEC not given for '+params['name']+'! Object skipped.')
+                    print(params['name'],'- DEC:',line[line.find('>')+1:line.rfind('<')].replace(',','.'))
+        elif '</Obj>' in line:
+            if len(str(params['ra']))*len(str(params['dec']))==0: continue  #RA/DEC error
+            objects.add(params['name'],params['ra'],params['dec'],params['mag'],params['size'],params['typ'],params['note'])
+            found=False
+            consts=[]
+            for const in constellations:
+                if constellations[const].testPoint(params['ra'],params['dec']):
+                    consts.append(const)
+                    found=True
+            if not found:
+                messagebox.showwarning('Constellation','Constellation of '+params['name']+'  not detected! Please, add it manually.')
+                objects.objects[params['name']]['object'].const='Ari'
+                print(params['name'])
+            else:
+                objects.objects[params['name']]['object'].const=consts[0]
+                if len(consts)>1:
+                    messagebox.showwarning('Constellation','Multiple possible constellations for '+params['name']+' detected ('\
+                    +', '.join(consts)+')! Please, add it manually.')
+                    print(params['name'],consts)
+            if (not objects.objects[params['name']]['object'].const.lower()==params['const'].lower()) and len(params['const'])>0:
+                messagebox.showwarning('Constellation','Detected constellation ('+objects.objects[params['name']]['object'].const+') for '+params['name']+\
+                " is different to catalog's one ("+params['const']+')! Please, add it manually.')
+                print(params['name'],objects.objects[params['name']]['object'].const,params['const'])
+    f.close()
+    return objects
+
 def maximE(objects,name):
     '''export objects to MaximDL file'''
     f=open(name,'w')

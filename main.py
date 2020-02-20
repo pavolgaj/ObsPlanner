@@ -1276,9 +1276,9 @@ def OpenFile(event=None):
     if saveQuestion()==0: return  #zrusene
 
     name=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file')
-    name=name.replace('\\','/')
 
     if len(name)>0:
+        name=name.replace('\\','/')
         objects=objClass.objects(constellations)
         objects.load(name)
         clear()
@@ -1305,8 +1305,8 @@ def SaveFile(event=None):
 def SaveAsFile():
     global changed
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Save file',defaultextension='.opd')
-    name=name.replace('\\','/')
     if len(name)>0:
+        name=name.replace('\\','/')
         objects.save(name)
         cwd=os.getcwd().replace('\\','/')+'/'
         if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
@@ -1877,8 +1877,8 @@ def saveQuestion():
             if len(settings['file'])==0:
                 name=filedialog.asksaveasfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],\
                 title='Save file',defaultextension='.opd')
-                name=name.replace('\\','/')
                 if len(name)>0:
+                    name=name.replace('\\','/')
                     cwd=os.getcwd().replace('\\','/')+'/'
                     if cwd in name: name=name.replace(cwd,'')    #uloz relativnu cestu
                     settings['file']=name
@@ -1892,51 +1892,73 @@ def join():
     if saveQuestion()==0: return  #zrusene
 
     name1=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file - 1st file')
-    name1=name1.replace('\\','/')
-
     name2=filedialog.askopenfilename(parent=root,filetypes=[('ObsPlanner files','*.opd'),('All files','*.*')],title='Open file - 2nd file')
-    name2=name2.replace('\\','/')
 
     if len(name1)*len(name2)>0:
+        NewFile()
+        name1=name1.replace('\\','/')
+        name2=name2.replace('\\','/')
         objects=objects_import.join(name1,name2)
         clear()
         settings['file']=''
+        messagebox.showinfo('Join files','Join successful!\n'+str(len(objects.objects))+' objects in datafile.')
 
 def maximI():
     global objects
     if saveQuestion()==0: return  #zrusene
 
     name=filedialog.askopenfilename(parent=root,filetypes=[('MaximDL catalog','stars.csv'),('All files','*.*')],title='Import from MaximDL')
-    name=name.replace('\\','/')
 
     if len(name)>0:
+        NewFile()
+        name=name.replace('\\','/')
         objects=objects_import.maximI(name)
         clear()
         settings['file']=''
+        messagebox.showinfo('MaximDL Import','Import successful!\n'+str(len(objects.objects))+' objects imported.')
 
 def sipsI():
     global objects
     if saveQuestion()==0: return  #zrusene
 
     name=filedialog.askopenfilename(parent=root,filetypes=[('SIPS catalog','catalog.ini'),('All files','*.*')],title='Import from SIPS')
-    name=name.replace('\\','/')
 
     if len(name)>0:
+        NewFile()
+        name=name.replace('\\','/')
         objects=objects_import.sipsI(name)
         clear()
         settings['file']=''
+        messagebox.showinfo('SIPS Import','Import successful!\n'+str(len(objects.objects))+' objects imported.')
 
 def aptI():
     global objects
     if saveQuestion()==0: return  #zrusene
 
     name=filedialog.askopenfilename(parent=root,filetypes=[('APT ObjectsList','APT_CustomObjectsList.xml'),('XML files','*.xml'),('All files','*.*')],title='Import from APT')
-    name=name.replace('\\','/')
 
     if len(name)>0:
+        NewFile()
+        name=name.replace('\\','/')
         objects=objects_import.aptI(name)
         clear()
         settings['file']=''
+        messagebox.showinfo('APT Import','Import successful!\n'+str(len(objects.objects))+' objects imported.')
+
+def plannerI():
+    global objects
+    if saveQuestion()==0: return  #zrusene
+
+    messagebox.showinfo('AstroPlanner Import','Export your objects to Generic File in AstroPlanner.\nUse settings from file "data/AstroPlanner_Fileds" (according to your AstroPlanner version) in ObsPlanner folder.')
+    name=filedialog.askopenfilename(parent=root,filetypes=[('XML files','*.xml'),('All files','*.*')],title='Import from AstroPlanner')
+
+    if len(name)>0:
+        NewFile()
+        name=name.replace('\\','/')
+        objects=objects_import.plannerI(name)
+        clear()
+        settings['file']=''
+        messagebox.showinfo('AstroPlanner Import','Import successful!\n'+str(len(objects.objects))+' objects imported.')
 
 def maximE():
     zoznam=list(objsVar.get())
@@ -1944,7 +1966,9 @@ def maximE():
     for o in zoznam: objE[o]=objects.objects[o]
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('MaximDL catalog','stars.csv'),('All files','*.*')],title='Export to MaximDL',\
         defaultextension='.csv',initialfile='stars.csv')
-    if len(name)>0: objects_import.maximE(objE,name)
+    if len(name)>0:
+        objects_import.maximE(objE,name)
+        messagebox.showinfo('MaximDL Export','Export successful!\n'+str(len(objE))+' objects exported.')
 
 def sipsE():
     zoznam=list(objsVar.get())
@@ -1952,7 +1976,9 @@ def sipsE():
     for o in zoznam: objE[o]=objects.objects[o]
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('SIPS catalog','catalog.ini'),('All files','*.*')],title='Export to SIPS',\
         defaultextension='.ini',initialfile='catalog.ini')
-    if len(name)>0: objects_import.sipsE(objE,name)
+    if len(name)>0:
+        objects_import.sipsE(objE,name)
+        messagebox.showinfo('SIPS Export','Export successful!\n'+str(len(objE))+' objects exported.')
 
 def aptE():
     zoznam=list(objsVar.get())
@@ -1960,7 +1986,9 @@ def aptE():
     for o in zoznam: objE[o]=objects.objects[o]
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('APT native format','APT_CustomObjectsList.xml'),('All files','*.*')],title='Export to APT',\
         defaultextension='.xml',initialfile='APT_CustomObjectsList.xml')
-    if len(name)>0: objects_import.aptE(objE,name)
+    if len(name)>0:
+        objects_import.aptE(objE,name)
+        messagebox.showinfo('APT Export','Export successful!\n'+str(len(objE))+' objects exported.')
 
 def textE():
     zoznam=list(objsVar.get())
@@ -1968,7 +1996,9 @@ def textE():
     for o in zoznam: objE[o]=objects.objects[o]
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export to TextFile',\
         defaultextension='.txt')
-    if len(name)>0: objects_import.textE(objE,name)
+    if len(name)>0:
+        objects_import.textE(objE,name)
+        messagebox.showinfo('Text Export','Export successful!\n'+str(len(objE))+' objects exported.')
 
 def excelE():
     zoznam=list(objsVar.get())
@@ -1977,8 +2007,10 @@ def excelE():
     for o in zoznam: objE[o]=objects.objects[o]
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export to Excel File',\
         defaultextension='.xls')
-    if len(name)>0: objects_import.excelE(objE,name,stars.juldat(year,mon,day,hour,minute,sec),stars.juldat(year,mon,day+round(hour/24.),0,0,0),\
-    settings['default_site'].lon,settings['default_site'].lat)
+    if len(name)>0:
+        objects_import.excelE(objE,name,stars.juldat(year,mon,day,hour,minute,sec),stars.juldat(year,mon,day+round(hour/24.),0,0,0),\
+        settings['default_site'].lon,settings['default_site'].lat)
+        messagebox.showinfo('Excel Export','Export successful!\n'+str(len(objE))+' objects exported.')
 
 def textObsE(allObj=False):
     if allObj: zoznam=list(objsVar.get())
@@ -1987,7 +2019,9 @@ def textObsE(allObj=False):
     for o in zoznam: objE[o]=objects.objects[o]
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('Text file','*.txt'),('All files','*.*')],title='Export Observations to TextFile',\
         defaultextension='.txt')
-    if len(name)>0: objects_import.textObsE(objE,name)
+    if len(name)>0:
+        obs=objects_import.textObsE(objE,name)
+        messagebox.showinfo('Text Export','Export successful!\n'+str(len(obs))+' observations exported.')
 
 def textObsAllE():
     textObsE(allObj=True)
@@ -1999,7 +2033,9 @@ def excelObsE(allObj=False):
     for o in zoznam: objE[o]=objects.objects[o]
     name=filedialog.asksaveasfilename(parent=root,filetypes=[('Excel file','*.xls'),('All files','*.*')],title='Export Observations to Excel File',\
         defaultextension='.xls')
-    if len(name)>0: objects_import.excelObsE(objE,name)
+    if len(name)>0:
+        obs=objects_import.excelObsE(objE,name)
+        messagebox.showinfo('Excel Export','Export successful!\n'+str(len(obs))+' observations exported.')
 
 def excelObsAllE():
     excelObsE(allObj=True)
@@ -2532,7 +2568,7 @@ if colors['text']=='red':
     #importMenu.configure(inactiveselectbackground=colors['select_bg'])
 import_export.add_cascade(menu=importMenu,label='Import Objects')
 importMenu.add_command(label='from APT',command=aptI)
-importMenu.add_command(label='from AstroPlanner',state=tk.DISABLED)
+importMenu.add_command(label='from AstroPlanner',command=plannerI)
 importMenu.add_command(label='from MaximDL',command=maximI)
 importMenu.add_command(label='from SIPS',command=sipsI)
 

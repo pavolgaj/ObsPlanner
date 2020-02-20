@@ -2,6 +2,8 @@ import stars
 import objects as objClass
 import numpy as np
 import copy
+import html  #replace html characters in XML
+import xml.etree.ElementTree as ET   #simple reading XML files
 
 from tkinter import messagebox
 import warnings
@@ -158,53 +160,108 @@ def aptI(name):
     '''import objects from APT ObjectsList.xml file'''
     constellations=stars.load()
     objects=objClass.objects(constellations)
-    f=open(name,'r')
-    for line in f:
-        if '<Obj>' in line:
-            #new object
-            params=dict().fromkeys(['name','ra','dec','mag','size','typ','note','const'],'')
-        elif '<Object>' in line: params['name']=line[line.find('>')+1:line.rfind('<')]
-        elif '<NameNotes>' in line: params['note']=line[line.find('>')+1:line.rfind('<')]
-        elif '<Type>' in line: params['typ']=line[line.find('>')+1:line.rfind('<')]
-        elif '<Const>' in line: params['const']=line[line.find('>')+1:line.rfind('<')]
-        elif '<Mag>' in line:
-            try: params['mag']=float(line[line.find('>')+1:line.rfind('<')].replace(',','.'))
-            except ValueError: params['mag']=line[line.find('>')+1:line.rfind('<')].replace(',','.')
-        elif '<Size>' in line: params['size']=line[line.find('>')+1:line.rfind('<')].replace(',','.')
-        elif '<RA>' in line:
-            try: params['ra']=stars.readDMS(line[line.find('>')+1:line.rfind('<')].replace(',','.'))
-            except:
-                    messagebox.showerror('RA Format','Wrong RA format or RA not given for '+params['name']+'! Object skipped.')
-                    print(params['name'],'- RA:',line[line.find('>')+1:line.rfind('<')].replace(',','.'))
-        elif '<DEC>' in line:
-            try: params['dec']=stars.readDMS(line[line.find('>')+1:line.rfind('<')].replace(',','.'))
-            except:
-                    messagebox.showerror('DEC Format','Wrong DEC format or DEC not given for '+params['name']+'! Object skipped.')
-                    print(params['name'],'- DEC:',line[line.find('>')+1:line.rfind('<')].replace(',','.'))
-        elif '</Obj>' in line:
-            if len(str(params['ra']))*len(str(params['dec']))==0: continue  #RA/DEC error
-            objects.add(params['name'],params['ra'],params['dec'],params['mag'],params['size'],params['typ'],params['note'])
-            found=False
-            consts=[]
-            for const in constellations:
-                if constellations[const].testPoint(params['ra'],params['dec']):
-                    consts.append(const)
-                    found=True
-            if not found:
-                messagebox.showwarning('Constellation','Constellation of '+params['name']+'  not detected! Please, add it manually.')
-                objects.objects[params['name']]['object'].const='Ari'
-                print(params['name'])
-            else:
-                objects.objects[params['name']]['object'].const=consts[0]
-                if len(consts)>1:
-                    messagebox.showwarning('Constellation','Multiple possible constellations for '+params['name']+' detected ('\
-                    +', '.join(consts)+')! Please, add it manually.')
-                    print(params['name'],consts)
-            if (not objects.objects[params['name']]['object'].const.lower()==params['const'].lower()) and len(params['const'])>0:
-                messagebox.showwarning('Constellation','Detected constellation ('+objects.objects[params['name']]['object'].const+') for '+params['name']+\
-                " is different to catalog's one ("+params['const']+')! Please, add it manually.')
-                print(params['name'],objects.objects[params['name']]['object'].const,params['const'])
-    f.close()
+
+    xmldoc=ET.parse(name)
+    objlist=xmldoc.findall('Obj')
+
+    for obj in objlist:
+        params=dict().fromkeys(['name','ra','dec','mag','size','typ','note','const'],'')
+        params['name']=obj.find('Object').text
+        params['note']=(obj.find('NameNotes').text or '')
+        if len(params['note'])>0: params['note']=html.unescape(params['note'])   #replace html characters in XML
+        params['typ']=(obj.find('Type').text or '')
+        params['const']=(obj.find('Const').text or '')
+        try: params['mag']=float(obj.find('Mag').text.replace(',','.'))
+        except ValueError: params['mag']=obj.find('Mag').text.replace(',','.')   #viac hodnot
+        except AttributeError: params['mag']=''  #bez hodnoty
+        params['size']=(obj.find('Size').text or '')
+        try: params['ra']=stars.readDMS(obj.find('RA').text.replace(',','.'))
+        except:
+            messagebox.showerror('RA Format','Wrong RA format or RA not given for '+params['name']+'! Object skipped.')
+            print(params['name'],'- RA:',obj.find('RA').text)
+        try: params['dec']=stars.readDMS(obj.find('DEC').text.replace(',','.'))
+        except:
+            messagebox.showerror('DEC Format','Wrong DEC format or DEC not given for '+params['name']+'! Object skipped.')
+            print(params['name'],'- DEC:',obj.find('DEC').text)
+
+        if len(str(params['ra']))*len(str(params['dec']))==0: continue  #RA/DEC error
+        objects.add(params['name'],params['ra'],params['dec'],params['mag'],params['size'],params['typ'],params['note'])
+        found=False
+        consts=[]
+        for const in constellations:
+            if constellations[const].testPoint(params['ra'],params['dec']):
+                consts.append(const)
+                found=True
+        if not found:
+            messagebox.showwarning('Constellation','Constellation of '+params['name']+'  not detected! Please, add it manually.')
+            objects.objects[params['name']]['object'].const='Ari'
+            print(params['name'])
+        else:
+            objects.objects[params['name']]['object'].const=consts[0]
+            if len(consts)>1:
+                messagebox.showwarning('Constellation','Multiple possible constellations for '+params['name']+' detected ('\
+                +', '.join(consts)+')! Please, add it manually.')
+                print(params['name'],consts)
+        if (not objects.objects[params['name']]['object'].const.lower()==params['const'].lower()) and len(params['const'])>0:
+            messagebox.showwarning('Constellation','Detected constellation ('+objects.objects[params['name']]['object'].const+') for '+params['name']+\
+            " is different to catalog's one ("+params['const']+')! Please, add it manually.')
+            print(params['name'],objects.objects[params['name']]['object'].const,params['const'])
+    return objects
+
+def plannerI(name):
+    '''import objects from AstroPlanner txt file'''
+    constellations=stars.load()
+    objects=objClass.objects(constellations)
+
+    xmldoc=ET.parse(name)
+    objlist=xmldoc.findall('object')
+
+    for obj in objlist:
+        params=dict().fromkeys(['name','ra','dec','mag','size','typ','note','const'],'')
+        params['name']=obj.find('id').text
+        params['note']=(obj.find('name').text or '')
+        if len(params['note'])>0: params['note']+='\n'  #uz tam daco je
+        if obj.find('usernotes') is not None: params['note']+=(obj.find('usernotes').text or '')   #AP_v2
+        elif obj.find('notes') is not None: params['note']+=(obj.find('notes').text or '')      #AP_v1
+        if len(params['note'])>0: params['note']=html.unescape(params['note'])   #replace html characters in XML
+        if obj.find('objecttype') is not None: params['typ']=(obj.find('objecttype').text or '')    #AP_v2
+        elif obj.find('type') is not None: params['typ']=(obj.find('type').text or '')   #AP_v1
+        params['const']=(obj.find('constellation').text or '')
+        try: params['mag']=float(obj.find('magnitude').text.replace(',','.'))
+        except ValueError: params['mag']=obj.find('magnitude').text.replace(',','.')   #viac hodnot
+        except AttributeError: params['mag']=''  #bez hodnoty
+        params['size']=(obj.find('size').text or '')
+        try: params['ra']=stars.readDMS(obj.find('ra').text.replace(',','.'))
+        except:
+            messagebox.showerror('RA Format','Wrong RA format or RA not given for '+params['name']+'! Object skipped.')
+            print(params['name'],'- RA:',obj.find('ra').text)
+        try: params['dec']=stars.readDMS(obj.find('dec').text.replace(',','.'))
+        except:
+            messagebox.showerror('DEC Format','Wrong DEC format or DEC not given for '+params['name']+'! Object skipped.')
+            print(params['name'],'- DEC:',obj.find('dec').text)
+
+        if len(str(params['ra']))*len(str(params['dec']))==0: continue  #RA/DEC error
+        objects.add(params['name'],params['ra'],params['dec'],params['mag'],params['size'],params['typ'],params['note'])
+        found=False
+        consts=[]
+        for const in constellations:
+            if constellations[const].testPoint(params['ra'],params['dec']):
+                consts.append(const)
+                found=True
+        if not found:
+            messagebox.showwarning('Constellation','Constellation of '+params['name']+'  not detected! Please, add it manually.')
+            objects.objects[params['name']]['object'].const='Ari'
+            print(params['name'])
+        else:
+            objects.objects[params['name']]['object'].const=consts[0]
+            if len(consts)>1:
+                messagebox.showwarning('Constellation','Multiple possible constellations for '+params['name']+' detected ('\
+                +', '.join(consts)+')! Please, add it manually.')
+                print(params['name'],consts)
+        if (not objects.objects[params['name']]['object'].const.lower()==params['const'].lower()) and len(params['const'])>0:
+            messagebox.showwarning('Constellation','Detected constellation ('+objects.objects[params['name']]['object'].const+') for '+params['name']+\
+            " is different to catalog's one ("+params['const']+')! Please, add it manually.')
+            print(params['name'],objects.objects[params['name']]['object'].const,params['const'])
     return objects
 
 def maximE(objects,name):
@@ -355,6 +412,8 @@ def textObsE(objects,name):
         f.write('"'+o.note.replace('\n','; ')+'"\n')
     f.close()
 
+    return obs
+
 def excelObsE(objects,name):
     '''export observations to Excel file'''
     try: wb=xlwt.Workbook()
@@ -444,4 +503,6 @@ def excelObsE(objects,name):
         ws.write(row,18,o.note.replace('\n','; '))
         row+=1
     wb.save(name)
+
+    return obs
 

@@ -71,7 +71,11 @@ def About():
     top.geometry('310x240')
     top.title('About')
     try: top.iconbitmap('ObsPlanner.ico')   #win
-    except: pass
+    except:
+        try: #linux
+            img=tk.Image('photo',file='ObsPlanner.png')
+            top.tk.call('wm','iconphoto',top._w,img)
+        except: pass
     top.resizable(False,False)
     top.configure(background=colors['window'])
 
@@ -208,12 +212,16 @@ def AddObj(obj=None):
             messagebox.showwarning('Constellation','Multiple possible constellations detected ('+', '.join(found)+')! Please, add it manually.')
             top.lift()
 
-    top=tk.Tk()
+    top=tk.Toplevel()
     top.lift()
     top.geometry('250x350')
     top.title('Object')
     try: top.iconbitmap('ObsPlanner.ico')   #win
-    except: pass
+    except:
+        try: #linux
+            img=tk.Image('photo',file='ObsPlanner.png')
+            top.tk.call('wm','iconphoto',top._w,img)
+        except: pass
     top.resizable(False,False)
     top.configure(background=colors['window'])
 
@@ -400,12 +408,17 @@ def AddObs(obs=None):
             topObs.destroy()
             top.lift()
 
-        topObs=tk.Tk()
+        topObs=tk.Toplevel()
         topObs.lift()
         topObs.geometry('300x80')
         topObs.title('Observer')
         try: topObs.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
+        except:
+            try: #linux
+                img=tk.Image('photo',file='ObsPlanner.png')
+                topObs.tk.call('wm','iconphoto',topObs._w,img)
+            except: pass
+        topObs.configure(background=colors['window'])
         topObs.resizable(False,False)
 
         obsNameVar=tk.StringVar(topObs)
@@ -446,12 +459,17 @@ def AddObs(obs=None):
                 topLims.destroy()
                 topSite.lift()
 
-            topLims=tk.Tk()
+            topLims=tk.Toplevel()
             topLims.lift()
             topLims.geometry('400x150')
             topLims.title('Limits')
             try: topLims.iconbitmap('ObsPlanner.ico')   #win
-            except: pass
+            except:
+                try: #linux
+                    img=tk.Image('photo',file='ObsPlanner.png')
+                    topLims.tk.call('wm','iconphoto',topLims._w,img)
+                except: pass
+            topLims.configure(background=colors['window'])
             topLims.resizable(False,False)
 
             minAltVar=tk.DoubleVar(topLims)
@@ -550,12 +568,17 @@ def AddObs(obs=None):
             topSite.destroy()
             top.lift()
 
-        topSite=tk.Tk()
+        topSite=tk.Toplevel()
         topSite.lift()
         topSite.geometry('230x200')
         topSite.title('Site')
         try: topSite.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
+        except:
+            try: #linux
+                img=tk.Image('photo',file='ObsPlanner.png')
+                topSite.tk.call('wm','iconphoto',topSite._w,img)
+            except: pass
+        topSite.configure(background=colors['window'])
         topSite.resizable(False,False)
 
         siteNameVar=tk.StringVar(topSite)
@@ -650,12 +673,17 @@ def AddObs(obs=None):
             topTel.destroy()
             top.lift()
 
-        topTel=tk.Tk()
+        topTel=tk.Toplevel()
         topTel.lift()
         topTel.geometry('400x80')
         topTel.title('Telescope')
         try: topTel.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
+        except:
+            try: #linux
+                img=tk.Image('photo',file='ObsPlanner.png')
+                topTel.tk.call('wm','iconphoto',topTel._w,img)
+            except: pass
+        topTel.configure(background=colors['window'])
         topTel.resizable(False,False)
 
         telNameVar=tk.StringVar(topTel)
@@ -760,12 +788,17 @@ def AddObs(obs=None):
                     constVar.set(const)
                     return
 
-        topObj=tk.Tk()
+        topObj=tk.Toplevel()
         topObj.lift()
         topObj.geometry('250x350')
         topObj.title('Object')
         try: topObj.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
+        except:
+            try: #linux
+                img=tk.Image('photo',file='ObsPlanner.png')
+                topObj.tk.call('wm','iconphoto',topObj._w,img)
+            except: pass
+        topObj.configure(background=colors['window'])
         topObj.resizable(False,False)
 
         nameVar=tk.StringVar(topObj)
@@ -980,12 +1013,17 @@ def AddObs(obs=None):
         top.destroy()
         root.lift()
 
-    top=tk.Tk()
+    top=tk.Toplevel()
     top.lift()
     top.geometry('450x400')
     top.title('Observation')
     try: top.iconbitmap('ObsPlanner.ico')   #win
-    except: pass
+    except:
+        try: #linux
+            img=tk.Image('photo',file='ObsPlanner.png')
+            top.tk.call('wm','iconphoto',top._w,img)
+        except: pass
+    top.configure(background=colors['window'])
     top.resizable(False,False)
 
     observerVar=tk.StringVar(top)
@@ -1327,12 +1365,17 @@ def Settings():
             topObs.destroy()
             top.lift()
 
-        topObs=tk.Tk()
+        topObs=tk.Toplevel()
         topObs.lift()
         topObs.geometry('300x80')
         topObs.title('Observer')
         try: topObs.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
+        except:
+            try: #linux
+                img=tk.Image('photo',file='ObsPlanner.png')
+                topObs.tk.call('wm','iconphoto',topObs._w,img)
+            except: pass
+        topObs.configure(background=colors['window'])
         topObs.resizable(False,False)
 
         obsNameVar=tk.StringVar(topObs)
@@ -1381,13 +1424,18 @@ def Settings():
                 topLims.destroy()
                 topSite.lift()
 
-            topLims=tk.Tk()
+            topLims=tk.Toplevel()
             topLims.lift()
             topLims.geometry('400x150')
             topLims.title('Limits')
             topLims.resizable(False,False)
             try: topLims.iconbitmap('ObsPlanner.ico')   #win
-            except: pass
+            except:
+                try: #linux
+                    img=tk.Image('photo',file='ObsPlanner.png')
+                    topLims.tk.call('wm','iconphoto',topLims._w,img)
+                except: pass
+            topLims.configure(background=colors['window'])
 
             minAltVar=tk.DoubleVar(topLims)
             maxAltVar=tk.DoubleVar(topLims)
@@ -1487,12 +1535,17 @@ def Settings():
             topSite.destroy()
             top.lift()
 
-        topSite=tk.Tk()
+        topSite=tk.Toplevel()
         topSite.lift()
         topSite.geometry('230x200')
         topSite.title('Site')
         try: topSite.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
+        except:
+            try: #linux
+                img=tk.Image('photo',file='ObsPlanner.png')
+                topSite.tk.call('wm','iconphoto',topSite._w,img)
+            except: pass
+        topSite.configure(background=colors['window'])
         topSite.resizable(False,False)
 
         siteNameVar=tk.StringVar(topSite)
@@ -1598,12 +1651,17 @@ def Settings():
             topTel.destroy()
             top.lift()
 
-        topTel=tk.Tk()
+        topTel=tk.Toplevel()
         topTel.lift()
         topTel.geometry('400x80')
         topTel.title('Telescope')
         try: topTel.iconbitmap('ObsPlanner.ico')   #win
-        except: pass
+        except:
+            try: #linux
+                img=tk.Image('photo',file='ObsPlanner.png')
+                topTel.tk.call('wm','iconphoto',topTel._w,img)
+            except: pass
+        topTel.configure(background=colors['window'])
         topTel.resizable(False,False)
 
         telNameVar=tk.StringVar(topTel)
@@ -1681,12 +1739,17 @@ def Settings():
         top.destroy()
         root.lift()
 
-    top=tk.Tk()
+    top=tk.Toplevel()
     top.lift()
     top.geometry('530x200')
     top.title('Settings')
     try: top.iconbitmap('ObsPlanner.ico')   #win
-    except: pass
+    except:
+        try: #linux
+            img=tk.Image('photo',file='ObsPlanner.png')
+            top.tk.call('wm','iconphoto',top._w,img)
+        except: pass
+    top.configure(background=colors['window'])
     top.resizable(False,False)
 
     settings1=copy.deepcopy(settings)
@@ -2383,7 +2446,6 @@ if colors['text']=='red':
 Text1.configure(width=256)
 Text1.configure(wrap=tk.WORD)
 
-#TODO focus color?
 Button3_2=tk.Button(Labelframe0)
 Button3_2.place(relx=0.05,rely=0.95,height=24,width=47)
 Button3_2.configure(command=AddObj)
@@ -2525,11 +2587,13 @@ frame1.place(relx=0.68,rely=0.54,relheight=0.44,relwidth=0.3)
 canvas1=FigureCanvasTkAgg(figObj,frame1)
 canvas1.get_tk_widget().pack(side='top',fill='both',expand=1)
 
-#TODO focus color?, disabled color?
 #menu
 Popupmenu1=tk.Menu(root,tearoff=0)
 Popupmenu1.configure(background=colors['window'])
 Popupmenu1.configure(fg=colors['text'])
+if colors['text']=='red':
+    Popupmenu1.configure(activebackground=colors['select_bg'])
+    Popupmenu1.configure(activeforeground=colors['select_text'])
 
 fileM=tk.Menu(Popupmenu1,tearoff=0)
 fileM.configure(background=colors['window'])
@@ -2537,7 +2601,6 @@ fileM.configure(fg=colors['text'])
 if colors['text']=='red':
     fileM.configure(activebackground=colors['select_bg'])
     fileM.configure(activeforeground=colors['select_text'])
-    #fileM.configure(inactiveselectbackground=colors['select_bg'])
 Popupmenu1.add_cascade(menu=fileM,label='File')
 fileM.add_command(command=NewFile,label='New',accelerator='Ctrl+N')
 root.bind('<Control-n>',NewFile)
@@ -2553,10 +2616,10 @@ root.bind('<Control-q>',Exit)
 import_export=tk.Menu(Popupmenu1,tearoff=0)
 import_export.configure(background=colors['window'])
 import_export.configure(fg=colors['text'])
+import_export.configure(disabledforeground=colors['text_dis'])
 if colors['text']=='red':
     import_export.configure(activebackground=colors['select_bg'])
     import_export.configure(activeforeground=colors['select_text'])
-    #import_export.configure(inactiveselectbackground=colors['select_bg'])
 Popupmenu1.add_cascade(menu=import_export,label='Import/Export')
 
 importMenu=tk.Menu(import_export,tearoff=0)
@@ -2565,7 +2628,6 @@ importMenu.configure(fg=colors['text'])
 if colors['text']=='red':
     importMenu.configure(activebackground=colors['select_bg'])
     importMenu.configure(activeforeground=colors['select_text'])
-    #importMenu.configure(inactiveselectbackground=colors['select_bg'])
 import_export.add_cascade(menu=importMenu,label='Import Objects')
 importMenu.add_command(label='from APT',command=aptI)
 importMenu.add_command(label='from AstroPlanner',command=plannerI)
@@ -2582,7 +2644,6 @@ exportObj.configure(fg=colors['text'])
 if colors['text']=='red':
     exportObj.configure(activebackground=colors['select_bg'])
     exportObj.configure(activeforeground=colors['select_text'])
-    #exportObj.configure(inactiveselectbackground=colors['select_bg'])
 exportObj.configure(disabledforeground=colors['text_dis'])
 import_export.add_cascade(menu=exportObj,label='Export Selected Objects',state=tk.DISABLED)
 exportObj.add_command(label='to APT',command=aptE)
@@ -2598,7 +2659,6 @@ exportObs.configure(fg=colors['text'])
 if colors['text']=='red':
     exportObs.configure(activebackground=colors['select_bg'])
     exportObs.configure(activeforeground=colors['select_text'])
-    #exportObs.configure(inactiveselectbackground=colors['select_bg'])
 exportObs.configure(disabledforeground=colors['text_dis'])
 import_export.add_cascade(menu=exportObs,label='Export Observations of Object',state=tk.DISABLED)
 exportObs.add_command(label='to Excel',command=excelObsE)
@@ -2610,7 +2670,6 @@ exportObsAll.configure(fg=colors['text'])
 if colors['text']=='red':
     exportObsAll.configure(activebackground=colors['select_bg'])
     exportObsAll.configure(activeforeground=colors['select_text'])
-    #exportObsAll.configure(inactiveselectbackground=colors['select_bg'])
 exportObsAll.configure(disabledforeground=colors['text_dis'])
 import_export.add_cascade(menu=exportObsAll,label='Export All Observations',state=tk.DISABLED)
 exportObsAll.add_command(label='to Excel',command=excelObsAllE)

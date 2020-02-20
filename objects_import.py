@@ -3,7 +3,7 @@ import objects as objClass
 import numpy as np
 import copy
 import html  #replace html characters in XML
-import xml.etree.ElementTree as ET   #simple reading XML files
+import defusedxml.ElementTree as ET   #simple reading XML files
 
 from tkinter import messagebox
 import warnings

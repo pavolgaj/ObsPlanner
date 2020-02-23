@@ -1924,9 +1924,12 @@ def Settings():
     Radiobutton1.configure(text='Original')
     Radiobutton1.configure(variable=copyVar)
     Radiobutton1.configure(value=0)
-    #TODO gulicka+ramik+active
+    #TODO ramik
     Radiobutton1.configure(background=colors['window'])
     Radiobutton1.configure(fg=colors['text'])
+    Radiobutton1.configure(activebackground=colors['window'])
+    Radiobutton1.configure(activeforeground=colors['text'])
+    Radiobutton1.configure(selectcolor=colors['bg'])
 
     Radiobutton2=tk.Radiobutton(top)
     Radiobutton2.place(relx=0.46,rely=0.52,height=21,relwidth=0.25)
@@ -1936,6 +1939,9 @@ def Settings():
     Radiobutton2.configure(value=1)
     Radiobutton2.configure(background=colors['window'])
     Radiobutton2.configure(fg=colors['text'])
+    Radiobutton2.configure(activebackground=colors['window'])
+    Radiobutton2.configure(activeforeground=colors['text'])
+    Radiobutton2.configure(selectcolor=colors['bg'])
 
     if settings1['file_copy']: copyVar.set(1)
     else: copyVar.set(0)
@@ -1955,6 +1961,9 @@ def Settings():
     Radiobutton3.configure(value=0)
     Radiobutton3.configure(background=colors['window'])
     Radiobutton3.configure(fg=colors['text'])
+    Radiobutton3.configure(activebackground=colors['window'])
+    Radiobutton3.configure(activeforeground=colors['text'])
+    Radiobutton3.configure(selectcolor=colors['bg'])
 
     Radiobutton4=tk.Radiobutton(top)
     Radiobutton4.place(relx=0.48,rely=0.69,height=21,relwidth=0.22)
@@ -1964,6 +1973,9 @@ def Settings():
     Radiobutton4.configure(value=1)
     Radiobutton4.configure(background=colors['window'])
     Radiobutton4.configure(fg=colors['text'])
+    Radiobutton4.configure(activebackground=colors['window'])
+    Radiobutton4.configure(activeforeground=colors['text'])
+    Radiobutton4.configure(selectcolor=colors['bg'])
 
     if settings1['night_mode']: nightVar.set(1)
     else: nightVar.set(0)

@@ -428,6 +428,8 @@ def AddObs(obs=None):
         Label1=tk.Label(topObs)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
+        Label1.configure(background=colors['window'])
+        Label1.configure(fg=colors['text'])
 
         Entry1=tk.Entry(topObs)
         Entry1.place(relx=0.2,rely=0.1,height=25,relwidth=0.75)
@@ -442,6 +444,10 @@ def AddObs(obs=None):
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveObs)
+        Button1.configure(background=colors['window'])
+        Button1.configure(fg=colors['text'])
+        Button1.configure(activebackground=colors['window'])
+        Button1.configure(activeforeground=colors['text'])
 
     def editObserver():
         addObserver(observerVar.get())
@@ -489,16 +495,22 @@ def AddObs(obs=None):
             Label1.place(relx=0.25,rely=0.05,height=21,width=43)
             Label1.configure(text='Min')
             Label1.configure(anchor='w')
+            Label1.configure(background=colors['window'])
+            Label1.configure(fg=colors['text'])
 
             Label2=tk.Label(topLims)
             Label2.place(relx=0.62,rely=0.05,height=21,width=43)
             Label2.configure(text='Max')
             Label2.configure(anchor='w')
+            Label2.configure(background=colors['window'])
+            Label2.configure(fg=colors['text'])
 
             Label3=tk.Label(topLims)
             Label3.place(relx=0.05,rely=0.25,height=21,width=80 )
             Label3.configure(text='Altitude')
             Label3.configure(anchor='w')
+            Label3.configure(background=colors['window'])
+            Label3.configure(fg=colors['text'])
 
             Entry1=tk.Entry(topLims)
             Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
@@ -522,6 +534,8 @@ def AddObs(obs=None):
             Label4.place(relx=0.05,rely=0.45,height=21,width=80)
             Label4.configure(text='Azimut')
             Label4.configure(anchor='w')
+            Label4.configure(background=colors['window'])
+            Label4.configure(fg=colors['text'])
 
             Entry3=tk.Entry(topLims)
             Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
@@ -545,6 +559,10 @@ def AddObs(obs=None):
             Button2.place(relx=0.45,rely=0.7,height=29,width=58)
             Button2.configure(text='Save')
             Button2.configure(command=saveLims)
+            Button2.configure(background=colors['window'])
+            Button2.configure(fg=colors['text'])
+            Button2.configure(activebackground=colors['window'])
+            Button2.configure(activeforeground=colors['text'])
 
         def saveSite():
             try:
@@ -599,6 +617,8 @@ def AddObs(obs=None):
         Label1.place(relx=0.05,rely=0.05,height=21,width=43)
         Label1.configure(text='Name')
         Label1.configure(anchor='w')
+        Label1.configure(background=colors['window'])
+        Label1.configure(fg=colors['text'])
 
         Entry1=tk.Entry(topSite)
         Entry1.place(relx=0.35,rely=0.05,height=25,relwidth=0.6)
@@ -613,6 +633,8 @@ def AddObs(obs=None):
         Label2.place(relx=0.05,rely=0.25,height=21,width=57)
         Label2.configure(text='Latitude')
         Label2.configure(anchor='w')
+        Label2.configure(background=colors['window'])
+        Label2.configure(fg=colors['text'])
 
         Entry2=tk.Entry(topSite)
         Entry2.place(relx=0.35,rely=0.25,height=25,relwidth=0.6)
@@ -627,6 +649,8 @@ def AddObs(obs=None):
         Label3.place(relx=0.05,rely=0.45,height=21,width=68)
         Label3.configure(text='Longitude')
         Label3.configure(anchor='w')
+        Label3.configure(background=colors['window'])
+        Label3.configure(fg=colors['text'])
 
         Entry3=tk.Entry(topSite)
         Entry3.place(relx=0.35,rely=0.45,height=25,relwidth=0.6)
@@ -641,6 +665,8 @@ def AddObs(obs=None):
         Label4.place(relx=0.05,rely=0.65,height=21,width=65)
         Label4.configure(text='Elevation')
         Label4.configure(anchor='w')
+        Label4.configure(background=colors['window'])
+        Label4.configure(fg=colors['text'])
 
         Entry4=tk.Entry(topSite)
         Entry4.place(relx=0.35,rely=0.65,height=25,relwidth=0.6)
@@ -655,11 +681,19 @@ def AddObs(obs=None):
         Button1.place(relx=0.2,rely=0.82,height=29,width=58)
         Button1.configure(text='Limits')
         Button1.configure(command=setLimits)
+        Button1.configure(background=colors['window'])
+        Button1.configure(fg=colors['text'])
+        Button1.configure(activebackground=colors['window'])
+        Button1.configure(activeforeground=colors['text'])
 
         Button2=tk.Button(topSite)
         Button2.place(relx=0.6,rely=0.82,height=29,width=58)
         Button2.configure(text='Save')
         Button2.configure(command=saveSite)
+        Button2.configure(background=colors['window'])
+        Button2.configure(fg=colors['text'])
+        Button2.configure(activebackground=colors['window'])
+        Button2.configure(activeforeground=colors['text'])
 
     def editSite():
         addSite(siteVar.get())
@@ -693,6 +727,8 @@ def AddObs(obs=None):
         Label1=tk.Label(topTel)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
+        Label1.configure(background=colors['window'])
+        Label1.configure(fg=colors['text'])
 
         Entry1=tk.Entry(topTel)
         Entry1.place(relx=0.15,rely=0.1,height=25,relwidth=0.82)
@@ -707,6 +743,10 @@ def AddObs(obs=None):
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveTel)
+        Button1.configure(background=colors['window'])
+        Button1.configure(fg=colors['text'])
+        Button1.configure(activebackground=colors['window'])
+        Button1.configure(activeforeground=colors['text'])
 
     def editTel():
         addTel(telVar.get())
@@ -823,6 +863,8 @@ def AddObs(obs=None):
         Label1.place(relx=0.01,rely=0.02,height=21,width=43)
         Label1.configure(text='Name')
         Label1.configure(anchor='w')
+        Label1.configure(background=colors['window'])
+        Label1.configure(fg=colors['text'])
 
         Entry1=tk.Entry(topObj)
         Entry1.place(relx=0.2,rely=0.02,height=25,relwidth=0.75)
@@ -837,6 +879,8 @@ def AddObs(obs=None):
         Label2.place(relx=0.01,rely=0.10,height=21,width=43)
         Label2.configure(text='RA')
         Label2.configure(anchor='w')
+        Label2.configure(background=colors['window'])
+        Label2.configure(fg=colors['text'])
 
         Entry2=tk.Entry(topObj)
         Entry2.place(relx=0.2,rely=0.10,height=25,relwidth=0.75)
@@ -851,6 +895,8 @@ def AddObs(obs=None):
         Label3.place(relx=0.01,rely=0.18,height=21,width=43)
         Label3.configure(text='DEC')
         Label3.configure(anchor='w')
+        Label3.configure(background=colors['window'])
+        Label3.configure(fg=colors['text'])
 
         Entry3=tk.Entry(topObj)
         Entry3.place(relx=0.2,rely=0.18,height=25,relwidth=0.75)
@@ -865,6 +911,8 @@ def AddObs(obs=None):
         Label8.place(relx=0.01,rely=0.26,height=21,width=90)
         Label8.configure(text='Constellation')
         Label8.configure(anchor='w')
+        Label8.configure(background=colors['window'])
+        Label8.configure(fg=colors['text'])
 
         Entry7=tk.Entry(topObj)
         Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
@@ -879,11 +927,17 @@ def AddObs(obs=None):
         Button2.place(relx=0.76,rely=0.26,height=24,width=47)
         Button2.configure(text='Detect')
         Button2.configure(command=detect)
+        Button2.configure(background=colors['window'])
+        Button2.configure(fg=colors['text'])
+        Button2.configure(activebackground=colors['window'])
+        Button2.configure(activeforeground=colors['text'])
 
         Label4=tk.Label(topObj)
         Label4.place(relx=0.01,rely=0.34,height=21,width=43)
         Label4.configure(text='Mag')
         Label4.configure(anchor='w')
+        Label4.configure(background=colors['window'])
+        Label4.configure(fg=colors['text'])
 
         Entry4=tk.Entry(topObj)
         Entry4.place(relx=0.2,rely=0.34,height=25,relwidth=0.75)
@@ -898,6 +952,8 @@ def AddObs(obs=None):
         Label5.place(relx=0.01,rely=0.42,height=21,width=43)
         Label5.configure(text='Size')
         Label5.configure(anchor='w')
+        Label5.configure(background=colors['window'])
+        Label5.configure(fg=colors['text'])
 
         Entry5=tk.Entry(topObj)
         Entry5.place(relx=0.2,rely=0.42,height=25,relwidth=0.75)
@@ -912,6 +968,8 @@ def AddObs(obs=None):
         Label6.place(relx=0.01,rely=0.50,height=21,width=43)
         Label6.configure(text='Type')
         Label6.configure(anchor='w')
+        Label6.configure(background=colors['window'])
+        Label6.configure(fg=colors['text'])
 
         Entry6=tk.Entry(topObj)
         Entry6.place(relx=0.2,rely=0.50,height=25,relwidth=0.75)
@@ -926,6 +984,8 @@ def AddObs(obs=None):
         Label7.place(relx=0.01,rely=0.58,height=21,width=43)
         Label7.configure(text='Notes')
         Label7.configure(anchor='w')
+        Label7.configure(background=colors['window'])
+        Label7.configure(fg=colors['text'])
 
         TextO=ScrolledText(topObj)
         TextO.place(relx=0.2,rely=0.58,relheight=0.33,relwidth=0.75)
@@ -949,6 +1009,10 @@ def AddObs(obs=None):
         Button1.place(relx=0.45,rely=0.93,height=24,width=47)
         Button1.configure(text='Save')
         Button1.configure(command=save)
+        Button1.configure(background=colors['window'])
+        Button1.configure(fg=colors['text'])
+        Button1.configure(activebackground=colors['window'])
+        Button1.configure(activeforeground=colors['text'])
 
 
 
@@ -1039,6 +1103,8 @@ def AddObs(obs=None):
     Label1.place(relx=0.02,rely=0.02,height=21,width=63)
     Label1.configure(text='Observer')
     Label1.configure(anchor='w')
+    Label1.configure(background=colors['window'])
+    Label1.configure(fg=colors['text'])
 
     if colors['text']=='red':
         top.option_add('*TCombobox*Listbox*Background',colors['bg'])
@@ -1063,16 +1129,26 @@ def AddObs(obs=None):
     ButtonOA.place(relx=0.75,rely=0.02,height=24,width=43)
     ButtonOA.configure(text='Add')
     ButtonOA.configure(command=addObserver)
+    ButtonOA.configure(background=colors['window'])
+    ButtonOA.configure(fg=colors['text'])
+    ButtonOA.configure(activebackground=colors['window'])
+    ButtonOA.configure(activeforeground=colors['text'])
 
     ButtonOE=tk.Button(top)
     ButtonOE.place(relx=0.88,rely=0.02,height=24,width=43)
     ButtonOE.configure(text='Edit')
     ButtonOE.configure(command=editObserver)
+    ButtonOE.configure(background=colors['window'])
+    ButtonOE.configure(fg=colors['text'])
+    ButtonOE.configure(activebackground=colors['window'])
+    ButtonOE.configure(activeforeground=colors['text'])
 
     Label2=tk.Label(top)
     Label2.place(relx=0.02,rely=0.10,height=21,width=130)
     Label2.configure(text='UTC Date/Time')
     Label2.configure(anchor='w')
+    Label2.configure(background=colors['window'])
+    Label2.configure(fg=colors['text'])
 
     Entry1=tk.Entry(top)
     Entry1.place(relx=0.27,rely=0.10,height=25,relwidth=0.45)
@@ -1087,6 +1163,8 @@ def AddObs(obs=None):
     Label3.place(relx=0.02,rely=0.18,height=21,width=29)
     Label3.configure(text='Site')
     Label3.configure(anchor='w')
+    Label3.configure(background=colors['window'])
+    Label3.configure(fg=colors['text'])
 
     TCombobox2=ttk.Combobox(top)
     TCombobox2.place(relx=0.27,rely=0.18,height=25,relwidth=0.45)
@@ -1097,20 +1175,30 @@ def AddObs(obs=None):
         TCombobox2['values']=sorted(settings['sites'])
         TCombobox2.current(sorted(settings['sites']).index(settings['default_site'].name))
 
-    ButtonOA=tk.Button(top)
-    ButtonOA.place(relx=0.75,rely=0.18,height=25,width=43)
-    ButtonOA.configure(text='Add')
-    ButtonOA.configure(command=addSite)
+    ButtonSA=tk.Button(top)
+    ButtonSA.place(relx=0.75,rely=0.18,height=25,width=43)
+    ButtonSA.configure(text='Add')
+    ButtonSA.configure(command=addSite)
+    ButtonSA.configure(background=colors['window'])
+    ButtonSA.configure(fg=colors['text'])
+    ButtonSA.configure(activebackground=colors['window'])
+    ButtonSA.configure(activeforeground=colors['text'])
 
-    ButtonOE=tk.Button(top)
-    ButtonOE.place(relx=0.88,rely=0.18,height=25,width=43)
-    ButtonOE.configure(text='Edit')
-    ButtonOE.configure(command=editSite)
+    ButtonSE=tk.Button(top)
+    ButtonSE.place(relx=0.88,rely=0.18,height=25,width=43)
+    ButtonSE.configure(text='Edit')
+    ButtonSE.configure(command=editSite)
+    ButtonSE.configure(background=colors['window'])
+    ButtonSE.configure(fg=colors['text'])
+    ButtonSE.configure(activebackground=colors['window'])
+    ButtonSE.configure(activeforeground=colors['text'])
 
     Label4=tk.Label(top)
     Label4.place(relx=0.02,rely=0.26,height=21,width=75)
     Label4.configure(text='Telescope')
     Label4.configure(anchor='w')
+    Label4.configure(background=colors['window'])
+    Label4.configure(fg=colors['text'])
 
     TCombobox3=ttk.Combobox(top)
     TCombobox3.place(relx=0.27,rely=0.26,height=25,relwidth=0.45)
@@ -1121,20 +1209,30 @@ def AddObs(obs=None):
         TCombobox3['values']=sorted(settings['telescopes'])
         TCombobox3.current(sorted(settings['telescopes']).index(settings['default_tel']))
 
-    ButtonOA=tk.Button(top)
-    ButtonOA.place(relx=0.75,rely=0.26,height=25,width=43)
-    ButtonOA.configure(text='Add')
-    ButtonOA.configure(command=addTel)
+    ButtonTA=tk.Button(top)
+    ButtonTA.place(relx=0.75,rely=0.26,height=25,width=43)
+    ButtonTA.configure(text='Add')
+    ButtonTA.configure(command=addTel)
+    ButtonTA.configure(background=colors['window'])
+    ButtonTA.configure(fg=colors['text'])
+    ButtonTA.configure(activebackground=colors['window'])
+    ButtonTA.configure(activeforeground=colors['text'])
 
-    ButtonOE=tk.Button(top)
-    ButtonOE.place(relx=0.88,rely=0.26,height=25,width=43)
-    ButtonOE.configure(text='Edit')
-    ButtonOE.configure(command=editTel)
+    ButtonTE=tk.Button(top)
+    ButtonTE.place(relx=0.88,rely=0.26,height=25,width=43)
+    ButtonTE.configure(text='Edit')
+    ButtonTE.configure(command=editTel)
+    ButtonTE.configure(background=colors['window'])
+    ButtonTE.configure(fg=colors['text'])
+    ButtonTE.configure(activebackground=colors['window'])
+    ButtonTE.configure(activeforeground=colors['text'])
 
     Label5=tk.Label(top)
     Label5.place(relx=0.02,rely=0.34,height=21,width=46)
     Label5.configure(text='Object')
     Label5.configure(anchor='w')
+    Label5.configure(background=colors['window'])
+    Label5.configure(fg=colors['text'])
 
     TCombobox4=ttk.Combobox(top)
     TCombobox4.place(relx=0.27,rely=0.34,height=25,relwidth=0.45)
@@ -1149,16 +1247,26 @@ def AddObs(obs=None):
     ButtonObA.place(relx=0.75,rely=0.34,height=25,width=43)
     ButtonObA.configure(text='Add')
     ButtonObA.configure(command=addObsObj)
+    ButtonObA.configure(background=colors['window'])
+    ButtonObA.configure(fg=colors['text'])
+    ButtonObA.configure(activebackground=colors['window'])
+    ButtonObA.configure(activeforeground=colors['text'])
 
     ButtonObE=tk.Button(top)
     ButtonObE.place(relx=0.88,rely=0.34,height=25,width=43)
     ButtonObE.configure(text='Edit')
     ButtonObE.configure(command=edObsObj)
+    ButtonObE.configure(background=colors['window'])
+    ButtonObE.configure(fg=colors['text'])
+    ButtonObE.configure(activebackground=colors['window'])
+    ButtonObE.configure(activeforeground=colors['text'])
 
     Label6=tk.Label(top)
     Label6.place(relx=0.02,rely=0.42,height=21,width=45)
     Label6.configure(text='Image')
     Label6.configure(anchor='w')
+    Label6.configure(background=colors['window'])
+    Label6.configure(fg=colors['text'])
 
     Entry2=tk.Entry(top)
     Entry2.place(relx=0.27,rely=0.42,height=25,relwidth=0.45)
@@ -1173,16 +1281,26 @@ def AddObs(obs=None):
     Button1.place(relx=0.75,rely=0.42,height=25,width=43)
     Button1.configure(text='Add')
     Button1.configure(command=addImgObs)
+    Button1.configure(background=colors['window'])
+    Button1.configure(fg=colors['text'])
+    Button1.configure(activebackground=colors['window'])
+    Button1.configure(activeforeground=colors['text'])
 
     Button1_2=tk.Button(top)
     Button1_2.place(relx=0.88,rely=0.42,height=25,width=43)
     Button1_2.configure(text='Edit')
     Button1_2.configure(command=edImgObs)
+    Button1_2.configure(background=colors['window'])
+    Button1_2.configure(fg=colors['text'])
+    Button1_2.configure(activebackground=colors['window'])
+    Button1_2.configure(activeforeground=colors['text'])
 
     Label7=tk.Label(top)
     Label7.place(relx=0.02,rely=0.5,height=21,width=46)
     Label7.configure(text='Note')
     Label7.configure(anchor='w')
+    Label7.configure(background=colors['window'])
+    Label7.configure(fg=colors['text'])
 
     TextO=ScrolledText(top)
     TextO.place(relx=0.27,rely=0.5,relheight=0.35,relwidth=0.45)
@@ -1198,6 +1316,10 @@ def AddObs(obs=None):
     Button2.place(relx=0.38,rely=0.88,height=29,width=57)
     Button2.configure(text='Save')
     Button2.configure(command=saveObs)
+    Button2.configure(background=colors['window'])
+    Button2.configure(fg=colors['text'])
+    Button2.configure(activebackground=colors['window'])
+    Button2.configure(activeforeground=colors['text'])
 
     if obs is not None:
         observerVar.set(obs.observer)
@@ -1385,6 +1507,8 @@ def Settings():
         Label1=tk.Label(topObs)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
+        Label1.configure(background=colors['window'])
+        Label1.configure(fg=colors['text'])
 
         Entry1=tk.Entry(topObs)
         Entry1.place(relx=0.2,rely=0.1,height=25,relwidth=0.75)
@@ -1399,6 +1523,10 @@ def Settings():
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveObs)
+        Button1.configure(background=colors['window'])
+        Button1.configure(fg=colors['text'])
+        Button1.configure(activebackground=colors['window'])
+        Button1.configure(activeforeground=colors['text'])
 
     def editObserver():
         addObserver(observerVar.get())
@@ -1454,16 +1582,22 @@ def Settings():
             Label1.place(relx=0.25,rely=0.05,height=21,width=43)
             Label1.configure(text='Min')
             Label1.configure(anchor='w')
+            Label1.configure(background=colors['window'])
+            Label1.configure(fg=colors['text'])
 
             Label2=tk.Label(topLims)
             Label2.place(relx=0.62,rely=0.05,height=21,width=43)
             Label2.configure(text='Max')
             Label2.configure(anchor='w')
+            Label2.configure(background=colors['window'])
+            Label2.configure(fg=colors['text'])
 
             Label3=tk.Label(topLims)
             Label3.place(relx=0.05,rely=0.25,height=21,width=80 )
             Label3.configure(text='Altitude')
             Label3.configure(anchor='w')
+            Label3.configure(background=colors['window'])
+            Label3.configure(fg=colors['text'])
 
             Entry1=tk.Entry(topLims)
             Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
@@ -1487,6 +1621,8 @@ def Settings():
             Label4.place(relx=0.05,rely=0.45,height=21,width=80)
             Label4.configure(text='Azimut')
             Label4.configure(anchor='w')
+            Label4.configure(background=colors['window'])
+            Label4.configure(fg=colors['text'])
 
             Entry3=tk.Entry(topLims)
             Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
@@ -1510,6 +1646,10 @@ def Settings():
             Button2.place(relx=0.45,rely=0.7,height=29,width=58)
             Button2.configure(text='Save')
             Button2.configure(command=saveLims)
+            Button2.configure(background=colors['window'])
+            Button2.configure(fg=colors['text'])
+            Button2.configure(activebackground=colors['window'])
+            Button2.configure(activeforeground=colors['text'])
 
         def saveSite():
             try:
@@ -1566,6 +1706,8 @@ def Settings():
         Label1.place(relx=0.05,rely=0.05,height=21,width=43)
         Label1.configure(text='Name')
         Label1.configure(anchor='w')
+        Label1.configure(background=colors['window'])
+        Label1.configure(fg=colors['text'])
 
         Entry1=tk.Entry(topSite)
         Entry1.place(relx=0.35,rely=0.05,height=25,relwidth=0.6)
@@ -1580,6 +1722,8 @@ def Settings():
         Label2.place(relx=0.05,rely=0.25,height=21,width=57)
         Label2.configure(text='Latitude')
         Label2.configure(anchor='w')
+        Label2.configure(background=colors['window'])
+        Label2.configure(fg=colors['text'])
 
         Entry2=tk.Entry(topSite)
         Entry2.place(relx=0.35,rely=0.25,height=25,relwidth=0.6)
@@ -1594,6 +1738,8 @@ def Settings():
         Label3.place(relx=0.05,rely=0.45,height=21,width=68)
         Label3.configure(text='Longitude')
         Label3.configure(anchor='w')
+        Label3.configure(background=colors['window'])
+        Label3.configure(fg=colors['text'])
 
         Entry3=tk.Entry(topSite)
         Entry3.place(relx=0.35,rely=0.45,height=25,relwidth=0.6)
@@ -1608,6 +1754,8 @@ def Settings():
         Label4.place(relx=0.05,rely=0.65,height=21,width=65)
         Label4.configure(text='Elevation')
         Label4.configure(anchor='w')
+        Label4.configure(background=colors['window'])
+        Label4.configure(fg=colors['text'])
 
         Entry4=tk.Entry(topSite)
         Entry4.place(relx=0.35,rely=0.65,height=25,relwidth=0.6)
@@ -1622,11 +1770,19 @@ def Settings():
         Button1.place(relx=0.2,rely=0.82,height=29,width=58)
         Button1.configure(text='Limits')
         Button1.configure(command=setLimits)
+        Button1.configure(background=colors['window'])
+        Button1.configure(fg=colors['text'])
+        Button1.configure(activebackground=colors['window'])
+        Button1.configure(activeforeground=colors['text'])
 
         Button2=tk.Button(topSite)
         Button2.place(relx=0.6,rely=0.82,height=29,width=58)
         Button2.configure(text='Save')
         Button2.configure(command=saveSite)
+        Button2.configure(background=colors['window'])
+        Button2.configure(fg=colors['text'])
+        Button2.configure(activebackground=colors['window'])
+        Button2.configure(activeforeground=colors['text'])
 
     def editSite():
         addSite(siteVar.get())
@@ -1671,6 +1827,8 @@ def Settings():
         Label1=tk.Label(topTel)
         Label1.place(relx=0.01,rely=0.1,height=21,width=43)
         Label1.configure(text='Name')
+        Label1.configure(background=colors['window'])
+        Label1.configure(fg=colors['text'])
 
         Entry1=tk.Entry(topTel)
         Entry1.place(relx=0.15,rely=0.1,height=25,relwidth=0.82)
@@ -1685,6 +1843,10 @@ def Settings():
         Button1.place(relx=0.4,rely=0.6,height=24,width=60)
         Button1.configure(text='Save')
         Button1.configure(command=saveTel)
+        Button1.configure(background=colors['window'])
+        Button1.configure(fg=colors['text'])
+        Button1.configure(activebackground=colors['window'])
+        Button1.configure(activeforeground=colors['text'])
 
     def editTel():
         addTel(telVar.get())
@@ -1924,12 +2086,12 @@ def Settings():
     Radiobutton1.configure(text='Original')
     Radiobutton1.configure(variable=copyVar)
     Radiobutton1.configure(value=0)
-    #TODO ramik
     Radiobutton1.configure(background=colors['window'])
     Radiobutton1.configure(fg=colors['text'])
     Radiobutton1.configure(activebackground=colors['window'])
     Radiobutton1.configure(activeforeground=colors['text'])
     Radiobutton1.configure(selectcolor=colors['bg'])
+    Radiobutton1.configure(highlightthickness=0)
 
     Radiobutton2=tk.Radiobutton(top)
     Radiobutton2.place(relx=0.46,rely=0.52,height=21,relwidth=0.25)
@@ -1942,6 +2104,7 @@ def Settings():
     Radiobutton2.configure(activebackground=colors['window'])
     Radiobutton2.configure(activeforeground=colors['text'])
     Radiobutton2.configure(selectcolor=colors['bg'])
+    Radiobutton2.configure(highlightthickness=0)
 
     if settings1['file_copy']: copyVar.set(1)
     else: copyVar.set(0)
@@ -1964,6 +2127,7 @@ def Settings():
     Radiobutton3.configure(activebackground=colors['window'])
     Radiobutton3.configure(activeforeground=colors['text'])
     Radiobutton3.configure(selectcolor=colors['bg'])
+    Radiobutton3.configure(highlightthickness=0)
 
     Radiobutton4=tk.Radiobutton(top)
     Radiobutton4.place(relx=0.48,rely=0.69,height=21,relwidth=0.22)
@@ -1976,6 +2140,7 @@ def Settings():
     Radiobutton4.configure(activebackground=colors['window'])
     Radiobutton4.configure(activeforeground=colors['text'])
     Radiobutton4.configure(selectcolor=colors['bg'])
+    Radiobutton4.configure(highlightthickness=0)
 
     if settings1['night_mode']: nightVar.set(1)
     else: nightVar.set(0)

@@ -7,8 +7,6 @@
 ![](https://img.shields.io/github/issues/pavolgaj/ObsPlanner.svg?style=flat)
 ![](https://img.shields.io/github/issues-closed/pavolgaj/ObsPlanner.svg?style=flat)
 
-Program is still in development...
-
 ### Requirements
 * python3
 * tkinter

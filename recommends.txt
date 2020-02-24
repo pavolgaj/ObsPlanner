@@ -1,2 +1,3 @@
 Pillow>=5.1.0
 xlwt>=1.3.0
+defusedxml

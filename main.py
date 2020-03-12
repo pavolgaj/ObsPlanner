@@ -472,7 +472,7 @@ def AddObs(obs=None):
                 barrier[3]=maxAzmPVar.get()
                 topLims.destroy()
                 topSite.lift()
-                
+
             def showLims():
                 lims=[]
                 lims.append(minAltVar.get())
@@ -527,7 +527,7 @@ def AddObs(obs=None):
             minAzmPVar=tk.DoubleVar(topLims)
             maxAzmPVar=tk.DoubleVar(topLims)
 
-            if site is not None: 
+            if site is not None:
                 limits=settings['sites'][site].limits
                 barrier=settings['sites'][site].barrier
             else: limits=new_limits
@@ -2736,7 +2736,7 @@ def objfilter(event=None):
              and (h>settings['default_site'].limits[0]) and not \
              ((a<settings['default_site'].barrier[3]) and (a>settings['default_site'].barrier[2]) and (h<settings['default_site'].barrier[1])\
              and (h>settings['default_site'].barrier[0])):
-                zoznam.append(ob['object'].name)                
+                zoznam.append(ob['object'].name)
     elif filt=='Above horizont':
         year,mon,day,hour,minute,sec=getDate()
         jd=stars.juldat(year,mon,day,hour,minute,sec)
@@ -2878,7 +2878,7 @@ settings0=copy.deepcopy(settings)
 if 'file_copy' not in settings: settings['file_copy']=False
 #transfor from old version
 for site in settings['sites']:
-    if not hasattr(settings['sites'][site],'barrier'): 
+    if not hasattr(settings['sites'][site],'barrier'):
         settings['sites'][site].barrier=[0,0,0,0]
 if not hasattr(settings['default_site'],'barrier'): settings['default_site'].barrier=[0,0,0,0]
 

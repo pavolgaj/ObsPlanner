@@ -4,7 +4,7 @@ import numpy as np
 import copy
 import html  #replace html characters in XML
 try: import defusedxml.ElementTree as ET   #simple reading XML files
-except: import xml.etree.ElementTree as ET 
+except: import xml.etree.ElementTree as ET
 
 from tkinter import messagebox
 import warnings

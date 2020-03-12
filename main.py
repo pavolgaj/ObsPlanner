@@ -459,19 +459,55 @@ def AddObs(obs=None):
 
     def addSite(site=None):
         def setLimits():
-            global limits
+            global limits, barrier
             def saveLims():
-                global limits
+                global limits, barrier
                 limits[0]=minAltVar.get()
                 limits[1]=maxAltVar.get()
                 limits[2]=minAzmVar.get()
                 limits[3]=maxAzmVar.get()
+                barrier[0]=minAltPVar.get()
+                barrier[1]=maxAltPVar.get()
+                barrier[2]=minAzmPVar.get()
+                barrier[3]=maxAzmPVar.get()
                 topLims.destroy()
                 topSite.lift()
+                
+            def showLims():
+                lims=[]
+                lims.append(minAltVar.get())
+                lims.append(maxAltVar.get())
+                lims.append(minAzmVar.get())
+                lims.append(maxAzmVar.get())
+                barrier=[]
+                barrier.append(minAltPVar.get())
+                barrier.append(maxAltPVar.get())
+                barrier.append(minAzmPVar.get())
+                barrier.append(maxAzmPVar.get())
+
+                matplotlib.rcParams['toolbar']='None'
+                fig=mpl.figure(facecolor=colors['fig_bg'])
+                ax=fig.add_subplot(111)
+                set_foregroundcolor(ax,colors['fig_text'])
+                #vyznacenie limitov
+                rect=patches.Rectangle((-10,0),380,100,edgecolor='none',facecolor=colors['fig_shade'])
+                ax.add_patch(rect)
+                rect=patches.Rectangle((limits[2],limits[0]),limits[3]-limits[2],limits[1]-limits[0],linewidth=1,edgecolor=colors['fig_edge'],facecolor=colors['fig_bg'])
+                ax.add_patch(rect)
+                #vyznacenie prekazky
+                rect=patches.Rectangle((barrier[2],barrier[0]),barrier[3]-barrier[2],barrier[1]-barrier[0],linewidth=1,edgecolor=colors['fig_edge'],facecolor=colors['fig_shade'])
+                ax.add_patch(rect)
+
+                ax.set_xlim(0,360)
+                ax.set_ylim(0,90)
+                ax.set_xlabel('Azimut')
+                ax.set_ylabel('Altitude')
+                fig.tight_layout()
+                fig.show()
 
             topLims=tk.Toplevel()
             topLims.lift()
-            topLims.geometry('400x150')
+            topLims.geometry('400x300')
             topLims.title('Limits')
             try: topLims.iconbitmap('ObsPlanner.ico')   #win
             except:
@@ -486,38 +522,48 @@ def AddObs(obs=None):
             maxAltVar=tk.DoubleVar(topLims)
             minAzmVar=tk.DoubleVar(topLims)
             maxAzmVar=tk.DoubleVar(topLims)
+            minAltPVar=tk.DoubleVar(topLims)
+            maxAltPVar=tk.DoubleVar(topLims)
+            minAzmPVar=tk.DoubleVar(topLims)
+            maxAzmPVar=tk.DoubleVar(topLims)
 
-            if site is not None: limits=settings['sites'][site].limits
+            if site is not None: 
+                limits=settings['sites'][site].limits
+                barrier=settings['sites'][site].barrier
             else: limits=new_limits
 
             minAltVar.set(limits[0])
             maxAltVar.set(limits[1])
             minAzmVar.set(limits[2])
             maxAzmVar.set(limits[3])
+            minAltPVar.set(barrier[0])
+            maxAltPVar.set(barrier[1])
+            minAzmPVar.set(barrier[2])
+            maxAzmPVar.set(barrier[3])
 
             Label1=tk.Label(topLims)
-            Label1.place(relx=0.25,rely=0.05,height=21,width=43)
+            Label1.place(relx=0.25,rely=0.03,height=21,width=43)
             Label1.configure(text='Min')
             Label1.configure(anchor='w')
             Label1.configure(background=colors['window'])
             Label1.configure(fg=colors['text'])
 
             Label2=tk.Label(topLims)
-            Label2.place(relx=0.62,rely=0.05,height=21,width=43)
+            Label2.place(relx=0.62,rely=0.03,height=21,width=43)
             Label2.configure(text='Max')
             Label2.configure(anchor='w')
             Label2.configure(background=colors['window'])
             Label2.configure(fg=colors['text'])
 
             Label3=tk.Label(topLims)
-            Label3.place(relx=0.05,rely=0.25,height=21,width=80 )
+            Label3.place(relx=0.05,rely=0.13,height=21,width=80 )
             Label3.configure(text='Altitude')
             Label3.configure(anchor='w')
             Label3.configure(background=colors['window'])
             Label3.configure(fg=colors['text'])
 
             Entry1=tk.Entry(topLims)
-            Entry1.place(relx=0.25,rely=0.25,height=25,relwidth=0.35)
+            Entry1.place(relx=0.25,rely=0.13,height=25,relwidth=0.35)
             Entry1.configure(background=colors['bg'])
             Entry1.configure(fg=colors['text'])
             if colors['text']=='red':
@@ -526,7 +572,7 @@ def AddObs(obs=None):
             Entry1.configure(textvariable=minAltVar)
 
             Entry2=tk.Entry(topLims)
-            Entry2.place(relx=0.62,rely=0.25,height=25,relwidth=0.35)
+            Entry2.place(relx=0.62,rely=0.13,height=25,relwidth=0.35)
             Entry2.configure(background=colors['bg'])
             Entry2.configure(fg=colors['text'])
             if colors['text']=='red':
@@ -535,14 +581,14 @@ def AddObs(obs=None):
             Entry2.configure(textvariable=maxAltVar)
 
             Label4=tk.Label(topLims)
-            Label4.place(relx=0.05,rely=0.45,height=21,width=80)
+            Label4.place(relx=0.05,rely=0.23,height=21,width=80)
             Label4.configure(text='Azimut')
             Label4.configure(anchor='w')
             Label4.configure(background=colors['window'])
             Label4.configure(fg=colors['text'])
 
             Entry3=tk.Entry(topLims)
-            Entry3.place(relx=0.25,rely=0.45,height=25,relwidth=0.35)
+            Entry3.place(relx=0.25,rely=0.23,height=25,relwidth=0.35)
             Entry3.configure(background=colors['bg'])
             Entry3.configure(fg=colors['text'])
             if colors['text']=='red':
@@ -551,7 +597,7 @@ def AddObs(obs=None):
             Entry3.configure(textvariable=minAzmVar)
 
             Entry4=tk.Entry(topLims)
-            Entry4.place(relx=0.62,rely=0.45,height=25,relwidth=0.35)
+            Entry4.place(relx=0.62,rely=0.23,height=25,relwidth=0.35)
             Entry4.configure(background=colors['bg'])
             Entry4.configure(fg=colors['text'])
             if colors['text']=='red':
@@ -559,8 +605,93 @@ def AddObs(obs=None):
                 Entry4.configure(selectforeground=colors['select_text'])
             Entry4.configure(textvariable=maxAzmVar)
 
+            #prekazka
+            Label0P=tk.Label(topLims)
+            Label0P.place(relx=0,rely=0.35,height=21,width=400)
+            Label0P.configure(text='Barrier')
+            Label0P.configure(anchor='c')
+            Label0P.configure(background=colors['window'])
+            Label0P.configure(fg=colors['text'])
+            f=font.Font(Label0P,Label0P.cget('font'))
+            f.configure(underline=True)
+            f.configure(weight='bold')
+            Label0P.configure(font=f)
+
+            Label1P=tk.Label(topLims)
+            Label1P.place(relx=0.25,rely=0.43,height=21,width=43)
+            Label1P.configure(text='Min')
+            Label1P.configure(anchor='w')
+            Label1P.configure(background=colors['window'])
+            Label1P.configure(fg=colors['text'])
+
+            Label2P=tk.Label(topLims)
+            Label2P.place(relx=0.62,rely=0.43,height=21,width=43)
+            Label2P.configure(text='Max')
+            Label2P.configure(anchor='w')
+            Label2P.configure(background=colors['window'])
+            Label2P.configure(fg=colors['text'])
+
+            Label3P=tk.Label(topLims)
+            Label3P.place(relx=0.05,rely=0.53,height=21,width=80 )
+            Label3P.configure(text='Altitude')
+            Label3P.configure(anchor='w')
+            Label3P.configure(background=colors['window'])
+            Label3P.configure(fg=colors['text'])
+
+            Entry1P=tk.Entry(topLims)
+            Entry1P.place(relx=0.25,rely=0.53,height=25,relwidth=0.35)
+            Entry1P.configure(background=colors['bg'])
+            Entry1P.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry1P.configure(selectbackground=colors['select_bg'])
+                Entry1P.configure(selectforeground=colors['select_text'])
+            Entry1P.configure(textvariable=minAltPVar)
+
+            Entry2P=tk.Entry(topLims)
+            Entry2P.place(relx=0.62,rely=0.53,height=25,relwidth=0.35)
+            Entry2P.configure(background=colors['bg'])
+            Entry2P.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry2P.configure(selectbackground=colors['select_bg'])
+                Entry2P.configure(selectforeground=colors['select_text'])
+            Entry2P.configure(textvariable=maxAltPVar)
+
+            Label4P=tk.Label(topLims)
+            Label4P.place(relx=0.05,rely=0.63,height=21,width=80)
+            Label4P.configure(text='Azimut')
+            Label4P.configure(anchor='w')
+            Label4P.configure(background=colors['window'])
+            Label4P.configure(fg=colors['text'])
+
+            Entry3P=tk.Entry(topLims)
+            Entry3P.place(relx=0.25,rely=0.63,height=25,relwidth=0.35)
+            Entry3P.configure(background=colors['bg'])
+            Entry3P.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry3P.configure(selectbackground=colors['select_bg'])
+                Entry3P.configure(selectforeground=colors['select_text'])
+            Entry3P.configure(textvariable=minAzmPVar)
+
+            Entry4P=tk.Entry(topLims)
+            Entry4P.place(relx=0.62,rely=0.63,height=25,relwidth=0.35)
+            Entry4P.configure(background=colors['bg'])
+            Entry4P.configure(fg=colors['text'])
+            if colors['text']=='red':
+                Entry4P.configure(selectbackground=colors['select_bg'])
+                Entry4P.configure(selectforeground=colors['select_text'])
+            Entry4P.configure(textvariable=maxAzmPVar)
+
+            Button1=tk.Button(topLims)
+            Button1.place(relx=0.25,rely=0.85,height=29,width=58)
+            Button1.configure(text='Show')
+            Button1.configure(command=showLims)
+            Button1.configure(background=colors['window'])
+            Button1.configure(fg=colors['text'])
+            Button1.configure(activebackground=colors['window'])
+            Button1.configure(activeforeground=colors['text'])
+
             Button2=tk.Button(topLims)
-            Button2.place(relx=0.45,rely=0.7,height=29,width=58)
+            Button2.place(relx=0.65,rely=0.85,height=29,width=58)
             Button2.configure(text='Save')
             Button2.configure(command=saveLims)
             Button2.configure(background=colors['window'])
@@ -584,7 +715,7 @@ def AddObs(obs=None):
                 topSite.lift()
                 return
             if site is not None: del settings['sites'][site]
-            settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()),limits)
+            settings['sites'][siteNameVar.get()]=siteClass(siteNameVar.get(),lat,lon,float(siteEleVar.get()),limits,barrier)
             TCombobox2['values']=sorted(settings['sites'].keys())
             TCombobox2.current(sorted(settings['sites'].keys()).index(siteNameVar.get()))
             topSite.destroy()
@@ -609,6 +740,7 @@ def AddObs(obs=None):
         siteEleVar=tk.StringVar(topSite)
         new_limits=[0,90,0,360]
         limits=new_limits
+        barrier=[0,0,0,0]
 
         if site is not None:
             siteNameVar.set(site)
@@ -616,6 +748,7 @@ def AddObs(obs=None):
             siteLonVar.set(stars.printDMS(settings['sites'][site].lon))
             siteEleVar.set(settings['sites'][site].ele)
             limits=settings['sites'][site].limits
+            barrier=settings['sites'][site].barrier
 
         Label1=tk.Label(topSite)
         Label1.place(relx=0.05,rely=0.05,height=21,width=43)
@@ -1394,8 +1527,12 @@ def Exit(event=None):
                     if not (y in settings0['sites']):
                         changedSet=True
                         break
+                    if not hasattr(settings0['sites'][y],'barrier'):
+                        changedSet=True
+                        break
                     if (not settings['sites'][y].lat==settings0['sites'][y].lat) or (not settings['sites'][y].lon==settings0['sites'][y].lon)\
-                     or (not settings['sites'][y].ele==settings0['sites'][y].ele) or (not settings['sites'][y].limits==settings0['sites'][y].limits):
+                     or (not settings['sites'][y].ele==settings0['sites'][y].ele) or (not settings['sites'][y].limits==settings0['sites'][y].limits)\
+                     or (not settings['sites'][y].barrier==settings0['sites'][y].barrier):
                         changedSet=True
                         break
                 if changedSet: break
@@ -1700,7 +1837,7 @@ def Settings():
             Label0P.configure(anchor='c')
             Label0P.configure(background=colors['window'])
             Label0P.configure(fg=colors['text'])
-            f=tk.font.Font(Label0P,Label0P.cget('font'))
+            f=font.Font(Label0P,Label0P.cget('font'))
             f.configure(underline=True)
             f.configure(weight='bold')
             Label0P.configure(font=f)
@@ -2596,9 +2733,10 @@ def objfilter(event=None):
         for ob in objects.objects.values():
             a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
             if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and (h<settings['default_site'].limits[1])\
-             and (h>settings['default_site'].limits[0]):
-                zoznam.append(ob['object'].name)
-                #TODO prekazka
+             and (h>settings['default_site'].limits[0]) and not \
+             ((a<settings['default_site'].barrier[3]) and (a>settings['default_site'].barrier[2]) and (h<settings['default_site'].barrier[1])\
+             and (h>settings['default_site'].barrier[0])):
+                zoznam.append(ob['object'].name)                
     elif filt=='Above horizont':
         year,mon,day,hour,minute,sec=getDate()
         jd=stars.juldat(year,mon,day,hour,minute,sec)
@@ -2618,7 +2756,9 @@ def objfilter(event=None):
             if len(ob['obs'])==0:
                 a,h=ob['object'].altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
                 if (a<settings['default_site'].limits[3]) and (a>settings['default_site'].limits[2]) and \
-                (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]):
+                (h<settings['default_site'].limits[1]) and (h>settings['default_site'].limits[0]) and not \
+                ((a<settings['default_site'].barrier[3]) and (a>settings['default_site'].barrier[2]) and \
+                 (h<settings['default_site'].barrier[1]) and (h>settings['default_site'].barrier[0])):
                     zoznam.append(ob['object'].name)
     zoznam=sort(zoznam)
     objsVar.set(zoznam)
@@ -2738,7 +2878,8 @@ settings0=copy.deepcopy(settings)
 if 'file_copy' not in settings: settings['file_copy']=False
 #transfor from old version
 for site in settings['sites']:
-    if not hasattr(settings['sites'][site],'barrier'): settings['sites'][site].barrier=[0,0,0,0]
+    if not hasattr(settings['sites'][site],'barrier'): 
+        settings['sites'][site].barrier=[0,0,0,0]
 if not hasattr(settings['default_site'],'barrier'): settings['default_site'].barrier=[0,0,0,0]
 
 #load colors

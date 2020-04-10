@@ -2658,19 +2658,8 @@ def plotAlt(ra,dec):
     figAlt.clf()
     ax=figAlt.add_subplot(111)
     set_foregroundcolor(ax,colors['fig_text'])
-    #vyznacenie limitov
-    rect=patches.Rectangle((-10,0),380,100,edgecolor='none',facecolor=colors['fig_shade'])
-    ax.add_patch(rect)
-    rect=patches.Rectangle((settings['default_site'].limits[2],settings['default_site'].limits[0]),\
-        settings['default_site'].limits[3]-settings['default_site'].limits[2],\
-        settings['default_site'].limits[1]-settings['default_site'].limits[0],linewidth=1,edgecolor=colors['fig_edge'],facecolor=colors['fig_bg'])
-    ax.add_patch(rect)
-    #prekazka
-    rect=patches.Rectangle((settings['default_site'].barrier[2],settings['default_site'].barrier[0]),\
-        settings['default_site'].barrier[3]-settings['default_site'].barrier[2],\
-        settings['default_site'].barrier[1]-settings['default_site'].barrier[0],linewidth=1,edgecolor=colors['fig_edge'],facecolor=colors['fig_shade'])
-    ax.add_patch(rect)
 
+    #krivka Azm-Vyska - vypocet
     year,mon,day,hour,minute,sec=getDate()
     jd0=stars.juldat(year,mon,day,hour-2,minute,sec)  #start -2h
     jd1=stars.juldat(year,mon,day,hour+8,minute,sec)  #stop +8h
@@ -2689,38 +2678,126 @@ def plotAlt(ra,dec):
         ax.set_axis_off()
         canvas2.draw()
         return
-    h0=np.ma.array(h[np.where(h>-5)])
-    a0=np.ma.array(a[np.where(h>-5)])
+    h0=np.array(h[np.where(h>-5)])
+    a0=np.array(a[np.where(h>-5)])
     i=np.where((np.abs(np.diff(a0))>10)*(np.abs(np.diff(np.sign(a0-300)))>0))[0]   #prechod cez N=360
-    a0[i]=np.ma.masked
-    h0[i]=np.ma.masked
+    i0=np.where(np.diff(a0)<0)[0]
+    if len(i0)>0 and min(h0)<0:
+        #prechod popod horizont -> zapad+vychod
+        if max(h0[:i0[0]+1])>0:
+            #zapad
+            a0=a0[:i0[0]+1]
+            h0=h0[:i0[0]+1]
+        else:
+            #vychod
+            a0=a0[i0[0]+1:]
+            h0=h0[i0[0]+1:]
+    elif len(i)>0:
+        #prechod nad horizontom -> rozdelenie na 2 casti
+        #a0[i+1]=np.ma.masked
+        #h0[i+1]=np.ma.masked
+        #aktualna poloha
+        jd=stars.juldat(year,mon,day,hour,minute,sec)
+        T=(jd-2451545.0)/36525
+        sid=280.46061837+360.98564736629*(jd-2451545.0)+0.000387933*T**2-T**3/38710000
+        sid=sid%360+settings['default_site'].lon
+        t=(sid-objZ.raD)/15.
+
+        if t<4 and t>2:
+            #len zapadny obluk
+            i=np.where(a0>180)
+            a0=a0[i]
+            h0=h0[i]
+        elif t>14 and t<16:
+            #len vychod
+            i=np.where(a0<180)
+            a0=a0[i]
+            h0=h0[i]
+        else:
+        #elif (t>=4 and t<=16) or min(abs(a0-180))>20:
+            #okolo N
+            a0[np.where(a0>180)]-=360
+
+    #vyznacenie limitov
+    if min(a0)<0:
+        rect=patches.Rectangle((-200,0),400,100,edgecolor='none',facecolor=colors['fig_shade'])
+    else:
+        rect=patches.Rectangle((-10,0),380,100,edgecolor='none',facecolor=colors['fig_shade'])
+    ax.add_patch(rect)
+
+    if min(a0)<0:
+        changed=[False]*8
+        for i in range(4):
+            if settings['default_site'].limits[i]>180:
+                changed[i]=True
+                settings['default_site'].limits[i]-=360
+            if settings['default_site'].barrier[i]>180:
+                changed[i+4]=True
+                settings['default_site'].barrier[i]-=360
+
+    rect=patches.Rectangle((settings['default_site'].limits[2],settings['default_site'].limits[0]),\
+        settings['default_site'].limits[3]-settings['default_site'].limits[2],\
+        settings['default_site'].limits[1]-settings['default_site'].limits[0],linewidth=1,edgecolor=colors['fig_edge'],facecolor=colors['fig_bg'])
+    ax.add_patch(rect)
+    #prekazka
+    rect=patches.Rectangle((settings['default_site'].barrier[2],settings['default_site'].barrier[0]),\
+        settings['default_site'].barrier[3]-settings['default_site'].barrier[2],\
+        settings['default_site'].barrier[1]-settings['default_site'].barrier[0],linewidth=1,edgecolor=colors['fig_edge'],facecolor=colors['fig_shade'])
+    ax.add_patch(rect)
+
+    if min(a0)<0:
+        for i in range(4):
+            if changed[i]: settings['default_site'].limits[i]+=360
+            if changed[i+4]: settings['default_site'].barrier[i]+=360
+
+    #krivka Azm-Vyska - vykreslenie
     ax.plot(a0,h0,colors['fig_text']+'-')
 
-    ax.set_xlim(min(a0)-5,max(a0)+5)
+    ax.set_xlim(max(min(a0)-5,0),min(max(a0)+5,360))
     ax.set_ylim(max(0,min(h0)-5),max(h)+5)
+    if min(a0)<0:
+        #okolo N
+        ax.set_xlim(min(a0)-5,max(a0)+5)
+
 
     #znacky po hodinach
-    jdH=np.arange(stars.juldat(year,mon,day,hour-1,0,0),stars.juldat(year,mon,day,hour+7,0,1),1./24.)
+    jdH=np.arange(stars.juldat(year,mon,day,hour-1,0,0),stars.juldat(year,mon,day,hour+8,0,1),1./24.)
     for i in range(len(jdH)):
         a,h=objZ.altAz(jdH[i],settings['default_site'].lon,settings['default_site'].lat)
         if h>0:
+            if min(a0)<0 and a>180: a-=360
             ax.plot(a,h,colors['fig_text']+'o')
             if hour-1+i>=24:
                 t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i-24,color=colors['fig_text'])
-                t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground=colors['fig_bg'])])
+            elif hour-1+i<0:
+                t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i+24,color=colors['fig_text'])
             else:
                 t=ax.text(a,h-(max(h0)-max(0,min(h0)))/10.,hour-1+i,color=colors['fig_text'])
-                t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground=colors['fig_bg'])])
+            t.set_path_effects([PathEffects.withStroke(linewidth=2,foreground=colors['fig_bg'])])
 
     #aktualna poloha
     jd=stars.juldat(year,mon,day,hour,minute,sec)
     a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
+    if min(a0)<0 and a>180: a-=360
     ax.plot(a,h,colors['fig_text']+'x',markersize=12)
 
     ax.set_ylabel('Alt. (deg)')
     ax.set_xlabel('Azm. (deg)')
+
     figAlt.tight_layout()
     canvas2.draw()
+
+    if min(a0)<0:
+        #okolo N
+        ticks=[item.get_text().replace('−','-') for item in ax.get_xticklabels()]
+        for i in range(len(ticks)):
+            try:
+                if int(ticks[i])<0: ticks[i]=str(int(ticks[i])+360)
+            except ValueError:
+                if float(ticks[i])<0: ticks[i]=str(float(ticks[i])+360)
+        ax.set_xticklabels(ticks)
+        canvas2.draw()
+
 
 def objfilter(event=None):
     #filtre objektov

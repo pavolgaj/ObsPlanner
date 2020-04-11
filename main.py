@@ -2693,30 +2693,8 @@ def plotAlt(ra,dec):
             a0=a0[i0[0]+1:]
             h0=h0[i0[0]+1:]
     elif len(i)>0:
-        #prechod nad horizontom -> rozdelenie na 2 casti
-        #a0[i+1]=np.ma.masked
-        #h0[i+1]=np.ma.masked
-        #aktualna poloha
-        jd=stars.juldat(year,mon,day,hour,minute,sec)
-        T=(jd-2451545.0)/36525
-        sid=280.46061837+360.98564736629*(jd-2451545.0)+0.000387933*T**2-T**3/38710000
-        sid=sid%360+settings['default_site'].lon
-        t=(sid-objZ.raD)/15.
-
-        if t<4 and t>2:
-            #len zapadny obluk
-            i=np.where(a0>180)
-            a0=a0[i]
-            h0=h0[i]
-        elif t>14 and t<16:
-            #len vychod
-            i=np.where(a0<180)
-            a0=a0[i]
-            h0=h0[i]
-        else:
-        #elif (t>=4 and t<=16) or min(abs(a0-180))>20:
-            #okolo N
-            a0[np.where(a0>180)]-=360
+        #okolo N
+        a0[np.where(a0>180)]-=360
 
     #vyznacenie limitov
     if min(a0)<0:

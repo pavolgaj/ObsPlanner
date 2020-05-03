@@ -2662,10 +2662,14 @@ def plotAlt(ra,dec):
     #krivka Azm-Vyska - vypocet
     year,mon,day,hour,minute,sec=getDate()
     jd0=stars.juldat(year,mon,day,hour-2,minute,sec)  #start -2h
-    jd1=stars.juldat(year,mon,day,hour+8,minute,sec)  #stop +8h
+    jd1=stars.juldat(year,mon,day,hour+18,minute,sec)  #stop +8h
     jd=np.linspace(jd0,jd1,200)
 
-    a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
+    lat=settings['default_site'].lat
+    if settings['default_site'].lat<0:
+        lat*=-1
+        objZ.dec*=-1
+    a,h=objZ.altAz(jd,settings['default_site'].lon,lat)
     if max(h)<0:
         figAlt.clf()
         ax=figAlt.add_subplot(111)
@@ -2677,6 +2681,7 @@ def plotAlt(ra,dec):
         ax.grid(False)
         ax.set_axis_off()
         canvas2.draw()
+        if settings['default_site'].lat<0: objZ.dec*=-1
         return
     h0=np.array(h[np.where(h>-5)])
     a0=np.array(a[np.where(h>-5)])
@@ -2695,6 +2700,7 @@ def plotAlt(ra,dec):
     elif len(i)>0:
         #okolo N
         a0[np.where(a0>180)]-=360
+    if settings['default_site'].lat<0: a0=-a0+180
 
     #vyznacenie limitov
     if min(a0)<0:
@@ -2741,8 +2747,9 @@ def plotAlt(ra,dec):
     #znacky po hodinach
     jdH=np.arange(stars.juldat(year,mon,day,hour-1,0,0),stars.juldat(year,mon,day,hour+8,0,1),1./24.)
     for i in range(len(jdH)):
-        a,h=objZ.altAz(jdH[i],settings['default_site'].lon,settings['default_site'].lat)
+        a,h=objZ.altAz(jdH[i],settings['default_site'].lon,lat)
         if h>0:
+            if settings['default_site'].lat<0: a=-a+180
             if min(a0)<0 and a>180: a-=360
             ax.plot(a,h,colors['fig_text']+'o')
             if hour-1+i>=24:
@@ -2755,7 +2762,8 @@ def plotAlt(ra,dec):
 
     #aktualna poloha
     jd=stars.juldat(year,mon,day,hour,minute,sec)
-    a,h=objZ.altAz(jd,settings['default_site'].lon,settings['default_site'].lat)
+    a,h=objZ.altAz(jd,settings['default_site'].lon,lat)
+    if settings['default_site'].lat<0: a=-a+180
     if min(a0)<0 and a>180: a-=360
     ax.plot(a,h,colors['fig_text']+'x',markersize=12)
 
@@ -2776,6 +2784,7 @@ def plotAlt(ra,dec):
         ax.set_xticklabels(ticks)
         canvas2.draw()
 
+    if settings['default_site'].lat<0: objZ.dec*=-1
 
 def objfilter(event=None):
     #filtre objektov
@@ -2853,18 +2862,23 @@ def objselect(evt):
     print('Size: '+objZ.size)
     print('Mag: '+str(objZ.mag))
     print('---------------------')
-    a,h=objZ.altAz(stars.juldat(year,mon,day,hour,minute,sec),settings['default_site'].lon,settings['default_site'].lat)
+    lat=settings['default_site'].lat
+    if settings['default_site'].lat<0:
+        lat*=-1
+        objZ.dec*=-1
+    a,h=objZ.altAz(stars.juldat(year,mon,day,hour,minute,sec),settings['default_site'].lon,lat)
     print('Az: '+stars.printDMS(a)+'; Alt: '+stars.printDMS(h))
-    r,t,s=objZ.rise(stars.juldat(year,mon,day+round(hour/24.),0,0,0),settings['default_site'].lon,settings['default_site'].lat)
+    r,t,s=objZ.rise(stars.juldat(year,mon,day+round(hour/24.),0,0,0),settings['default_site'].lon,lat)
     if not r=='NA':
         r=stars.printDMS(r)
         s=stars.printDMS(s)
     print('Rise: '+r)
-    print('Transit: '+stars.printDMS(t)+' @ '+str(round(objZ.dec+90-settings['default_site'].lat,2))+' deg')
+    print('Transit: '+stars.printDMS(t)+' @ '+str(round(objZ.dec+90-lat,2))+' deg')
     print('Set: '+s)
     print('---------------------')
     print('Note: '+objZ.note)
     sys.stdout=old
+    if settings['default_site'].lat<0: objZ.dec*=-1
 
     obssVar.set(sortObs(obsZ))
     Button2.configure(state=tk.NORMAL)

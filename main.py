@@ -2662,7 +2662,7 @@ def plotAlt(ra,dec):
     #krivka Azm-Vyska - vypocet
     year,mon,day,hour,minute,sec=getDate()
     jd0=stars.juldat(year,mon,day,hour-2,minute,sec)  #start -2h
-    jd1=stars.juldat(year,mon,day,hour+18,minute,sec)  #stop +8h
+    jd1=stars.juldat(year,mon,day,hour+8,minute,sec)  #stop +8h
     jd=np.linspace(jd0,jd1,200)
 
     lat=settings['default_site'].lat

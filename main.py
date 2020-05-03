@@ -2949,7 +2949,8 @@ if 'file_copy' not in settings: settings['file_copy']=False
 for site in settings['sites']:
     if not hasattr(settings['sites'][site],'barrier'):
         settings['sites'][site].barrier=[0,0,0,0]
-if not hasattr(settings['default_site'],'barrier'): settings['default_site'].barrier=[0,0,0,0]
+if not hasattr(settings['default_site'],'barrier') and settings['default_site'] is not None:
+    settings['default_site'].barrier=[0,0,0,0]
 
 #load colors
 if settings['night_mode']: color_name='data/night.opc'

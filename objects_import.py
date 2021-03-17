@@ -167,15 +167,20 @@ def aptI(name):
 
     for obj in objlist:
         params=dict().fromkeys(['name','ra','dec','mag','size','typ','note','const'],'')
-        params['name']=obj.find('Object').text
-        params['note']=(obj.find('NameNotes').text or '')
+        try: params['name']=obj.find('Object').text
+        except: params['name']=obj.find('Name').text 
+        try: params['note']=(obj.find('NameNotes').text or '')
+        except: params['note']=''
         if len(params['note'])>0: params['note']=html.unescape(params['note'])   #replace html characters in XML
-        params['typ']=(obj.find('Type').text or '')
-        params['const']=(obj.find('Const').text or '')
+        try: params['typ']=(obj.find('Type').text or '')
+        except: params['typ']=''
+        try: params['const']=(obj.find('Const').text or '')
+        except: params['const']='' 
         try: params['mag']=float(obj.find('Mag').text.replace(',','.'))
         except ValueError: params['mag']=obj.find('Mag').text.replace(',','.')   #viac hodnot
         except AttributeError: params['mag']=''  #bez hodnoty
-        params['size']=(obj.find('Size').text or '')
+        try: params['size']=(obj.find('Size').text or '')
+        except: params['size']=''
         try: params['ra']=stars.readDMS(obj.find('RA').text.replace(',','.'))
         except:
             messagebox.showerror('RA Format','Wrong RA format or RA not given for '+params['name']+'! Object skipped.')

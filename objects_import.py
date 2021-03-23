@@ -74,7 +74,7 @@ def maximI(name):
         if '-' in tmp[0]: sgn=-1
         else: sgn=1
         dec=float(tmp[0])+sgn*float(tmp[1])/60.+sgn*float(tmp[2])/3600.
-        mag=float(dat[3].strip()[1:-1])
+        mag=dat[3].strip()[1:-1].strip()
         typ=''
         size=''
         objects.add(name,ra,dec,mag,size,typ,note)
@@ -123,7 +123,7 @@ def sipsI(name):
         for d in dat[7:]:
             #osetrenie nahodneho usporiadania stlpcov v SIPS!!!!
             try:
-                mag=float(d[:d.find('m')])
+                mag=d[:d.find('m')].strip()
                 continue
             except: pass
             if d.strip().lower() in skratky:
@@ -176,8 +176,7 @@ def aptI(name):
         except: params['typ']=''
         try: params['const']=(obj.find('Const').text or '')
         except: params['const']='' 
-        try: params['mag']=float(obj.find('Mag').text.replace(',','.'))
-        except ValueError: params['mag']=obj.find('Mag').text.replace(',','.')   #viac hodnot
+        try: params['mag']=obj.find('Mag').text.replace(',','.').strip()
         except AttributeError: params['mag']=''  #bez hodnoty
         try: params['size']=(obj.find('Size').text or '')
         except: params['size']=''
@@ -233,8 +232,7 @@ def plannerI(name):
         if obj.find('objecttype') is not None: params['typ']=(obj.find('objecttype').text or '')    #AP_v2
         elif obj.find('type') is not None: params['typ']=(obj.find('type').text or '')   #AP_v1
         params['const']=(obj.find('constellation').text or '')
-        try: params['mag']=float(obj.find('magnitude').text.replace(',','.'))
-        except ValueError: params['mag']=obj.find('magnitude').text.replace(',','.')   #viac hodnot
+        try: params['mag']=obj.find('magnitude').text.replace(',','.').strip()
         except AttributeError: params['mag']=''  #bez hodnoty
         params['size']=(obj.find('size').text or '')
         try: params['ra']=stars.readDMS(obj.find('ra').text.replace(',','.'))
@@ -279,7 +277,7 @@ def maximE(objects,name):
         f.write('"'+o.name+'/",')
         f.write('"'+stars.printDMS(o.ra).replace(':',' ')+'",')
         f.write('"'+stars.printDMS(o.dec).replace(':',' ')+'",')
-        f.write('"'+o.mag+'"\n')
+        f.write('"'+str(o.mag)+'"\n')
     f.close()
 
 def sipsE(objects,name):
@@ -294,7 +292,7 @@ def sipsE(objects,name):
         f.write(o.const+' ')
         f.write(o.type.replace(' ','_')+' ')
         f.write(o.size.replace(' ','_')+' ')
-        f.write(o.mag+'mag\n')
+        f.write(str(o.mag)+'mag\n')
     f.close()
 
 def aptE(objects,name):
@@ -308,7 +306,7 @@ def aptE(objects,name):
         f.write('\t\t<NameNotes>'+o.note.replace('\n','; ')+'</NameNotes>\n')
         f.write('\t\t<Type>'+'</Type>\n')
         f.write('\t\t<Const>'+o.const+'</Const>\n')
-        f.write('\t\t<Mag>'+o.mag+'</Mag>\n')
+        f.write('\t\t<Mag>'+str(o.mag)+'</Mag>\n')
         f.write('\t\t<Size>'+o.size.replace("'",'')+'</Size>\n')
         f.write('\t\t<RA>'+stars.printDMS(o.ra)+'</RA>\n')
         f.write('\t\t<DEC>'+stars.printDMS(o.dec)+'</DEC>\n')
@@ -327,7 +325,7 @@ def textE(objects,name):
         f.write(stars.printDMS(o.ra)+'  ')
         f.write(stars.printDMS(o.dec)+'  ')
         f.write(o.const+'  ')
-        f.write(o.mag+'  ')
+        f.write(str(o.mag)+'  ')
         f.write('"'+o.size+'"  ')
         f.write('"'+o.type+'"  ')
         f.write('"'+o.note.replace('\n','; ')+'"\n')

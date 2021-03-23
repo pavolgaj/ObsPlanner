@@ -301,3 +301,15 @@ def load():
 
     return constellations
 
+def abbrev():
+    f=open('data/constellations.txt','r')
+    lines=f.readlines()
+    f.close()    
+
+    abbrevConst={}
+
+    for l in lines:
+        tmp=l.split(';')
+        abbrevConst[tmp[0].strip()]=tmp[1].strip()
+
+    return abbrevConst

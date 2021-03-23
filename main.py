@@ -156,7 +156,12 @@ def AddObj(obj=None):
             top.lift()
             return
         if len(constVar.get())==0:
-            messagebox.showerror('Constelation Error','"Constelation" not given!')
+            messagebox.showerror('Constelation Error','"Constellation" not given!')
+            top.lift()
+            return
+        if constVar.get().strip() not in constellations:
+            messagebox.showerror('Constelation Error','Invalid constallation "'+constVar.get().strip()+\
+            '"! Use standard abbreviations (see file "data/constellations.txt")!')
             top.lift()
             return
 

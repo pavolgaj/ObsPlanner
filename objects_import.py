@@ -314,7 +314,22 @@ def aptE(objects,name):
         f.write('\t<Obj>\n')
         f.write('\t\t<Object>'+o.name+'</Object>\n')
         f.write('\t\t<NameNotes>'+o.note.replace('\n','; ')+'</NameNotes>\n')
-        f.write('\t\t<Type>'+'</Type>\n')
+        if 'galaxy' in o.type.lower(): typ='G'
+        elif 'open' in o.type.lower(): typ='OC'
+        elif 'globular' in o.type.lower(): typ='GC'
+        elif 'planetary' in o.type.lower(): typ='PN'
+        elif 'star' in o.type.lower(): typ='S'
+        elif 'reflection' in o.type.lower(): typ='RN'
+        elif 'emission' in o.type.lower(): typ='EN'
+        elif 'dark' in o.type.lower(): typ='DN'
+        elif 'diffuse' in o.type.lower(): typ='DFN'
+        elif 'asterism' in o.type.lower(): typ='A'
+        elif 'nebula' in o.type.lower(): typ='N'
+        elif 'supernova' in o.type.lower(): typ='SN'
+        else: 
+            typ=o.type
+            print(typ)
+        f.write('\t\t<Type>'+typ+'</Type>\n')
         f.write('\t\t<Const>'+o.const+'</Const>\n')
         f.write('\t\t<Mag>'+str(o.mag)+'</Mag>\n')
         f.write('\t\t<Size>'+o.size.replace("'",'')+'</Size>\n')

@@ -102,7 +102,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1.6')
+    Label3.configure(text='version 0.1.7')
     Label3.configure(background=colors['window'])
     Label3.configure(fg=colors['text'])
 
@@ -126,7 +126,7 @@ def About():
 
     Label2=tk.Label(top)
     Label2.place(relx=0.0,rely=0.88,height=21,width=310)
-    Label2.configure(text='(c) Pavol Gajdoš, 2019 - 2020')
+    Label2.configure(text='(c) Pavol Gajdoš, 2019 - 2021')
     Label2.configure(background=colors['window'])
     Label2.configure(fg=colors['text'])
 
@@ -242,6 +242,8 @@ def AddObj(obj=None):
     sizeVar=tk.StringVar(top)
     typeVar=tk.StringVar(top)
 
+    constVar.set('')
+
     if obj is not None:
         nameVar.set(obj.name)
         raVar.set(stars.printDMS(obj.ra))
@@ -250,6 +252,16 @@ def AddObj(obj=None):
         magVar.set(obj.mag)
         sizeVar.set(obj.size)
         typeVar.set(obj.type)
+
+    if colors['text']=='red':
+        top.option_add('*TCombobox*Listbox*Background',colors['bg'])
+        top.option_add('*TCombobox*Listbox*Foreground',colors['text'])
+    style=ttk.Style(top)
+    style.theme_use('alt')
+    style.map('TCombobox',selectbackground=[('readonly',colors['bg'])])
+    style.map('TCombobox',fieldbackground=[('readonly',colors['bg'])])
+    style.map('TCombobox',foreground=[('readonly',colors['text'])])
+    style.map('TCombobox',selectforeground=[('readonly',colors['text'])])
 
     #objekty
     Label1=tk.Label(top)
@@ -308,14 +320,12 @@ def AddObj(obj=None):
     Label8.configure(fg=colors['text'])
     Label8.configure(background=colors['window'])
 
-    Entry7=tk.Entry(top)
-    Entry7.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
-    Entry7.configure(background=colors['bg'])
-    Entry7.configure(textvariable=constVar)
-    if colors['text']=='red':
-        Entry7.configure(selectbackground=colors['select_bg'])
-        Entry7.configure(selectforeground=colors['select_text'])
-    Entry7.configure(fg=colors['text'])
+    TCombobox1=ttk.Combobox(top)
+    TCombobox1.place(relx=0.4,rely=0.26,height=25,relwidth=0.35)
+    TCombobox1.configure(textvariable=constVar)
+    TCombobox1.configure(state='readonly')
+    TCombobox1['values']=['']+sorted(constellations)
+    #TCombobox1.current(0)
 
     Button2=tk.Button(top)
     Button2.place(relx=0.76,rely=0.26,height=24,width=47)
@@ -3014,7 +3024,6 @@ if colors['text']=='red':
     root.option_add('*TCombobox*Listbox*Background',colors['bg'])
 style=ttk.Style()
 style.theme_use('alt')
-#style.map('TCombobox',background=[('readonly',colors['bg'])])
 style.map('TCombobox',selectbackground=[('readonly',colors['bg'])])
 style.map('TCombobox',fieldbackground=[('readonly',colors['bg'])])
 style.map('TCombobox',foreground=[('readonly',colors['text'])])
@@ -3024,8 +3033,6 @@ TCombobox1=ttk.Combobox(Labelframe0)
 TCombobox1.place(relx=0.2,rely=0.01,height=25,relwidth=0.7)
 TCombobox1.configure(textvariable=filtVar)
 TCombobox1.configure(state='readonly')
-#TCombobox1.configure(background=colors['bg'])
-#TCombobox1.configure(fg=colors['text'])
 TCombobox1['values']=('All','Visible','Above horizont','Observed','Not Observed','Visible + Not Observed')
 TCombobox1.current(0)
 TCombobox1.bind('<<ComboboxSelected>>',objfilter)
@@ -3037,7 +3044,6 @@ Scrolledlistbox1.configure(fg=colors['text'])
 if colors['text']=='red':
     Scrolledlistbox1.configure(selectbackground=colors['select_bg'])
     Scrolledlistbox1.configure(selectforeground=colors['select_text'])
-#Scrolledlistbox1.configure(inactiveselectbackground=colors['select_bg'])
 Scrolledlistbox1.configure(width=10)
 Scrolledlistbox1.configure(listvariable=objsVar)
 Scrolledlistbox1.bind('<<ListboxSelect>>',objselect)
@@ -3099,7 +3105,6 @@ Scrolledlistbox2.configure(fg=colors['text'])
 if colors['text']=='red':
     Scrolledlistbox2.configure(selectbackground=colors['select_bg'])
     Scrolledlistbox2.configure(selectforeground=colors['select_text'])
-#Scrolledlistbox2.configure(inactiveselectbackground=colors['select_bg'])
 Scrolledlistbox2.configure(width=10)
 Scrolledlistbox2.configure(listvariable=obssVar)
 Scrolledlistbox2.bind('<<ListboxSelect>>',obsselect)

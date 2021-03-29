@@ -457,6 +457,8 @@ def excelObsE(objects,name):
     time_format.num_format_str='hh:mm:ss'
     date_format=xlwt.XFStyle()
     date_format.num_format_str='YYYY-MM-DD'
+    #date_time_format=xlwt.XFStyle()
+    #date_time_format.num_format_str='YYYY-MM-DD hh:mm:ss'
 
     ws.write(0,0,'Date')
     ws.write(0,1,'Time')
@@ -505,8 +507,9 @@ def excelObsE(objects,name):
     #sort all observations by JD
     for i in sortObs(obs):
         o=obs[i]
-        ws.write(row,0,o.datetimeObject,date_format)
-        ws.write(row,1,o.datetimeObject,time_format)
+        ws.write(row,0,o.datetimeObject.date(),date_format)
+        ws.write(row,1,o.datetimeObject.time(),time_format)
+        #ws.write(row,19,o.datetimeObject,date_time_format)
         ws.write(row,2,o.jd)
         #ws.write(row,3,o.obj)
         #ws.write(row,4,stars.printDMS(obj.ra))

@@ -396,7 +396,7 @@ def excelE(objects,name,jd,jd0,lon,lat):
             s=stars.printDMS(s)
         ws.write(row,5,r)
         ws.write(row,6,stars.printDMS(t))
-        ws.write(row,7,o.dec+90-lat)
+        ws.write(row,7,round(o.dec+90-lat,2))
         ws.write(row,8,s)
         ws.write(row,9,o.const)
         try: ws.write(row,10,float(o.mag))
@@ -452,6 +452,11 @@ def excelObsE(objects,name):
         warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)
         return
     ws=wb.add_sheet('Observations')
+    
+    time_format=xlwt.XFStyle()
+    time_format.num_format_str='hh:mm:ss'
+    date_format=xlwt.XFStyle()
+    date_format.num_format_str='YYYY-MM-DD'
 
     ws.write(0,0,'Date')
     ws.write(0,1,'Time')
@@ -500,8 +505,8 @@ def excelObsE(objects,name):
     #sort all observations by JD
     for i in sortObs(obs):
         o=obs[i]
-        ws.write(row,0,o.date.split()[0])
-        ws.write(row,1,o.date.split()[1])
+        ws.write(row,0,o.datetimeObject,date_format)
+        ws.write(row,1,o.datetimeObject,time_format)
         ws.write(row,2,o.jd)
         #ws.write(row,3,o.obj)
         #ws.write(row,4,stars.printDMS(obj.ra))
@@ -510,7 +515,7 @@ def excelObsE(objects,name):
         ws.write(row,3,o.obj.name)
         ws.write(row,4,stars.printDMS(o.obj.ra))
         ws.write(row,5,stars.printDMS(o.obj.dec))
-        a,h=obj.altAz(o.jd,o.site.lon,o.site.lat)
+        a,h=o.obj.altAz(o.jd,o.site.lon,o.site.lat)
         ws.write(row,6,stars.printDMS(h))
         ws.write(row,7,stars.printDMS(a))
         #ws.write(row,8,obj.const)

@@ -102,7 +102,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1.7')
+    Label3.configure(text='version 0.1.7-1')
     Label3.configure(background=colors['window'])
     Label3.configure(fg=colors['text'])
 

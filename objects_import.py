@@ -101,7 +101,7 @@ def sipsI(name):
     '''import objects from SIPS file'''
     constellations=stars.load()
     abbrevConst={x.lower():y for x,y in stars.abbrev().items()}   #malym -> osetrenie problem s velkostou pismen
-    
+
     skratky=[x.lower() for x in constellations.keys()]        #malym -> osetrenie problem s velkostou pismen
     objects=objClass.objects(constellations)
     f=open(name,'r')
@@ -129,11 +129,11 @@ def sipsI(name):
                 continue
             except: pass
             if d.strip().lower() in skratky:
-                const0=d.strip() 
+                const0=d.strip()
                 continue
             elif d.strip().lower() in abbrevConst:
-                const0=abbrevConst[d.strip().lower()] 
-                continue                
+                const0=abbrevConst[d.strip().lower()]
+                continue
             typ=d
         size=''
         if '(' in line: note=line[line.find('(')+1:line.find(')')]
@@ -166,7 +166,7 @@ def aptI(name):
     '''import objects from APT ObjectsList.xml file'''
     constellations=stars.load()
     abbrevConst={x.lower():y for x,y in stars.abbrev().items()}   #malym -> osetrenie problem s velkostou pismen
-    
+
     objects=objClass.objects(constellations)
 
     xmldoc=ET.parse(name)
@@ -175,7 +175,7 @@ def aptI(name):
     for obj in objlist:
         params=dict().fromkeys(['name','ra','dec','mag','size','typ','note','const'],'')
         try: params['name']=obj.find('Object').text
-        except: params['name']=obj.find('Name').text 
+        except: params['name']=obj.find('Name').text
         try: params['note']=(obj.find('NameNotes').text or '')
         except: params['note']=''
         if len(params['note'])>0: params['note']=html.unescape(params['note'])   #replace html characters in XML
@@ -183,7 +183,7 @@ def aptI(name):
         except: params['typ']=''
         try: params['const']=(obj.find('Const').text or '')
         except: params['const']=''
-        if params['const'].lower() in abbrevConst: params['const']=abbrevConst[params['const'].lower()]  
+        if params['const'].lower() in abbrevConst: params['const']=abbrevConst[params['const'].lower()]
         try: params['mag']=obj.find('Mag').text.replace(',','.').strip()
         except AttributeError: params['mag']=''  #bez hodnoty
         try: params['size']=(obj.find('Size').text or '')
@@ -241,7 +241,7 @@ def plannerI(name):
         if obj.find('objecttype') is not None: params['typ']=(obj.find('objecttype').text or '')    #AP_v2
         elif obj.find('type') is not None: params['typ']=(obj.find('type').text or '')   #AP_v1
         params['const']=(obj.find('constellation').text or '')
-        if params['const'].lower() in abbrevConst: params['const']=abbrevConst[params['const'].lower()] 
+        if params['const'].lower() in abbrevConst: params['const']=abbrevConst[params['const'].lower()]
         try: params['mag']=obj.find('magnitude').text.replace(',','.').strip()
         except AttributeError: params['mag']=''  #bez hodnoty
         params['size']=(obj.find('size').text or '')
@@ -326,7 +326,7 @@ def aptE(objects,name):
         elif 'asterism' in o.type.lower(): typ='A'
         elif 'nebula' in o.type.lower(): typ='N'
         elif 'supernova' in o.type.lower(): typ='SN'
-        else: 
+        else:
             typ=o.type
             print(typ)
         f.write('\t\t<Type>'+typ+'</Type>\n')
@@ -452,7 +452,7 @@ def excelObsE(objects,name):
         warnings.warn('Module "xlwt" not installed! Export to Excel will not be possible!',ImportWarning,stacklevel=2)
         return
     ws=wb.add_sheet('Observations')
-    
+
     time_format=xlwt.XFStyle()
     time_format.num_format_str='hh:mm:ss'
     date_format=xlwt.XFStyle()

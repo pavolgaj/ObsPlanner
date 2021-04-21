@@ -1,6 +1,6 @@
 import numpy as np
 import datetime
-from stars import juldat, sid_time
+from stars import sid_time
 
 def jd2date(jd):
     '''convert julian date to date and time'''
@@ -136,34 +136,44 @@ def eq2alt(jd,ra,de,lon,lat):
     alt=np.rad2deg(alt)
     return alt
 
-def riseSet(jd,ra,dec,lon,lat):
-    '''vypocet vychodov a zapadov'''
-# =============================================================================
-#     sid=sid_time(jd)+lon
-#     t=np.rad2deg(np.arccos(-np.tan(np.deg2rad(dec))*np.tan(np.deg2rad(lat))))
-#     T0=t+ra-sid
-#     T1=360-t+ra-sid
-#     if T0>=360: T0-=360
-#     elif T0<0: T0+=360
-#     if T1>=360: T1-=360
-#     elif T1<0: T1+=360
-#     return T1/15.,T0/15.
-# =============================================================================
+def riseSet(jd,lon,lat,sun=True):
     '''calculate time of rising, transit and setting; jd - at Oh UT'''
+
+    def rise0(dec,lat):
+        dec=np.deg2rad(dec)
+        lat=np.deg2rad(lat)
+
+        ha=np.arccos(-np.tan(lat)*np.tan(dec))
+        ha=np.rad2deg(ha)
+        return ha
+
+    if sun: coord=sunCoordinates
+    else: coord=moonCoordinates
+
+    ra,dec=coord(jd)
+
     sid=sid_time(jd)+lon    #local sidereal time
-
-    dec=np.deg2rad(dec)
-    lat=np.deg2rad(lat)
-
-    ha=np.arccos(-np.tan(lat)*np.tan(dec))
-    ha=np.rad2deg(ha)
-
+    ha=rise0(dec,lat)
     t=(ra-sid)/15.  #transit
-    t=t%24
     if np.isnan(ha): return 'NA',t,'NA'    #nie je vychod/zapad
     r=t-ha/15.           #rise
-    r=r%24
     s=t+ha/15.           #set
+
+    if sun: coord=sunCoordinates
+    else: coord=moonCoordinates
+
+    #corrections (moving object)
+    ra,dec=coord(jd+t/24.)
+    t=(ra-sid)/15.   #transit
+    ra,dec=coord(jd+r/24.)
+    ha=rise0(dec,lat)
+    r=(ra-sid-ha)/15.           #rise
+    ra,dec=coord(jd+s/24.)
+    ha=rise0(dec,lat)
+    s=(ra-sid+ha)/15.           #rise
+
+    t=t%24
+    r=r%24
     s=s%24
 
     return r,t,s

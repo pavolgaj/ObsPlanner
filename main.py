@@ -281,7 +281,7 @@ def Informations():
     if loc>24: loc-=24
     print('Local Sidereal Time: '+stars.printDMS(loc))
 
-    def info(ra,dec):
+    def info(ra,dec,sun=True):
         print('RA: '+stars.printDMS(ra/15)+'; DEC: '+stars.printDMS(dec))
         found=[]
         for const in constellations:
@@ -292,7 +292,7 @@ def Informations():
         print('Const.: '+const)
         h=moon.eq2alt(jd,ra,dec,settings['default_site'].lon,settings['default_site'].lat)
         print('Alt: '+stars.printDMS(h))
-        r,t,s=moon.riseSet(stars.juldat(year,mon,day+round(hour/24.),0,0,0),ra,dec,settings['default_site'].lon,settings['default_site'].lat)
+        r,t,s=moon.riseSet(stars.juldat(year,mon,day+round(hour/24.),0,0,0),settings['default_site'].lon,settings['default_site'].lat,sun)
         if not r=='NA':
             r=stars.printDMS(r)
             s=stars.printDMS(s)
@@ -303,13 +303,13 @@ def Informations():
     sys.stdout=StdoutRedirector(Text2)
     #sun
     ra,dec=moon.sunCoordinates(jd)
-    info(ra,dec)
+    info(ra,dec,sun=True)
 
 
     sys.stdout=StdoutRedirector(Text3)
     #moon
     ra,dec=moon.moonCoordinates(jd)
-    info(ra,dec)
+    info(ra,dec,sun=False)
 
     sys.stdout=old
 

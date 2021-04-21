@@ -25,6 +25,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.patheffects as PathEffects
 import matplotlib.patches as patches
+from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as mpl
 
 import datetime
@@ -33,6 +34,8 @@ import stars
 import objects as objClass
 from gui_tools import *
 import objects_import
+import moon
+
 
 class siteClass():
     def __init__(self,name,lat,lon,ele,limits=None,barrier=None):
@@ -102,7 +105,7 @@ def About():
 
     Label3=tk.Label(top)
     Label3.place(relx=0.0,rely=0.52,height=21,width=310)
-    Label3.configure(text='version 0.1.7-1')
+    Label3.configure(text='version 0.2.1')
     Label3.configure(background=colors['window'])
     Label3.configure(fg=colors['text'])
 
@@ -129,6 +132,186 @@ def About():
     Label2.configure(text='(c) Pavol Gajdoš, 2019 - 2021')
     Label2.configure(background=colors['window'])
     Label2.configure(fg=colors['text'])
+
+def Informations():
+    #TODO info - Slnko,Mesiac...
+    '''
+    JD, sid_time - greenwitch, local
+    Slnko - ra,dec,vychod,zapad,vyska,sumraky?
+    Mesiac - ra,dec,vychod,zapad,vyska,faza/vek,spln,nov
+    '''
+    top=tk.Toplevel()
+    top.lift()
+    top.geometry('500x600')
+    top.title('Informations')
+    try: top.iconbitmap('ObsPlanner.ico')   #win
+    except:
+        try: #linux
+            img=tk.Image('photo',file='ObsPlanner.png')
+            top.tk.call('wm','iconphoto',top._w,img)
+        except: pass
+    top.resizable(False,False)
+    top.configure(background=colors['window'])
+
+    Label1=tk.Label(top)
+    Label1.place(relx=0.04,rely=0.01,height=21,width=80)
+    Label1.configure(text='General')
+    Label1.configure(background=colors['window'])
+    Label1.configure(fg=colors['text'])
+    Label1.configure(anchor='w')
+
+    Text1=ScrolledText(top)
+    Text1.place(relx=0.04,rely=0.05,relheight=0.15,relwidth=0.75)
+    Text1.configure(background=colors['bg'])
+    Text1.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Text1.configure(selectbackground=colors['select_bg'])
+        Text1.configure(selectforeground=colors['select_text'])
+        Text1.configure(inactiveselectbackground=colors['select_bg'])
+    Text1.configure(width=256)
+    Text1.configure(wrap=tk.WORD)
+
+    Label2=tk.Label(top)
+    Label2.place(relx=0.04,rely=0.22,height=21,width=80)
+    Label2.configure(text='Sun')
+    Label2.configure(background=colors['window'])
+    Label2.configure(fg=colors['text'])
+    Label2.configure(anchor='w')
+
+    Text2=ScrolledText(top)
+    Text2.place(relx=0.04,rely=0.26,relheight=0.27,relwidth=0.92)
+    Text2.configure(background=colors['bg'])
+    Text2.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Text2.configure(selectbackground=colors['select_bg'])
+        Text2.configure(selectforeground=colors['select_text'])
+        Text2.configure(inactiveselectbackground=colors['select_bg'])
+    Text2.configure(width=256)
+    Text2.configure(wrap=tk.WORD)
+
+    Label3=tk.Label(top)
+    Label3.place(relx=0.04,rely=0.55,height=21,width=80)
+    Label3.configure(text='Moon')
+    Label3.configure(background=colors['window'])
+    Label3.configure(fg=colors['text'])
+    Label3.configure(anchor='w')
+
+    Text3=ScrolledText(top)
+    Text3.place(relx=0.04,rely=0.59,relheight=0.38,relwidth=0.92)
+    Text3.configure(background=colors['bg'])
+    Text3.configure(fg=colors['text'])
+    if colors['text']=='red':
+        Text3.configure(selectbackground=colors['select_bg'])
+        Text3.configure(selectforeground=colors['select_text'])
+        Text3.configure(inactiveselectbackground=colors['select_bg'])
+    Text3.configure(width=256)
+    Text3.configure(wrap=tk.WORD)
+
+    frame=tk.Frame(top,background=colors['text'],padx=2,pady=2)
+    frame.place(relx=0.82,rely=0.05,height=80,width=80)
+    figMoon=Figure(facecolor=colors['fig_bg'])
+    canvas=FigureCanvasTkAgg(figMoon,frame)
+    canvas.get_tk_widget().pack(side='top',fill='both',expand=1)
+
+    year,mon,day,hour,minute,sec=getDate()
+    jd=stars.juldat(year,mon,day,hour,minute,sec)
+
+    #faza mesiaca
+    #'''
+    #kruh
+    a=np.arange(0,2*np.pi,0.1)
+    r=5.
+
+    x0=r*np.cos(a)
+    y0=r*np.sin(a)
+
+    phase0=moon.phase(jd)
+    phase=phase0
+    if phase0>0.5: phase-=0.5
+    arg=2*np.pi*phase
+
+    ym=np.arange(-r,r+.01,0.1)
+    xm=np.cos(arg)*np.sqrt(r**2-ym**2)
+    y1=np.arange(r,-r-.01,-0.1)
+    x1=np.sqrt(r**2-y1**2)
+    xm=np.append(xm,x1)
+    ym=np.append(ym,y1)
+    xy=np.zeros([xm.shape[0],2])
+    xy[:,0]=xm
+    xy[:,1]=ym
+
+    xy0=np.zeros([x0.shape[0],2])
+    xy0[:,0]=x0
+    xy0[:,1]=y0
+
+    figMoon.clf()
+    ax=figMoon.add_subplot(111)
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    ax.grid(False)
+    ax.set_axis_off()
+    figMoon.tight_layout()
+    if phase0<=0.5:
+        polygon=patches.Polygon(xy0,True)
+        p=PatchCollection([polygon],color='k',zorder=3)
+        ax.add_collection(p)
+
+        polygon=patches.Polygon(xy,True)
+        p=PatchCollection([polygon],color=colors['moon'],zorder=3)
+        ax.add_collection(p)
+    else:
+        polygon=patches.Polygon(xy0,True)
+        p=PatchCollection([polygon],color=colors['moon'],zorder=3)
+        ax.add_collection(p)
+
+        polygon=patches.Polygon(xy,True)
+        p=PatchCollection([polygon],color='k',zorder=3)
+        ax.add_collection(p)
+    ax.set_ylim(-6,6)
+    ax.set_xlim(-6,6)
+    canvas.draw()
+
+    old=sys.stdout
+    #redirect output to text field
+    sys.stdout=StdoutRedirector(Text1)
+    #general
+    print('Julian Date: '+str(jd))
+    print('Sidereal Time: '+stars.printDMS(stars.sid_time(jd)/15.))
+    loc=(stars.sid_time(jd)+settings['default_site'].lon)/15.
+    if loc>24: loc-=24
+    print('Local Sidereal Time: '+stars.printDMS(loc))
+
+    def info(ra,dec):
+        print('RA: '+stars.printDMS(ra/15)+'; DEC: '+stars.printDMS(dec))
+        found=[]
+        for const in constellations:
+            if constellations[const].testPoint(ra/15,dec): found.append(const)
+        if len(found)==1: const=found[0]
+        elif len(found)==2: const=found[0]+'/'+found[1]
+        else: const='---'
+        print('Const.: '+const)
+        h=moon.eq2alt(jd,ra,dec,settings['default_site'].lon,settings['default_site'].lat)
+        print('Alt: '+stars.printDMS(h))
+        r,t,s=moon.riseSet(stars.juldat(year,mon,day+round(hour/24.),0,0,0),ra,dec,settings['default_site'].lon,settings['default_site'].lat)
+        if not r=='NA':
+            r=stars.printDMS(r)
+            s=stars.printDMS(s)
+        print('Rise: '+r)
+        print('Transit: '+stars.printDMS(t)+' @ '+str(round(dec+90-settings['default_site'].lat,2))+' deg')
+        print('Set: '+s)
+
+    sys.stdout=StdoutRedirector(Text2)
+    #sun
+    ra,dec=moon.sunCoordinates(jd)
+    info(ra,dec)
+
+
+    sys.stdout=StdoutRedirector(Text3)
+    #moon
+    ra,dec=moon.moonCoordinates(jd)
+    info(ra,dec)
+
+    sys.stdout=old
 
 def AddObj(obj=None):
     global changed
@@ -2883,6 +3066,7 @@ def objselect(evt):
         objZ.dec*=-1
     a,h=objZ.altAz(stars.juldat(year,mon,day,hour,minute,sec),settings['default_site'].lon,lat)
     print('Az: '+stars.printDMS(a)+'; Alt: '+stars.printDMS(h))
+    print('Moon distance: '+str(round(moon.moonDist(stars.juldat(year,mon,day,hour,minute,sec),objZ.raD,objZ.dec),2))+' deg')
     r,t,s=objZ.rise(stars.juldat(year,mon,day+round(hour/24.),0,0,0),settings['default_site'].lon,lat)
     if not r=='NA':
         r=stars.printDMS(r)
@@ -3288,6 +3472,7 @@ exportObsAll.add_command(label='to Excel',command=excelObsAllE)
 exportObsAll.add_command(label='to Text File',command=textObsAllE)
 
 Popupmenu1.add_command(command=Settings,label='Settings')
+Popupmenu1.add_command(command=Informations,label='Informations')
 Popupmenu1.add_command(command=About,label='About')
 root.config(menu=Popupmenu1)
 

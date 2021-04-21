@@ -12,6 +12,13 @@ def juldat(year,mon,day,h=0,m=0,s=0):
     jd=int(365.25*(year+4716))+int(30.6001*(mon+1))+day+h/24.+m/1440.+s/86400.+b-1524.5
     return jd
 
+def sid_time(jd):
+    '''sidereal time on Greenwich in degrees'''
+    T=(jd-2451545.0)/36525
+    sid=280.46061837+360.98564736629*(jd-2451545.0)+0.000387933*T**2-T**3/38710000
+    sid=sid%360
+    return sid
+
 def printDMS(x):
         #output in format d:m:s
         sgn=''
@@ -61,10 +68,7 @@ class star:
 
         if isinstance(jd,list): jd=np.array(jd)
 
-        #sidereal time on Greenwich in degrees or hours
-        T=(jd-2451545.0)/36525
-        sid=280.46061837+360.98564736629*(jd-2451545.0)+0.000387933*T**2-T**3/38710000
-        sid=sid%360+lon
+        sid=sid_time(jd)+lon    #local sidereal time
 
         t=sid-self.raD
         if out_type=='num': t=np.array([t])
@@ -92,10 +96,7 @@ class star:
 
     def rise(self,jd,lon,lat):
         '''calculate time of rising, transit and setting; jd - at Oh UT'''
-        #sidereal time on Greenwich in degrees or hours
-        T=(jd-2451545.0)/36525
-        sid=280.46061837+360.98564736629*(jd-2451545.0)+0.000387933*T**2-T**3/38710000
-        sid=sid%360+lon
+        sid=sid_time(jd)+lon    #local sidereal time
 
         dec=np.deg2rad(self.dec)
         lat=np.deg2rad(lat)
@@ -304,7 +305,7 @@ def load():
 def abbrev():
     f=open('data/constellations.txt','r')
     lines=f.readlines()
-    f.close()    
+    f.close()
 
     abbrevConst={}
 

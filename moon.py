@@ -147,6 +147,11 @@ def riseSet(jd,lon,lat,sun=True):
         ha=np.rad2deg(ha)
         return ha
 
+    def getTime(jd,x):
+        tmp=jd+x/24.
+        tmp=jd2date(tmp)
+        return tmp.hour+tmp.minute/60.+tmp.second/3600.
+
     if sun: coord=sunCoordinates
     else: coord=moonCoordinates
 
@@ -172,9 +177,9 @@ def riseSet(jd,lon,lat,sun=True):
     ha=rise0(dec,lat)
     s=(ra-sid+ha)/15.           #rise
 
-    t=t%24
-    r=r%24
-    s=s%24
+    r=getTime(jd,r)
+    t=getTime(jd,t)
+    s=getTime(jd,s)
 
     return r,t,s
 

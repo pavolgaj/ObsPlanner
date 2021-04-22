@@ -292,7 +292,8 @@ def Informations():
         print('Const.: '+const)
         h=moon.eq2alt(jd,ra,dec,settings['default_site'].lon,settings['default_site'].lat)
         print('Alt: '+stars.printDMS(h))
-        r,t,s=moon.riseSet(stars.juldat(year,mon,day+round(hour/24.),0,0,0),settings['default_site'].lon,settings['default_site'].lat,sun)
+        #r,t,s=moon.riseSet(stars.juldat(year,mon,day+round(hour/24.),0,0,0),settings['default_site'].lon,settings['default_site'].lat,sun)
+        r,t,s=moon.riseSet(jd,settings['default_site'].lon,settings['default_site'].lat,sun)
         if not r=='NA':
             r=stars.printDMS(r)
             s=stars.printDMS(s)

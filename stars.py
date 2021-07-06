@@ -20,28 +20,28 @@ def sid_time(jd):
     return sid
 
 def printDMS(x):
-        #output in format d:m:s
-        sgn=''
-        if np.sign(x)<0: sgn='-'
-        x=abs(x)
-        d=int(abs(x))
-        m=int(round((abs(x)-d)*60.,3))
-        s=abs(round((abs(x)-d-m/60.)*3600.,2))
-        xx=sgn+str(d).rjust(2,'0')+':'+str(m).rjust(2,'0')+':'+('%.2f' %s).rjust(5,'0')
-        return xx
+    '''output in format d:m:s'''
+    sgn=''
+    if np.sign(x)<0: sgn='-'
+    x=abs(x)
+    d=int(abs(x))
+    m=int(round((abs(x)-d)*60.,3))
+    s=abs(round((abs(x)-d-m/60.)*3600.,2))
+    xx=sgn+str(d).rjust(2,'0')+':'+str(m).rjust(2,'0')+':'+('%.2f' %s).rjust(5,'0')
+    return xx
 
 def readDMS(x,deg=True):
-        #input in format d:m:s
-        sgn=1
-        if x[0]=='-':
-            sgn=-1
-            x=x[1:]
-        d=int(x[:x.find(':')])
-        x=x[x.find(':')+1:]
-        m=int(x[:x.find(':')])
-        s=float(x[x.find(':')+1:])
-        if deg: return sgn*(d+m/60.+s/3600.)
-        else: return sgn*d,m,s
+    '''input in format d:m:s'''
+    sgn=1
+    if x[0]=='-':
+        sgn=-1
+        x=x[1:]
+    d=int(x[:x.find(':')])
+    x=x[x.find(':')+1:]
+    m=int(x[:x.find(':')])
+    s=float(x[x.find(':')+1:])
+    if deg: return sgn*(d+m/60.+s/3600.)
+    else: return sgn*d,m,s
 
 class star:
     def __init__(self,name,ra,dec,mag,size='0',typ='NA',note='',const=''):
@@ -58,7 +58,7 @@ class star:
     def altAz(self,jd,lon,lat):
         #type of output (same as input - number, list, numpy.array)
         out_type='lst'
-        if (isinstance(jd,int) or isinstance(jd,float)):
+        if isinstance(jd,(int,float)):
             #all input args are numbers
             out_type='num'
 
@@ -214,7 +214,7 @@ class constellation:
             ra,dec=self._transform(ra,dec,coef)
             ra0,dec0=self._transform(ra0,dec0,coef)
 
-            for i in range(len(ra0)):
+            for i,ra0i in enumerate(ra0):
                 poly.append([ra0[i],dec0[i]])
 
             if ra>max(ra0) or ra<min(ra0): continue

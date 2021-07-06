@@ -53,9 +53,9 @@ def sort(zoznam):
     objSort=[]
     order={}
     for x in zoznam:
-        for i in range(len(x)):
+        for i,xi in enumerate(x):
             try:
-                int(x[i])
+                int(xi)
                 break
             except: pass
         order[x[:i]+x[i:].rjust(10,'0')]=x

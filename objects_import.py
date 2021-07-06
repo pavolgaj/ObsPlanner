@@ -102,7 +102,7 @@ def sipsI(name):
     constellations=stars.load()
     abbrevConst={x.lower():y for x,y in stars.abbrev().items()}   #malym -> osetrenie problem s velkostou pismen
 
-    skratky=[x.lower() for x in constellations.keys()]        #malym -> osetrenie problem s velkostou pismen
+    skratky=[x.lower() for x in constellations]        #malym -> osetrenie problem s velkostou pismen
     objects=objClass.objects(constellations)
     f=open(name,'r')
     group=''    #type of object in catalog (M,NGC etc.)
@@ -130,11 +130,9 @@ def sipsI(name):
             except: pass
             if d.strip().lower() in skratky:
                 const0=d.strip()
-                continue
             elif d.strip().lower() in abbrevConst:
                 const0=abbrevConst[d.strip().lower()]
-                continue
-            typ=d
+            else: typ=d
         size=''
         if '(' in line: note=line[line.find('(')+1:line.find(')')]
         else: note=''

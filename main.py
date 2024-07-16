@@ -252,19 +252,19 @@ def Informations():
     ax.set_axis_off()
     figMoon.tight_layout()
     if phase0<=0.5:
-        polygon=patches.Polygon(xy0,True)
+        polygon=patches.Polygon(xy0,closed=True)
         p=PatchCollection([polygon],color='k',zorder=3)
         ax.add_collection(p)
 
-        polygon=patches.Polygon(xy,True)
+        polygon=patches.Polygon(xy,closed=True)
         p=PatchCollection([polygon],color=colors['moon'],zorder=3)
         ax.add_collection(p)
     else:
-        polygon=patches.Polygon(xy0,True)
+        polygon=patches.Polygon(xy0,closed=True)
         p=PatchCollection([polygon],color=colors['moon'],zorder=3)
         ax.add_collection(p)
 
-        polygon=patches.Polygon(xy,True)
+        polygon=patches.Polygon(xy,closed=True)
         p=PatchCollection([polygon],color='k',zorder=3)
         ax.add_collection(p)
     ax.set_ylim(-6,6)
